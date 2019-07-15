@@ -391,9 +391,9 @@ auto ppu::get_sprite_pixel() const
     // todo: maybe use a blocking array instead?
     if (sprite.id == 0xFF) break;
 
-    uint8_t offset = pixel - sprite.x;
+    int offset = pixel - sprite.x;
 
-    if (offset >= 8) continue;  // Not in range
+    if (offset < 0 || offset >= 8) continue;  // Not in range
 
     uint8_t spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
 
