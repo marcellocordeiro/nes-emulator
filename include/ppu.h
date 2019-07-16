@@ -117,8 +117,8 @@ private:
   std::array<uint8_t, 0x20>  cg_ram  = {};  // Colour generator RAM
   std::array<uint8_t, 0x100> oam_mem = {};  // Object Attribute Memory (sprites)
 
-  std::array<sprite_info, 8> oam     = {};  // Sprite buffer
-  std::array<sprite_info, 8> sec_oam = {};  // Sprite buffer
+  std::vector<sprite_info> oam     = {};  // Sprite buffer
+  std::vector<sprite_info> sec_oam = {};  // Sprite buffer
 
   std::array<uint32_t, 256 * 240> frame_buffer = {};  // Frame buffer
 

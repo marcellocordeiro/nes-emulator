@@ -110,7 +110,7 @@ void ppu::step()
     ++scanline;
 
     if (scanline == 240) {
-      this->bus->emulator.update_frame(frame_buffer.data());
+      bus->emulator.update_frame(frame_buffer.data());
       ppu_state = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
@@ -241,7 +241,7 @@ uint8_t ppu::vram_read(uint16_t addr) const
   using namespace nes::types::ppu::memory;
 
   switch (get_mem_map(addr)) {
-    case CHR: return this->bus->cartridge.chr_read(addr);
+    case CHR: return bus->cartridge.chr_read(addr);
     case Nametables: return ci_ram[nt_mirror_addr(addr)];
     case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
     default: return 0;
@@ -253,7 +253,7 @@ void ppu::vram_write(uint16_t addr, uint8_t value)
   using namespace nes::types::ppu::memory;
 
   switch (get_mem_map(addr)) {
-    case CHR: this->bus->cartridge.chr_write(addr, value); break;
+    case CHR: bus->cartridge.chr_write(addr, value); break;
     case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
     case Palettes: cg_ram[palette_addr(addr)] = value; break;
   }
@@ -261,25 +261,27 @@ void ppu::vram_write(uint16_t addr, uint8_t value)
 
 void ppu::clear_sec_oam()
 {
-  sec_oam.fill({});
+  sec_oam.clear();
 }
 
 void ppu::sprite_evaluation()
 {
-  size_t n = 0;
-  for (uint8_t i = 0; i < 64; ++i) {
+  for (uint8_t i = 0; i < 64 && sec_oam.size() < 8; ++i) {
     int line = scanline - oam_mem[i * 4];
 
     if (line >= 0 && line < sprite_height) {
-      sec_oam[n].id   = i;
-      sec_oam[n].y    = oam_mem[(i * 4) + 0];
-      sec_oam[n].tile = oam_mem[(i * 4) + 1];
-      sec_oam[n].attr = oam_mem[(i * 4) + 2];
-      sec_oam[n].x    = oam_mem[(i * 4) + 3];
+      sprite_info sprite;
 
-      if (++n; n > 8) {
+      sprite.id   = i;
+      sprite.y    = oam_mem[(i * 4) + 0];
+      sprite.tile = oam_mem[(i * 4) + 1];
+      sprite.attr = oam_mem[(i * 4) + 2];
+      sprite.x    = oam_mem[(i * 4) + 3];
+
+      sec_oam.push_back(sprite);
+
+      if (sec_oam.size() == 8) {
         status.spr_overflow = true;
-        return;
       }
     }
   }
@@ -380,30 +382,22 @@ auto ppu::get_sprite_pixel() const
 {
   uint8_t pixel = static_cast<uint8_t>(tick - 2);
 
-  if (!mask.show_spr || (!mask.spr_left && pixel < 8)) {
-    return std::tuple{false, uint8_t{0}, false};
-  }
+  if (mask.show_spr && !(!mask.spr_left && pixel < 8)) {
+    for (const auto& sprite : oam) {
+      int offset = pixel - sprite.x;
 
-  for (const auto& sprite : oam) {
-    // If this sprite haven't been loaded yet,
-    // all sprites after this one are invalid.
-    //
-    // todo: maybe use a blocking array instead?
-    if (sprite.id == 0xFF) break;
+      if (offset < 0 || offset >= 8) continue;  // Not in range
 
-    int offset = pixel - sprite.x;
+      auto spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
 
-    if (offset < 0 || offset >= 8) continue;  // Not in range
+      if (spr_palette != 0) {
+        spr_palette |= (sprite.attr & 3) << 2;
 
-    uint8_t spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
-
-    if (spr_palette != 0) {
-      spr_palette |= (sprite.attr & 3) << 2;
-
-      return std::tuple{
-          sprite.id == 0,                          // Is sprite 0?
-          static_cast<uint8_t>(spr_palette + 16),  // Sprite palette
-          !(sprite.attr & 0x20)};                  // Is the sprite on top?
+        return std::tuple{
+            sprite.id == 0,                          // Is sprite 0?
+            static_cast<uint8_t>(spr_palette + 16),  // Sprite palette
+            !(sprite.attr & 0x20)};                  // Is the sprite on top?
+      }
     }
   }
 
@@ -414,18 +408,18 @@ auto ppu::get_background_pixel() const
 {
   uint8_t pixel = static_cast<uint8_t>(tick - 2);
 
-  if (!mask.show_bg || (!mask.bg_left && pixel < 8)) {
-    return uint8_t{0};
+  if (mask.show_bg && !(!mask.bg_left && pixel < 8)) {
+    auto bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
+
+    if (bg_palette) {
+      auto attr_palette = get_palette(at_shift_l, at_shift_h, 7 - fine_x);
+      bg_palette |= attr_palette << 2;
+    }
+
+    return bg_palette;
   }
 
-  auto bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
-
-  if (bg_palette) {
-    auto attr_palette = get_palette(at_shift_l, at_shift_h, 7 - fine_x);
-    bg_palette |= attr_palette << 2;
-  }
-
-  return bg_palette;
+  return uint8_t{0};
 }
 
 void ppu::render_pixel()
@@ -440,7 +434,7 @@ void ppu::render_pixel()
   auto bg_palette                              = get_background_pixel();
   auto [is_sprite0, spr_palette, spr_priority] = get_sprite_pixel();
 
-  if (is_sprite0 && bg_palette && pixel != 255) {
+  if (is_sprite0 && spr_palette && bg_palette && pixel != 255) {
     status.spr0_hit = true;
   }
 
@@ -448,13 +442,12 @@ void ppu::render_pixel()
 
   // Evaluate priority
   if (spr_palette && (spr_priority || bg_palette == 0)) {
-    palette = spr_palette;
+    palette = vram_read(0x3F00 + spr_palette);
   } else {
-    palette = bg_palette;
+    palette = vram_read(0x3F00 + bg_palette);
   }
 
-  frame_buffer[scanline * 256 + pixel] =
-      nes_to_rgb[vram_read(0x3F00 + palette)];
+  frame_buffer[scanline * 256 + pixel] = nes_to_rgb[palette];
 }
 
 void ppu::background_fetch()
@@ -518,7 +511,7 @@ void ppu::scanline_cycle_pre()
 
     if (in_range(280, 304)) vertical_update();
     if (tick == 321) load_sprites();
-    if (tick == 260) this->bus->cartridge.scanline_counter();
+    if (tick == 260) bus->cartridge.scanline_counter();
   }
 }
 
@@ -538,7 +531,7 @@ void ppu::scanline_cycle_visible()
       default: break;
     }
 
-    if (tick == 260) this->bus->cartridge.scanline_counter();
+    if (tick == 260) bus->cartridge.scanline_counter();
   }
 }
 
@@ -548,7 +541,7 @@ void ppu::scanline_cycle_nmi()
     status.vblank = true;
 
     if (ctrl.nmi) {
-      this->bus->cpu.set_nmi();
+      bus->cpu.set_nmi();
     }
   }
 }
