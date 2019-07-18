@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.15)
 
-project(nes-emulator VERSION 1.0.0)
+project(nes-emulator)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_HOME_DIRECTORY}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/bin")
 
 #
 # Dependencies
@@ -48,11 +48,8 @@ target_compile_options(nes-emulator
 
 target_compile_definitions(nes-emulator PRIVATE $<$<CXX_COMPILER_ID:MSVC>:SDL_MAIN_HANDLED>)
 
-# Remove for CMake 3.15 (CMP0092)
-string(REGEX REPLACE "/W3" "/W4" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
-
 #
-# Post compilation
+# Copy resource files
 #
 
-configure_file("res/nes_mesen.pal" ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} COPYONLY)
+configure_file("res/nes_mesen.pal" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/nes_mesen.pal" COPYONLY)

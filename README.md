@@ -34,7 +34,7 @@ Generate the solution files using CMake and build it. It has been tested on Wind
   - {fmt} 5.3.1
 
 - Tools:
-  - CMake 3.14
+  - CMake 3.15
 
 ## Running
 
