@@ -55,4 +55,4 @@ target_compile_options(nes-emulator
 
 # Copy resource files
 
-configure_file("res/nes_mesen.pal" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/nes_mesen.pal" COPYONLY)
+configure_file("res/nes_mesen.pal" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/palette.pal" COPYONLY)

@@ -10,6 +10,7 @@
 #include "emulator.h"
 #include "log.h"
 #include "ppu.h"
+#include "system_utils.h"
 
 int main(int argc, char* argv[])
 {
@@ -17,10 +18,11 @@ int main(int argc, char* argv[])
     throw std::invalid_argument("Too few arguments");
   }
 
-  app_path = argv[0];
+  // Prevents pointer invalidation
+  auto path_str = lib::get_executable_path().string();
+  app_path      = path_str.c_str();
 
-  std::ofstream log_file{std::filesystem::path(app_path).parent_path() /
-                         "nes-emulator.log"};
+  std::ofstream log_file{std::filesystem::path(app_path) / "nes-emulator.log"};
   lib::log::get().set_stream(log_file);
 
   nes::cpu        cpu;
@@ -47,6 +49,6 @@ int main(int argc, char* argv[])
   try {
     emulator.run();
   } catch (std::exception& e) {
-    std::cout << e.what() << '\n';
+    lib::message_box(e.what());
   }
 }

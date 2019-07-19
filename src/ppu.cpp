@@ -29,8 +29,7 @@ void ppu::reset()
 
 void ppu::set_palette()
 {
-  auto palette_path =
-      std::filesystem::path(app_path).parent_path() / "nes_mesen.pal";
+  auto palette_path = std::filesystem::path(app_path) / "palette.pal";
 
   std::ifstream palette(palette_path, std::ios::binary);
 

@@ -7,8 +7,9 @@ project(nes-emulator-lib)
 add_library(nes-emulator-lib STATIC)
 
 target_sources(nes-emulator-lib PRIVATE
-  "src/log.cpp"
   "src/bit_utils.cpp"
+  "src/log.cpp"
+  "src/system_utils.cpp"
 )
 
 target_include_directories(nes-emulator-lib SYSTEM PUBLIC "include")
