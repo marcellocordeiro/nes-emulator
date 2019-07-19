@@ -2,36 +2,43 @@ cmake_minimum_required(VERSION 3.15)
 
 project(nes-emulator)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/bin")
-
-#
-# Dependencies
-#
-
-find_package(SDL2 2.0 REQUIRED)
-# find_package(fmt 5.3 REQUIRED)
-
-add_subdirectory("lib")
-
-#
 # Setting up the target
-#
 
-file(GLOB SOURCE_FILES
-  "src/*.cpp"
-  "src/mappers/*.cpp"
-  "src/types/*.cpp"
+add_executable(nes-emulator)
+
+target_sources(nes-emulator PRIVATE
+  "src/mappers/mapper0.cpp"
+  "src/mappers/mapper1.cpp"
+  "src/mappers/mapper2.cpp"
+  "src/mappers/mapper4.cpp"
+  "src/types/cpu.cpp"
+  "src/types/ppu.cpp"
+  "src/apu.cpp"
+  "src/cartridge.cpp"
+  "src/controller.cpp"
+  "src/cpu.cpp"
+  "src/cpu_instructions.cpp"
+  "src/debugger.cpp"
+  "src/emulator.cpp"
+  "src/main.cpp"
+  "src/mapper.cpp"
+  "src/ppu.cpp"
 )
-  
-add_executable(nes-emulator ${SOURCE_FILES})
+
 target_include_directories(nes-emulator PRIVATE "include")
 
-target_link_libraries(nes-emulator PRIVATE nes-emulator-lib)
-target_link_libraries(nes-emulator PRIVATE SDL2::SDL2)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
-#
+# Dependencies
+
+add_subdirectory("lib")
+target_link_libraries(nes-emulator PRIVATE nes-emulator-lib)
+
+find_package(SDL2 2.0 REQUIRED)
+target_link_libraries(nes-emulator PRIVATE SDL2::SDL2)
+target_compile_definitions(nes-emulator PRIVATE $<$<CXX_COMPILER_ID:MSVC>:SDL_MAIN_HANDLED>)
+
 # Compiler settings
-#
 
 set_target_properties(nes-emulator
   PROPERTIES
@@ -46,10 +53,6 @@ target_compile_options(nes-emulator
     $<$<CXX_COMPILER_ID:GNU,Clang>:-Werror -Wall -Wextra -pedantic -Wuseless-cast -Wshadow -Wformat=2 -Wdisabled-optimization>
 )
 
-target_compile_definitions(nes-emulator PRIVATE $<$<CXX_COMPILER_ID:MSVC>:SDL_MAIN_HANDLED>)
-
-#
 # Copy resource files
-#
 
 configure_file("res/nes_mesen.pal" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/nes_mesen.pal" COPYONLY)
