@@ -4,6 +4,8 @@ project(nes-emulator)
 
 # Setting up the target
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+
 add_executable(nes-emulator)
 
 target_sources(nes-emulator PRIVATE
@@ -26,8 +28,6 @@ target_sources(nes-emulator PRIVATE
 )
 
 target_include_directories(nes-emulator PRIVATE "include")
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 # Dependencies
 
