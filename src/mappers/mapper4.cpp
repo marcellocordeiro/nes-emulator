@@ -1,14 +1,7 @@
 #include "mappers/mapper4.h"
 
-#include "cpu.h"
-
 namespace nes {
-mapper4::mapper4(
-    const nes::cartridge_info& info_in,
-    std::vector<uint8_t>&&     prg_in,
-    std::vector<uint8_t>&&     chr_in)
-  : mapper{info_in, std::move(prg_in), std::move(chr_in)}
-{}
+mapper4::mapper4(nes::cartridge& cartridge_ref) : mapper{cartridge_ref} {}
 
 void mapper4::reset()
 {
@@ -63,7 +56,7 @@ void mapper4::apply()
 
   using namespace mirroring;
 
-  this->set_mirroring(horizontal_mirroring ? Horizontal : Vertical);
+  set_mirroring(horizontal_mirroring ? Horizontal : Vertical);
 }
 
 void mapper4::prg_write(uint16_t addr, uint8_t value)
@@ -78,7 +71,7 @@ void mapper4::prg_write(uint16_t addr, uint8_t value)
       case 0xC000: irq_period = value; break;
       case 0xC001: irq_counter = 0; break;
       case 0xE000:
-        this->bus->cpu.set_irq(false);
+        set_cpu_irq(false);
         irq_enabled = false;
         break;
       case 0xE001: irq_enabled = true; break;
@@ -97,7 +90,7 @@ void mapper4::scanline_counter()
   }
 
   if (irq_enabled && irq_counter == 0) {
-    this->bus->cpu.set_irq();
+    set_cpu_irq(true);
   }
 }
 }  // namespace nes

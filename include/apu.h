@@ -3,8 +3,8 @@
 #include <array>
 #include <memory>
 
-#include "bus.h"
 #include "common.h"
+#include "types/forward_decl.h"
 
 #include "Nes_Apu.h"
 #include "Sound_Queue.h"
@@ -12,7 +12,7 @@
 namespace nes {
 class apu {
 public:
-  void set_bus(nes::bus&);
+  apu(nes::cpu&);
 
   void power_on();
 
@@ -22,7 +22,7 @@ public:
   void run_frame(int);
 
 private:
-  nes::bus* bus = nullptr;
+  nes::cpu& cpu;
 
   static constexpr int buffer_size = 4096;
 

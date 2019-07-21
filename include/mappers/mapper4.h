@@ -5,10 +5,7 @@
 namespace nes {
 class mapper4 : public mapper {
 public:
-  mapper4(
-      const nes::cartridge_info&,
-      std::vector<uint8_t>&&,
-      std::vector<uint8_t>&&);
+  mapper4(nes::cartridge&);
 
   void reset() override;
 

@@ -12,10 +12,14 @@
 using namespace nes::types::cpu;
 
 namespace nes {
-void cpu::set_bus(nes::bus& ref)
-{
-  this->bus = &ref;
-}
+cpu::cpu(
+    nes::ppu&        ppu_ref,
+    nes::apu&        apu_ref,
+    nes::cartridge&  cartridge_ref,
+    nes::controller& controller_ref)
+  : ppu(ppu_ref), apu(apu_ref), cartridge(cartridge_ref),
+    controller(controller_ref)
+{}
 
 void cpu::power_on()
 {
@@ -67,16 +71,16 @@ void cpu::run_frame()
     execute();
   }
 
-  this->bus->apu.run_frame(elapsed());
+  apu.run_frame(elapsed());
 
   // state.cycle_count = 0;
 }
 
 void cpu::tick()
 {
-  this->bus->ppu.step();
-  this->bus->ppu.step();
-  this->bus->ppu.step();
+  ppu.step();
+  ppu.step();
+  ppu.step();
   --remaining_cycles;
 
   //++state.cycle_count;
@@ -88,13 +92,14 @@ uint8_t cpu::read(uint16_t addr) const
 
   switch (get_map<Read>(addr)) {
     case CPU_RAM: return this->ram[addr % 0x800];
-    case PPU_Access: return this->bus->ppu.read(addr);
-    case APU_Access: return this->bus->apu.read(elapsed());
-    case Controller_1: return this->bus->controller.read(0);
-    case Controller_2: return this->bus->controller.read(1);
-    case Cartridge: return this->bus->cartridge.prg_read(addr);
+    case PPU_Access: return ppu.read(addr);
+    case APU_Access: return apu.read(elapsed());
+    case Controller_1: return controller.read(0);
+    case Controller_2: return controller.read(1);
+    case Cartridge: return cartridge.prg_read(addr);
     case Unknown:
-      LOG(lib::log::Error) << "Invalid read address:" << std::showbase << std::hex << addr;
+      LOG(lib::log::Error) << "Invalid read address:" << std::showbase
+                           << std::hex << addr;
       return 0;
     default: return 0;
   }
@@ -106,11 +111,11 @@ void cpu::write(uint16_t addr, uint8_t value)
 
   switch (get_map<Write>(addr)) {
     case CPU_RAM: this->ram[addr % 0x800] = value; break;
-    case PPU_Access: this->bus->ppu.write(addr, value); break;
-    case APU_Access: this->bus->apu.write(elapsed(), addr, value); break;
+    case PPU_Access: ppu.write(addr, value); break;
+    case APU_Access: apu.write(elapsed(), addr, value); break;
     case OAMDMA: this->dma_oam(value); break;
-    case Controller: this->bus->controller.write(value & 1); break;
-    case Cartridge: this->bus->cartridge.prg_write(addr, value); break;
+    case Controller: controller.write(value & 1); break;
+    case Cartridge: cartridge.prg_write(addr, value); break;
     default: throw std::runtime_error("Invalid write address");
   }
 }

@@ -6,17 +6,18 @@
 #include <stdexcept>
 #include <vector>
 
+#include "cpu.h"
 #include "log.h"
 #include "mappers/mapper0.h"
 #include "mappers/mapper1.h"
 #include "mappers/mapper2.h"
 #include "mappers/mapper4.h"
+#include "ppu.h"
 
 namespace nes {
-void cartridge::set_bus(nes::bus& ref)
-{
-  this->bus = &ref;
-}
+cartridge::cartridge(nes::cpu& cpu_ref, nes::ppu& ppu_ref)
+  : cpu(cpu_ref), ppu(ppu_ref)
+{}
 
 void cartridge::load(const char* rom_path)
 {
@@ -56,28 +57,22 @@ void cartridge::load(const char* rom_path)
   rom.read(reinterpret_cast<char*>(prg.data()), prg.size());
   rom.read(reinterpret_cast<char*>(chr.data()), chr.size());
 
+  if (info.chr_ram) {
+    chr.resize(0x2000, 0);
+  }
+
   rom.close();
 
-  using std::move;
-
   switch (info.mapper_num) {
-    case 0:
-      mapper = std::make_unique<mapper0>(this->info, move(prg), move(chr));
-      break;
-    case 1:
-      mapper = std::make_unique<mapper1>(this->info, move(prg), move(chr));
-      break;
-    case 2:
-      mapper = std::make_unique<mapper2>(this->info, move(prg), move(chr));
-      break;
-    case 4:
-      mapper = std::make_unique<mapper4>(this->info, move(prg), move(chr));
-      break;
+    case 0: mapper = std::make_unique<mapper0>(*this); break;
+    case 1: mapper = std::make_unique<mapper1>(*this); break;
+    case 2: mapper = std::make_unique<mapper2>(*this); break;
+    case 4: mapper = std::make_unique<mapper4>(*this); break;
     default: throw std::runtime_error("Mapper not implemented");
   }
 
-  mapper->set_bus(*this->bus);
-  mapper->reset();
+  this->mapper->set_prg_rom(std::move(prg));
+  this->mapper->set_chr_rom(std::move(chr));
 
   std::ifstream prg_ram_file(
       std::filesystem::path(rom_path).replace_extension(".srm"),
@@ -86,8 +81,13 @@ void cartridge::load(const char* rom_path)
   if (prg_ram_file) {
     std::vector<uint8_t> prg_ram(info.prg_ram_size, 0);
     prg_ram_file.read(reinterpret_cast<char*>(prg_ram.data()), prg_ram.size());
-    this->mapper->set_prg_ram(move(prg_ram));
+    this->mapper->set_prg_ram(std::move(prg_ram));
+  } else {
+    this->mapper->set_prg_ram(
+        std::move(std::vector<uint8_t>(info.prg_ram_size)));
   }
+
+  mapper->reset();
 }
 
 void cartridge::dump_prg_ram() const
@@ -101,6 +101,11 @@ void cartridge::dump_prg_ram() const
   // std::ofstream ofp{prg_ram_file, std::ios::out | std::ios::binary};
   prg_ram_file.write(
       reinterpret_cast<const char*>(prg_ram.data()), prg_ram.size());
+}
+
+const nes::cartridge_info& cartridge::get_info() const
+{
+  return info;
 }
 
 uint8_t cartridge::prg_read(uint16_t addr) const
@@ -121,6 +126,16 @@ uint8_t cartridge::chr_read(uint16_t addr) const
 void cartridge::chr_write(uint16_t addr, uint8_t value)
 {
   mapper->chr_write(addr, value);
+}
+
+void cartridge::set_mirroring(int mode)
+{
+  ppu.set_mirroring(mode);
+}
+
+void cartridge::set_cpu_irq(bool value)
+{
+  cpu.set_irq(value);
 }
 
 void cartridge::scanline_counter()

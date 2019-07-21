@@ -1,12 +1,7 @@
 #include "mappers/mapper1.h"
 
 namespace nes {
-mapper1::mapper1(
-    const nes::cartridge_info& info_in,
-    std::vector<uint8_t>&&     prg_in,
-    std::vector<uint8_t>&&     chr_in)
-  : mapper{info_in, std::move(prg_in), std::move(chr_in)}
-{}
+mapper1::mapper1(nes::cartridge& cartridge_ref) : mapper{cartridge_ref} {}
 
 void mapper1::reset()
 {
@@ -18,7 +13,7 @@ void mapper1::reset()
   chr_bank_1 = 0;
   prg_bank   = 0;
 
-  this->apply();
+  apply();
 }
 
 void mapper1::apply()
@@ -51,10 +46,10 @@ void mapper1::apply()
   }
 
   switch (control & 0b11) {
-    case 0: this->set_mirroring(One_Screen_Low); break;
-    case 1: this->set_mirroring(One_Screen_High); break;
-    case 2: this->set_mirroring(Vertical); break;
-    case 3: this->set_mirroring(Horizontal); break;
+    case 0: set_mirroring(One_Screen_Low); break;
+    case 1: set_mirroring(One_Screen_High); break;
+    case 2: set_mirroring(Vertical); break;
+    case 3: set_mirroring(Horizontal); break;
   }
 }
 
@@ -68,7 +63,7 @@ void mapper1::prg_write(const uint16_t addr, const uint8_t value)
       write_counter = 0;
       shift_reg     = 0;
 
-      this->apply();
+      apply();
     } else {
       shift_reg = ((value & 1) << 4) | (shift_reg >> 1);
       ++write_counter;
@@ -84,7 +79,7 @@ void mapper1::prg_write(const uint16_t addr, const uint8_t value)
         write_counter = 0;
         shift_reg     = 0;
 
-        this->apply();
+        apply();
       }
     }
   }

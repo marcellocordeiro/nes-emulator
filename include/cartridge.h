@@ -2,19 +2,21 @@
 
 #include <memory>
 
-#include "bus.h"
 #include "common.h"
 #include "mapper.h"
 #include "types/cartridge.h"
+#include "types/forward_decl.h"
 
 namespace nes {
 class cartridge {
 public:
-  void set_bus(nes::bus&);
+  cartridge(nes::cpu&, nes::ppu&);
 
   void load(const char*);
 
   void dump_prg_ram() const;
+
+  const nes::cartridge_info& get_info() const;
 
   uint8_t prg_read(uint16_t) const;
   uint8_t chr_read(uint16_t) const;
@@ -22,10 +24,13 @@ public:
   void prg_write(uint16_t, uint8_t);
   void chr_write(uint16_t, uint8_t);
 
+  void set_mirroring(int);
+  void set_cpu_irq(bool);
   void scanline_counter();
 
 private:
-  nes::bus* bus = nullptr;
+  nes::cpu& cpu;
+  nes::ppu& ppu;
 
   nes::cartridge_info info{};
 

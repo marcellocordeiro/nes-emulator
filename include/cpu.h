@@ -2,14 +2,15 @@
 
 #include <array>
 
-#include "bus.h"
 #include "common.h"
 #include "types/cpu.h"
+#include "types/forward_decl.h"
 
 namespace nes {
 class cpu {
 public:
-  void set_bus(nes::bus&);
+  cpu(nes::ppu&, nes::apu&, nes::cartridge&, nes::controller&);
+
   void power_on();
   void reset();
 
@@ -24,7 +25,10 @@ public:
   // friend class debugger;
 
 private:
-  nes::bus* bus = nullptr;
+  nes::ppu& ppu;
+  nes::apu& apu;
+  nes::cartridge& cartridge;
+  nes::controller& controller;
 
   nes::types::cpu::state     state;
   std::array<uint8_t, 0x800> ram = {};

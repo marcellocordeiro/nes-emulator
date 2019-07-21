@@ -1,30 +1,21 @@
 #include "mapper.h"
 
+#include "cartridge.h"
 #include "log.h"
-#include "ppu.h"
 
 namespace nes {
-mapper::mapper(
-    const nes::cartridge_info& info_in,
-    std::vector<uint8_t>&&     prg_in,
-    std::vector<uint8_t>&&     chr_in)
-  : info{info_in}, prg{std::move(prg_in)}, chr{std::move(chr_in)}
-{
-  if (info.chr_ram) {
-    this->chr.resize(0x2000, 0);
-  }
+mapper::mapper(nes::cartridge& cartridge_ref)
+  : cartridge{cartridge_ref}, info{cartridge_ref.get_info()}
+{}
 
-  this->prg_ram.resize(info.prg_ram_size, 0);
+void mapper::set_prg_rom(std::vector<uint8_t>&& vec)
+{
+  this->prg = std::move(vec);
 }
 
-void mapper::set_bus(nes::bus& ref)
+void mapper::set_chr_rom(std::vector<uint8_t>&& vec)
 {
-  this->bus = &ref;
-}
-
-void mapper::set_mirroring(int mode)
-{
-  this->bus->ppu.set_mirroring(mode);
+  this->chr = std::move(vec);
 }
 
 void mapper::set_prg_ram(std::vector<uint8_t>&& vec)
@@ -107,4 +98,14 @@ template void mapper::set_chr_map<8>(int, int);
 template void mapper::set_chr_map<4>(int, int);
 template void mapper::set_chr_map<2>(int, int);
 template void mapper::set_chr_map<1>(int, int);
+
+void mapper::set_mirroring(int mode)
+{
+  cartridge.set_mirroring(mode);
+}
+
+void mapper::set_cpu_irq(bool value)
+{
+  cartridge.set_cpu_irq(value);
+}
 }  // namespace nes

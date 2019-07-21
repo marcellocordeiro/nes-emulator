@@ -3,14 +3,15 @@
 #include <array>
 #include <vector>
 
-#include "bus.h"
 #include "common.h"
+#include "types/forward_decl.h"
 #include "types/ppu.h"
 
 namespace nes {
 class ppu {
 public:
-  void set_bus(nes::bus&);
+  ppu(nes::cpu&, nes::cartridge&, nes::io&);
+
   void power_on();
   void reset();
 
@@ -90,7 +91,9 @@ private:
 
   template <typename T> uint8_t get_palette(T, T, int) const;  // Get palette
 
-  nes::bus* bus = nullptr;
+  nes::cpu&       cpu;
+  nes::cartridge& cartridge;
+  nes::io&        io;
 
   enum timing { Idle, Visible, VBlank, PreRender };
 

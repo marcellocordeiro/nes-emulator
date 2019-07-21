@@ -22,6 +22,7 @@ target_sources(nes-emulator PRIVATE
   "src/cpu_instructions.cpp"
   "src/debugger.cpp"
   "src/emulator.cpp"
+  "src/io.cpp"
   "src/main.cpp"
   "src/mapper.cpp"
   "src/ppu.cpp"

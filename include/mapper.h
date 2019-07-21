@@ -3,22 +3,20 @@
 #include <array>
 #include <vector>
 
-#include "bus.h"
 #include "common.h"
 #include "types/cartridge.h"
+#include "types/forward_decl.h"
 
 namespace nes {
 class mapper {
 public:
-  mapper(
-      const nes::cartridge_info&,
-      std::vector<uint8_t>&&,
-      std::vector<uint8_t>&&);
+  mapper(nes::cartridge&);
   virtual ~mapper() = default;
 
   virtual void reset() = 0;
 
-  void set_bus(nes::bus&);
+  void set_prg_rom(std::vector<uint8_t>&&);
+  void set_chr_rom(std::vector<uint8_t>&&);
 
   void                        set_prg_ram(std::vector<uint8_t>&&);
   const std::vector<uint8_t>& get_prg_ram() const;
@@ -36,7 +34,9 @@ public:
 
 protected:
   void set_mirroring(int);
+  void set_cpu_irq(bool);
 
+  nes::cartridge&            cartridge;
   const nes::cartridge_info& info;
 
   std::vector<uint8_t> prg;
@@ -45,7 +45,5 @@ protected:
 
   std::array<size_t, 4> prg_map{};
   std::array<size_t, 8> chr_map{};
-
-  nes::bus* bus = nullptr;
 };
 }  // namespace nes

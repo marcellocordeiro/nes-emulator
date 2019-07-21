@@ -3,10 +3,7 @@
 #include "cpu.h"
 
 namespace nes {
-void apu::set_bus(nes::bus& ref)
-{
-  this->bus = &ref;
-}
+apu::apu(nes::cpu& cpu_ref) : cpu(cpu_ref) {}
 
 void apu::power_on()
 {
@@ -20,10 +17,10 @@ void apu::power_on()
 
   nes_apu->dmc_reader(
       [](void* user_data, cpu_addr_t addr) -> int {
-        auto a_cpu = static_cast<cpu*>(user_data);
+        auto a_cpu = static_cast<nes::cpu*>(user_data);
         return a_cpu->dmc_reader(addr);
       },
-      &this->bus->cpu);
+      &cpu);
 }
 
 uint8_t apu::read(int elapsed)
