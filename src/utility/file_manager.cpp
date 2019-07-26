@@ -6,8 +6,11 @@ namespace nes::util {
 void file_manager::set_rom(const std::filesystem::path& value)
 {
   rom     = std::filesystem::canonical(value);  // May throw
-  prg_ram = std::filesystem::path(rom).replace_extension(".srm");
-  patch   = std::filesystem::path(rom).replace_extension(".ips");
+  prg_ram = rom;
+  patch   = rom;
+
+  prg_ram.replace_extension(".srm");
+  patch.replace_extension(".ips");
 
   if (std::filesystem::exists(prg_ram)) {
     LOG(lib::log::Info) << "Found PRG-RAM file";
