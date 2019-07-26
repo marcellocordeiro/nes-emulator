@@ -15,6 +15,8 @@ target_sources(nes-emulator PRIVATE
   "src/mappers/mapper4.cpp"
   "src/types/cpu.cpp"
   "src/types/ppu.cpp"
+  "src/utility/file_manager.cpp"
+  "src/utility/ips_patch.cpp"
   "src/apu.cpp"
   "src/cartridge.cpp"
   "src/controller.cpp"
@@ -50,7 +52,7 @@ set_target_properties(nes-emulator
 
 target_compile_options(nes-emulator
   PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:/WX /W4 /permissive- /diagnostics:caret>
+    $<$<CXX_COMPILER_ID:MSVC>:/WX /W4 /permissive- /diagnostics:caret /MP>
     $<$<CXX_COMPILER_ID:GNU,Clang>:-Werror -Wall -Wextra -pedantic -Wuseless-cast -Wshadow -Wformat=2 -Wdisabled-optimization>
 )
 
