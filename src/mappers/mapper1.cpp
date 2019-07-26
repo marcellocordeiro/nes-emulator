@@ -1,5 +1,7 @@
 #include "mappers/mapper1.h"
 
+#include "cartridge.h"
+
 namespace nes {
 mapper1::mapper1(nes::cartridge& cartridge_ref) : mapper{cartridge_ref} {}
 
@@ -46,10 +48,10 @@ void mapper1::apply()
   }
 
   switch (control & 0b11) {
-    case 0: set_mirroring(One_Screen_Low); break;
-    case 1: set_mirroring(One_Screen_High); break;
-    case 2: set_mirroring(Vertical); break;
-    case 3: set_mirroring(Horizontal); break;
+    case 0: cartridge.set_mirroring(One_Screen_Low); break;
+    case 1: cartridge.set_mirroring(One_Screen_High); break;
+    case 2: cartridge.set_mirroring(Vertical); break;
+    case 3: cartridge.set_mirroring(Horizontal); break;
   }
 }
 

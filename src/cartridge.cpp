@@ -1,9 +1,11 @@
 #include "cartridge.h"
 
+#include <algorithm>
 #include <array>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
+#include <string>
 #include <vector>
 
 #include "cpu.h"
@@ -13,6 +15,9 @@
 #include "mappers/mapper2.h"
 #include "mappers/mapper4.h"
 #include "ppu.h"
+#include "utility/file_manager.h"
+
+#include "utility/ips_patch.h"
 
 namespace nes {
 cartridge::cartridge(nes::cpu& cpu_ref, nes::ppu& ppu_ref)
@@ -23,89 +28,75 @@ void cartridge::load(const char* rom_path)
 {
   using namespace mirroring;
 
-  auto rom_file = std::filesystem::path(rom_path);
+  std::ifstream rom_stream(util::fmngr.get_rom(), std::ios::binary);
 
-  std::ifstream rom(rom_file, std::ios::binary);
+  if (!rom_stream) {
+    throw std::runtime_error("Couldn't open the ROM");
+  }
 
-  if (!rom) {
-    throw std::runtime_error("Can't open the ROM");
+  std::vector<uint8_t> rom(std::filesystem::file_size(util::fmngr.get_rom()));
+  rom_stream.read(reinterpret_cast<char*>(rom.data()), rom.size());
+
+  // todo
+  // Patch the ROM here
+  if (util::fmngr.has_patch()) {
+    rom = util::ips_patch(util::fmngr.get_patch()).patch(rom);
   }
 
   std::array<uint8_t, 16> header;
-  rom.read(reinterpret_cast<char*>(header.data()), 16);
+  std::copy(rom.begin(), rom.begin() + 16, header.begin());
 
   info.path         = rom_path;
-  info.rom_size     = std::filesystem::file_size(rom_file);
+  info.rom_size     = rom.size();
   info.mapper_num   = (header[7] & 0xF0) | (header[6] >> 4);
-  info.prg_banks    = header[4];
-  info.chr_banks    = header[5];
-  info.chr_ram      = (info.chr_banks == 0);
+  info.prg_size     = header[4] * ct::prg_bank_size;
+  info.chr_size     = header[5] * ct::chr_bank_size;
+  info.chr_ram      = (info.chr_size == 0);
   info.prg_ram_size = header[8] ? header[8] * 0x2000 : 0x2000;
   info.mirroring    = (header[6] & 1) ? Vertical : Horizontal;
-
-  LOG(lib::log::Info) << "16KB PRG-ROM banks: " << info.prg_banks;
-  LOG(lib::log::Info) << "8KB CHR-ROM banks: " << info.chr_banks;
-  LOG(lib::log::Info) << "Name table mirroring: " << +(header[6] & 0xB);
-  LOG(lib::log::Info) << "Mirroring: "
-                      << (info.mirroring ? "Vertical" : "Horizontal");
-  LOG(lib::log::Info) << "Mapper #: " << info.mapper_num;
-  LOG(lib::log::Info) << "PRG RAM size: " << info.prg_ram_size;
-
-  std::vector<uint8_t> prg(info.prg_banks * ct::prg_bank_size);
-  std::vector<uint8_t> chr(info.chr_banks * ct::chr_bank_size);
-
-  rom.read(reinterpret_cast<char*>(prg.data()), prg.size());
-  rom.read(reinterpret_cast<char*>(chr.data()), chr.size());
-
-  if (info.chr_ram) {
-    chr.resize(0x2000, 0);
-  }
-
-  rom.close();
 
   switch (info.mapper_num) {
     case 0: mapper = std::make_unique<mapper0>(*this); break;
     case 1: mapper = std::make_unique<mapper1>(*this); break;
     case 2: mapper = std::make_unique<mapper2>(*this); break;
     case 4: mapper = std::make_unique<mapper4>(*this); break;
-    default: throw std::runtime_error("Mapper not implemented");
+    default:
+      throw std::runtime_error(
+          "Mapper #" + std::to_string(info.mapper_num) + " not implemented");
   }
 
-  this->mapper->set_prg_rom(std::move(prg));
-  this->mapper->set_chr_rom(std::move(chr));
+  LOG(lib::log::Info) << "PRG-ROM size (16KB banks): " << info.prg_size;
+  LOG(lib::log::Info) << "CHR-ROM size (8KB banks): " << info.chr_size;
+  LOG(lib::log::Info) << "Nametable mirroring: " << +(header[6] & 0xB);
+  LOG(lib::log::Info) << "Mirroring: "
+                      << (info.mirroring ? "Vertical" : "Horizontal");
+  LOG(lib::log::Info) << "Mapper #: " << info.mapper_num;
+  LOG(lib::log::Info) << "PRG RAM size: " << info.prg_ram_size;
 
-  std::ifstream prg_ram_file(
-      std::filesystem::path(rom_path).replace_extension(".srm"),
-      std::ios::binary);
+  auto prg_start = 16;
+  auto prg_end   = 16 + info.prg_size;
+  auto chr_start = prg_end;
+  auto chr_end   = prg_end + info.chr_size;
 
-  if (prg_ram_file) {
-    std::vector<uint8_t> prg_ram(info.prg_ram_size, 0);
+  std::vector<uint8_t> prg(rom.begin() + prg_start, rom.begin() + prg_end);
+  std::vector<uint8_t> chr(rom.begin() + chr_start, rom.begin() + chr_end);
+  std::vector<uint8_t> prg_ram(info.prg_ram_size);
+
+  if (info.chr_ram) {
+    chr.resize(0x2000, 0);
+  }
+
+  if (util::fmngr.has_prg_ram()) {
+    std::ifstream prg_ram_file(util::fmngr.get_prg_ram(), std::ios::binary);
     prg_ram_file.read(reinterpret_cast<char*>(prg_ram.data()), prg_ram.size());
-    this->mapper->set_prg_ram(std::move(prg_ram));
-  } else {
-    this->mapper->set_prg_ram(
-        std::move(std::vector<uint8_t>(info.prg_ram_size)));
   }
 
+  mapper->set_prg_rom(std::move(prg));
+  mapper->set_chr_rom(std::move(chr));
+  mapper->set_prg_ram(std::move(prg_ram));
   mapper->reset();
-}
 
-void cartridge::dump_prg_ram() const
-{
-  auto prg_ram = this->mapper->get_prg_ram();
-
-  std::ofstream prg_ram_file(
-      std::filesystem::path(this->info.path).replace_extension(".srm"),
-      std::ios::binary);
-
-  // std::ofstream ofp{prg_ram_file, std::ios::out | std::ios::binary};
-  prg_ram_file.write(
-      reinterpret_cast<const char*>(prg_ram.data()), prg_ram.size());
-}
-
-const nes::cartridge_info& cartridge::get_info() const
-{
-  return info;
+  set_mirroring(info.mirroring);
 }
 
 uint8_t cartridge::prg_read(uint16_t addr) const
@@ -128,6 +119,11 @@ void cartridge::chr_write(uint16_t addr, uint8_t value)
   mapper->chr_write(addr, value);
 }
 
+void cartridge::scanline_counter()
+{
+  mapper->scanline_counter();
+}
+
 void cartridge::set_mirroring(int mode)
 {
   ppu.set_mirroring(mode);
@@ -138,8 +134,13 @@ void cartridge::set_cpu_irq(bool value)
   cpu.set_irq(value);
 }
 
-void cartridge::scanline_counter()
+void cartridge::dump_prg_ram() const
 {
-  mapper->scanline_counter();
+  auto prg_ram = mapper->get_prg_ram();
+
+  std::ofstream prg_ram_file(util::fmngr.get_prg_ram(), std::ios::binary);
+
+  prg_ram_file.write(
+      reinterpret_cast<const char*>(prg_ram.data()), prg_ram.size());
 }
 }  // namespace nes

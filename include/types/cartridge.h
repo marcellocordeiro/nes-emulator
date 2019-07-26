@@ -23,8 +23,8 @@ struct cartridge_info {
   const char* path;
   size_t      rom_size;
   size_t      mapper_num;
-  size_t      prg_banks;
-  size_t      chr_banks;
+  size_t      prg_size;
+  size_t      chr_size;
   size_t      prg_ram_size;
   int         mirroring = mirroring::Unset;
 

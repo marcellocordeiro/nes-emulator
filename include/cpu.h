@@ -25,9 +25,9 @@ public:
   // friend class debugger;
 
 private:
-  nes::ppu& ppu;
-  nes::apu& apu;
-  nes::cartridge& cartridge;
+  nes::ppu&        ppu;
+  nes::apu&        apu;
+  nes::cartridge&  cartridge;
   nes::controller& controller;
 
   nes::types::cpu::state     state;

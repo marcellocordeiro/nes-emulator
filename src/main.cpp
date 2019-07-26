@@ -4,25 +4,26 @@
 
 #include "emulator.h"
 #include "system_utils.h"
+#include "utility/file_manager.h"
 
 int main(int argc, char* argv[])
 {
   if (argc == 1) {
     std::cout << "Too few arguments" << '\n';
     return 1;
-    // throw std::invalid_argument("Too few arguments");
   }
 
-  // Prevents pointer invalidation
-  auto path_str = lib::get_executable_path().string();
-  app_path      = path_str.c_str();
+  auto main_path = lib::get_executable_path();
 
-  std::ofstream log_file{std::filesystem::path(app_path) / "nes-emulator.log"};
+  std::ofstream log_file{main_path / "nes-emulator.log"};
   lib::log::get().set_stream(log_file);
 
-  nes::emulator emulator;
-
   try {
+    nes::util::fmngr.set_rom(argv[1]);
+    nes::util::fmngr.set_palette(main_path / "palette.pal");
+
+    nes::emulator emulator;
+
     emulator.load_rom(argv[1]);
     emulator.power_on();
 

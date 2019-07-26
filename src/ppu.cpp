@@ -1,6 +1,5 @@
 #include "ppu.h"
 
-#include <filesystem>
 #include <fstream>
 #include <tuple>
 
@@ -9,6 +8,7 @@
 #include "cpu.h"
 #include "io.h"
 #include "log.h"
+#include "utility/file_manager.h"
 
 namespace nes {
 ppu::ppu(nes::cpu& cpu_ref, nes::cartridge& cartridge_ref, nes::io& io_ref)
@@ -28,12 +28,10 @@ void ppu::reset()
 
 void ppu::set_palette()
 {
-  auto palette_path = std::filesystem::path(app_path) / "palette.pal";
-
-  std::ifstream palette(palette_path, std::ios::binary);
+  std::ifstream palette(util::fmngr.get_palette(), std::ios::binary);
 
   if (!palette) {
-    throw std::runtime_error("Can't open the palette file");
+    throw std::runtime_error("Couldnt't open the palette file");
   }
 
   std::array<uint8_t, 64 * 3> pal_buffer;

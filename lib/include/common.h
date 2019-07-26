@@ -26,5 +26,3 @@ constexpr auto DEBUG_MODE = true;
 #else
 constexpr auto DEBUG_MODE = false;
 #endif
-
-inline const char* app_path = nullptr;

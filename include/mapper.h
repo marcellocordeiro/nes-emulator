@@ -33,11 +33,7 @@ public:
   virtual void scanline_counter() {}
 
 protected:
-  void set_mirroring(int);
-  void set_cpu_irq(bool);
-
-  nes::cartridge&            cartridge;
-  const nes::cartridge_info& info;
+  nes::cartridge& cartridge;
 
   std::vector<uint8_t> prg;
   std::vector<uint8_t> prg_ram;
