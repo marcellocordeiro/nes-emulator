@@ -11,8 +11,8 @@ uint8_t controller::read(size_t port)
     return 0x40 | (io.get_controller(port) & 1);  // 1 == A
   }
 
-  uint8_t status = (controller_bits[port] & 1) | 0x40;
-  controller_bits[port] >>= 1;
+  uint8_t status        = 0x40 | (controller_bits[port] & 1);
+  controller_bits[port] = 0x80 | (controller_bits[port] >> 1);
 
   return status;
 }

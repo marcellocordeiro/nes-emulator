@@ -64,11 +64,11 @@ bool ips_patch::check()
 
 bool ips_patch::read_record()
 {
-  uint8_t        buffer[3];
   constexpr auto magic_eof = (('E') << 16) | ('O' << 8) | ('F');
 
   record_entry record;
 
+  uint8_t buffer[3];
   ips_file.read(reinterpret_cast<char*>(buffer), 3);
   record.addr = (buffer[0] << 16) | (buffer[1] << 8) | (buffer[2]);
 

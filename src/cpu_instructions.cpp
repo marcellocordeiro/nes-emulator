@@ -285,7 +285,8 @@ void cpu::execute()
     case 0x7F: return RRA<AbsoluteX>();
 
     default: {
-      LOG(lib::log::Error) << "Invalid opcode: " << std::hex << +opcode;
+      LOG(lib::log::Error) << "Invalid opcode: 0x" << std::uppercase << std::hex
+                           << +opcode;
       throw std::runtime_error("Invalid opcode");
       return;
     }
@@ -478,38 +479,38 @@ template <auto Mode> void cpu::STY()
 
 void cpu::TAX()
 {
-  state.set_x(state.a);
   tick();
+  state.set_x(state.a);
 }
 
 void cpu::TAY()
 {
-  state.set_y(state.a);
   tick();
+  state.set_y(state.a);
 }
 
 void cpu::TSX()
 {
-  state.set_x(state.sp);
   tick();
+  state.set_x(state.sp);
 }
 
 void cpu::TXA()
 {
-  state.set_a(state.x);
   tick();
+  state.set_a(state.x);
 }
 
 void cpu::TXS()
 {
-  state.sp = state.x;
   tick();
+  state.sp = state.x;
 }
 
 void cpu::TYA()
 {
-  state.set_a(state.y);
   tick();
+  state.set_a(state.y);
 }
 
 //
@@ -959,8 +960,8 @@ void cpu::NOP()
 
 template <auto Mode> void cpu::NOP()
 {
-  get_operand<Mode>();  // Discard it
   tick();
+  get_operand<Mode>();  // Discard it
 }
 
 template <auto Mode> void cpu::LAX()
@@ -1062,11 +1063,10 @@ template <auto Mode> void cpu::RRA()
 
 template <auto Mode> uint16_t cpu::get_operand()
 {
-  if constexpr (Mode != Immediate && Mode != Relative) {
-    throw;
-  }
-  auto addr = state.pc;
+  static_assert(
+      Mode == Immediate || Mode == Relative, "Invalid addressing mode");
 
+  auto addr = state.pc;
   ++state.pc;
 
   return addr;
@@ -1080,21 +1080,18 @@ template <> uint16_t cpu::get_operand<ZeroPage>()
 template <> uint16_t cpu::get_operand<ZeroPageX>()
 {
   tick();
-
   return (get_operand<ZeroPage>() + state.x) & 0xFF;
 }
 
 template <> uint16_t cpu::get_operand<ZeroPageY>()
 {
   tick();
-
   return (get_operand<ZeroPage>() + state.y) & 0xFF;
 }
 
 template <> uint16_t cpu::get_operand<Absolute>()
 {
   auto base_addr = get_operand<Immediate>();
-
   ++state.pc;
 
   return (memory_read(base_addr + 1) << 8) | memory_read(base_addr);
@@ -1113,9 +1110,7 @@ template <> uint16_t cpu::get_operand<AbsoluteX>()
 
 template <> uint16_t cpu::get_operand<AbsoluteX_Exception>()
 {
-  auto base_addr = get_operand<Absolute>();
-
-  return base_addr + state.x;
+  return get_operand<Absolute>() + state.x;
 }
 
 template <> uint16_t cpu::get_operand<AbsoluteY>()
@@ -1131,9 +1126,7 @@ template <> uint16_t cpu::get_operand<AbsoluteY>()
 
 template <> uint16_t cpu::get_operand<AbsoluteY_Exception>()
 {
-  auto base_addr = get_operand<Absolute>();
-
-  return base_addr + state.y;
+  return get_operand<Absolute>() + state.y;
 }
 
 template <> uint16_t cpu::get_operand<Indirect>()
