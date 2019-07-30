@@ -284,6 +284,28 @@ void cpu::execute()
     case 0x7B: return RRA<AbsoluteY>();
     case 0x7F: return RRA<AbsoluteX>();
 
+    // AAC
+    case 0x0B:
+    case 0x2B: return AAC<Immediate>();
+
+    // ASR
+    case 0x4B: return ASR<Immediate>();
+
+    // ARR
+    case 0x6B: return ARR<Immediate>();
+
+    // ATX
+    case 0xAB: return ATX<Immediate>();
+
+    // AXS
+    case 0xCB: return AXS<Immediate>();
+
+    // SYA
+    case 0x9C: return SYA<AbsoluteX_Exception>();
+
+    // SXA
+    case 0x9E: return SXA<AbsoluteY_Exception>();
+
     default: {
       LOG(lib::log::Error) << "Invalid opcode: 0x" << std::uppercase << std::hex
                            << +opcode;
@@ -1059,6 +1081,99 @@ template <auto Mode> void cpu::RRA()
 
   add(result);
   memory_write(addr, result);
+}
+
+template <auto Mode> void cpu::AAC()
+{
+  auto addr = get_operand<Mode>();
+  state.set_a(state.a & memory_read(addr));
+
+  state.clear_flags(flags::Carry);
+
+  if (state.check_flags(flags::Negative)) {
+    state.set_flags(flags::Carry);
+  }
+}
+
+template <auto Mode> void cpu::ASR()
+{
+  auto addr = get_operand<Mode>();
+  state.set_a(state.a & memory_read(addr));
+
+  state.clear_flags(flags::Carry);
+
+  if (state.a & 0x01) {
+    state.set_flags(flags::Carry);
+  }
+
+  state.set_a(state.a >> 1);
+}
+
+template <auto Mode> void cpu::ARR()
+{
+  auto addr = get_operand<Mode>();
+  state.set_a((state.a & memory_read(addr)) >> 1);
+
+  if (state.check_flags(flags::Carry)) {
+    state.set_a(state.a | 0x80);
+  }
+
+  state.clear_flags(flags::Carry | flags::Overflow);
+
+  if (state.a & 0x40) {
+    state.set_flags(flags::Carry);
+  }
+
+  if ((state.check_flags(flags::Carry) ? 0x01 : 0x00) ^
+      ((state.a >> 5) & 0x01)) {
+    state.set_flags(flags::Overflow);
+  }
+}
+
+template <auto Mode> void cpu::ATX()
+{
+  auto value = memory_read(get_operand<Mode>());
+
+  state.set_a(value);
+  state.set_x(state.a);
+
+  state.update_nz(value);
+}
+
+template <auto Mode> void cpu::AXS()
+{
+  auto    value  = memory_read(get_operand<Mode>());
+  uint8_t result = (state.a & state.x) - value;
+
+  state.clear_flags(flags::Carry);
+
+  if ((state.a & state.x) >= value) {
+    state.set_flags(flags::Carry);
+  }
+
+  state.set_x(result);
+}
+
+template <auto Mode> void cpu::SYA()
+{
+  auto addr = get_operand<Mode>();
+
+  uint8_t high  = addr >> 8;
+  uint8_t low   = addr & 0xFF;
+  uint8_t value = state.y & (high + 1);
+
+  memory_write(((state.y & (high + 1)) << 8) | low, value);
+}
+
+template <auto Mode> void cpu::SXA()
+{
+  auto addr = get_operand<Mode>();
+
+  uint8_t high  = addr >> 8;
+  uint8_t low   = addr & 0xFF;
+  uint8_t value = state.x & (high + 1);
+
+  memory_write(((state.x & (high + 1)) << 8) | low, value);
 }
 
 template <auto Mode> uint16_t cpu::get_operand()

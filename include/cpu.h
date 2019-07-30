@@ -203,5 +203,12 @@ private:
   template <auto Mode> void RLA();  // ROL then AND
   template <auto Mode> void SRE();  // LSR then EOR
   template <auto Mode> void RRA();  // ROR then ADC
+  template <auto Mode> void AAC();  // A &= get_operand
+  template <auto Mode> void ASR();  // A &= get_operand then A >>= 1
+  template <auto Mode> void ARR();  // Same as ASR, but setting different flags
+  template <auto Mode> void ATX();  // LDA then TAX
+  template <auto Mode> void AXS();  // CMP then DEX
+  template <auto Mode> void SYA();
+  template <auto Mode> void SXA();
 };
 }  // namespace nes
