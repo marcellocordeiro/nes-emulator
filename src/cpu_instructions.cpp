@@ -1134,10 +1134,8 @@ template <auto Mode> void cpu::ATX()
 {
   auto value = memory_read(get_operand<Mode>());
 
+  state.set_x(value);
   state.set_a(value);
-  state.set_x(state.a);
-
-  state.update_nz(value);
 }
 
 template <auto Mode> void cpu::AXS()
