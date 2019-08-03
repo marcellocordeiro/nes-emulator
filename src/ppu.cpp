@@ -6,14 +6,13 @@
 #include "bit_utils.h"
 #include "cartridge.h"
 #include "cpu.h"
+#include "emulator.h"
 #include "io.h"
 #include "log.h"
 #include "utility/file_manager.h"
 
 namespace nes {
-ppu::ppu(nes::cpu& cpu_ref, nes::cartridge& cartridge_ref, nes::io& io_ref)
-  : cpu(cpu_ref), cartridge(cartridge_ref), io(io_ref)
-{}
+ppu::ppu(nes::emulator& emulator_ref) : emulator{emulator_ref} {}
 
 void ppu::power_on()
 {
@@ -106,7 +105,7 @@ void ppu::step()
     ++scanline;
 
     if (scanline == 240) {
-      io.update_frame(frame_buffer.data());
+      emulator.get_io()->update_frame(frame_buffer.data());
       ppu_state = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
@@ -237,7 +236,7 @@ uint8_t ppu::vram_read(uint16_t addr) const
   using namespace nes::types::ppu::memory;
 
   switch (get_mem_map(addr)) {
-    case CHR: return cartridge.chr_read(addr);
+    case CHR: return emulator.get_cartridge()->chr_read(addr);
     case Nametables: return ci_ram[nt_mirror_addr(addr)];
     case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
     default: return 0;
@@ -249,7 +248,7 @@ void ppu::vram_write(uint16_t addr, uint8_t value)
   using namespace nes::types::ppu::memory;
 
   switch (get_mem_map(addr)) {
-    case CHR: cartridge.chr_write(addr, value); break;
+    case CHR: emulator.get_cartridge()->chr_write(addr, value); break;
     case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
     case Palettes: cg_ram[palette_addr(addr)] = value; break;
   }
@@ -507,7 +506,7 @@ void ppu::scanline_cycle_pre()
 
     if (in_range(280, 304)) vertical_update();
     if (tick == 321) load_sprites();
-    if (tick == 260) cartridge.scanline_counter();
+    if (tick == 260) emulator.get_cartridge()->scanline_counter();
   }
 }
 
@@ -527,7 +526,7 @@ void ppu::scanline_cycle_visible()
       default: break;
     }
 
-    if (tick == 260) cartridge.scanline_counter();
+    if (tick == 260) emulator.get_cartridge()->scanline_counter();
   }
 }
 
@@ -537,7 +536,7 @@ void ppu::scanline_cycle_nmi()
     status.vblank = true;
 
     if (ctrl.nmi) {
-      cpu.set_nmi();
+      emulator.get_cpu()->set_nmi();
     }
   }
 }
@@ -587,5 +586,143 @@ template <typename T> uint8_t ppu::get_palette(T low, T high, int offset) const
   };
 
   return nth_bit(high, offset) << 1 | nth_bit(low, offset);
+}
+
+//
+// Snapshot
+//
+
+void ppu::save(std::ofstream& out)
+{
+  for (const auto& value : ci_ram) dump_snapshot(out, value);
+  for (const auto& value : cg_ram) dump_snapshot(out, value);
+  for (const auto& value : oam_mem) dump_snapshot(out, value);
+  // Dump these?
+  // std::vector<sprite_info> oam     = {};  // Sprite buffer
+  // std::vector<sprite_info> sec_oam = {};  // Sprite buffer
+
+  dump_snapshot(out, oam.size());
+
+  for (const auto& value : oam) {
+    dump_snapshot(
+        out,
+        value.y,
+        value.tile,
+        value.attr,
+        value.x,
+        value.id,
+        value.data_l,
+        value.data_h);
+  }
+
+  dump_snapshot(out, sec_oam.size());
+
+  for (const auto& value : sec_oam) {
+    dump_snapshot(
+        out,
+        value.y,
+        value.tile,
+        value.attr,
+        value.x,
+        value.id,
+        value.data_l,
+        value.data_h);
+  }
+
+  dump_snapshot(out, mirroring_mode);
+  dump_snapshot(out, ppu_state, ppu_addr);
+  dump_snapshot(out, scanline, tick, is_odd_frame);
+  dump_snapshot(out, ctrl.raw, mask.raw, status.raw);
+  dump_snapshot(out, bus_latch, ppudata_buffer, addr_latch);
+  dump_snapshot(out, vram_addr.raw, temp_addr.raw, fine_x, oam_addr);
+
+  dump_snapshot(
+      out,
+      nt_latch,
+      at_latch,
+      bg_latch_l,
+      bg_latch_h,
+      at_shift_l,
+      at_shift_h,
+      bg_shift_l,
+      bg_shift_h,
+      at_latch_l,
+      at_latch_h);
+}
+
+void ppu::load(std::ifstream& in)
+{
+  for (auto& value : ci_ram) get_snapshot(in, value);
+  for (auto& value : cg_ram) get_snapshot(in, value);
+  for (auto& value : oam_mem) get_snapshot(in, value);
+  // Dump these?
+  // std::vector<sprite_info> oam     = {};  // Sprite buffer
+  // std::vector<sprite_info> sec_oam = {};  // Sprite buffer
+
+  {
+    size_t size;
+    get_snapshot(in, size);
+    oam.resize(size);
+  }
+
+  for (auto& value : oam) {
+    get_snapshot(
+        in,
+        value.y,
+        value.tile,
+        value.attr,
+        value.x,
+        value.id,
+        value.data_l,
+        value.data_h);
+  }
+
+  {
+    size_t size;
+    get_snapshot(in, size);
+    sec_oam.resize(size);
+  }
+
+  for (auto& value : sec_oam) {
+    get_snapshot(
+        in,
+        value.y,
+        value.tile,
+        value.attr,
+        value.x,
+        value.id,
+        value.data_l,
+        value.data_h);
+  }
+
+  get_snapshot(in, mirroring_mode);
+  get_snapshot(in, ppu_state, ppu_addr);
+  get_snapshot(in, scanline, tick, is_odd_frame);
+  get_snapshot(in, ctrl.raw, mask.raw, status.raw);
+  get_snapshot(in, bus_latch, ppudata_buffer, addr_latch);
+  get_snapshot(in, vram_addr.raw, temp_addr.raw, fine_x, oam_addr);
+
+  get_snapshot(
+      in,
+      nt_latch,
+      at_latch,
+      bg_latch_l,
+      bg_latch_h,
+      at_shift_l,
+      at_shift_h,
+      bg_shift_l,
+      bg_shift_h,
+      at_latch_l,
+      at_latch_h);
+
+  // Restore auxiliary
+  is_rendering   = mask.show_bg || mask.show_spr;
+  grayscale_mask = mask.grayscale ? 0x30 : 0x3F;
+  nes_to_rgb     = full_nes_palette[mask.rgb].data();
+  sprite_height  = ctrl.spr_size ? 16 : 8;
+  addr_increment = ctrl.addr_inc ? 32 : 1;
+
+  // Clear buffers
+  sprite_evaluation();
 }
 }  // namespace nes

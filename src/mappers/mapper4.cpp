@@ -95,4 +95,20 @@ void mapper4::scanline_counter()
     cartridge.set_cpu_irq(true);
   }
 }
+
+void mapper4::save(std::ofstream& out)
+{
+  for (const auto& value : regs) dump_snapshot(out, value);
+  dump_snapshot(out, reg_8000);
+  dump_snapshot(out, horizontal_mirroring);
+  dump_snapshot(out, irq_period, irq_counter, irq_enabled);
+}
+
+void mapper4::load(std::ifstream& in)
+{
+  for (auto& value : regs) get_snapshot(in, value);
+  get_snapshot(in, reg_8000);
+  get_snapshot(in, horizontal_mirroring);
+  get_snapshot(in, irq_period, irq_counter, irq_enabled);
+}
 }  // namespace nes

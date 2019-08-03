@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "cpu.h"
+#include "emulator.h"
 #include "log.h"
 #include "mappers/mapper0.h"
 #include "mappers/mapper1.h"
@@ -20,9 +21,14 @@
 #include "utility/ips_patch.h"
 
 namespace nes {
-cartridge::cartridge(nes::cpu& cpu_ref, nes::ppu& ppu_ref)
-  : cpu(cpu_ref), ppu(ppu_ref)
-{}
+cartridge::cartridge(nes::emulator& emulator_ref) : emulator{emulator_ref} {}
+
+cartridge::~cartridge() = default;
+
+nes::mapper* cartridge::get_mapper()
+{
+  return mapper.get();
+}
 
 void cartridge::load(const char* rom_path)
 {
@@ -126,12 +132,12 @@ void cartridge::scanline_counter()
 
 void cartridge::set_mirroring(int mode)
 {
-  ppu.set_mirroring(mode);
+  emulator.get_ppu()->set_mirroring(mode);
 }
 
 void cartridge::set_cpu_irq(bool value)
 {
-  cpu.set_irq(value);
+  emulator.get_cpu()->set_irq(value);
 }
 
 void cartridge::dump_prg_ram() const

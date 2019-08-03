@@ -1,12 +1,23 @@
 #pragma once
 
 namespace nes {
+class emulator;
+class io;
+class debugger;
+
 class cpu;
 class apu;
 class ppu;
 class cartridge;
+class mapper;
 class controller;
-
-class io;
-class debugger;
 }  // namespace nes
+
+namespace nes::util {
+class snapshotable;
+}  // namespace nes::util
+
+// blargg's Nes_Snd_Emu
+class Nes_Apu;
+class Blip_Buffer;
+class Sound_Queue;

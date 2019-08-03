@@ -6,11 +6,12 @@
 #include "common.h"
 #include "types/forward_decl.h"
 #include "types/ppu.h"
+#include "utility/snapshotable.h"
 
 namespace nes {
-class ppu {
+class ppu : public util::snapshotable {
 public:
-  ppu(nes::cpu&, nes::cartridge&, nes::io&);
+  ppu(nes::emulator&);
 
   void power_on();
   void reset();
@@ -23,6 +24,9 @@ public:
   void set_mirroring(int);
 
   void step();
+
+  void save(std::ofstream&) override;
+  void load(std::ifstream&) override;
 
 private:
   //
@@ -91,9 +95,7 @@ private:
 
   template <typename T> uint8_t get_palette(T, T, int) const;  // Get palette
 
-  nes::cpu&       cpu;
-  nes::cartridge& cartridge;
-  nes::io&        io;
+  nes::emulator& emulator;
 
   enum timing { Idle, Visible, VBlank, PreRender };
 

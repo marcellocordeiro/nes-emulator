@@ -6,6 +6,7 @@
 
 using namespace nes::types::cpu;
 using namespace nes::types::cpu::addressing_mode;
+using namespace nes::types::cpu::flags;
 
 namespace nes {
 template uint16_t    cpu::get_operand<Immediate>();
@@ -180,6 +181,7 @@ void cpu::execute()
     case 0xFD: return SBC<AbsoluteX>();
     case 0xFE: return INC<AbsoluteX_Exception>();
 
+#if 0  // Disabling all unofficial instructions for now
     //
     // Unofficial instructions
     //
@@ -305,6 +307,7 @@ void cpu::execute()
 
     // SXA
     case 0x9E: return SXA<AbsoluteY_Exception>();
+#endif
 
     default: {
       LOG(lib::log::Error) << "Invalid opcode: 0x" << std::uppercase << std::hex
@@ -323,16 +326,16 @@ void cpu::execute()
 
 void cpu::add(uint8_t value)
 {
-  uint16_t result = state.a + value + state.check_flags(flags::Carry);
+  uint16_t result = state.a + value + state.check_flags(Carry);
 
-  state.clear_flags(flags::Carry | flags::Overflow);
+  state.clear_flags(Carry | Overflow);
 
   if (result > 0xFF) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 
   if (~(state.a ^ value) & (state.a ^ result) & 0x80) {
-    state.set_flags(flags::Overflow);
+    state.set_flags(Overflow);
   }
 
   state.set_a(static_cast<uint8_t>(result));
@@ -343,10 +346,10 @@ uint8_t cpu::shift_left(uint8_t value)
   uint8_t result = value << 1;
   state.update_nz(result);
 
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 
   if (value & 0x80) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 
   return result;
@@ -357,10 +360,10 @@ uint8_t cpu::shift_right(uint8_t value)
   uint8_t result = value >> 1;
   state.update_nz(result);
 
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 
   if (value & 0x01) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 
   return result;
@@ -369,13 +372,13 @@ uint8_t cpu::shift_right(uint8_t value)
 uint8_t cpu::rotate_left(uint8_t value)
 {
   uint8_t result =
-      (value << 1) | static_cast<uint8_t>(state.check_flags(flags::Carry));
+      (value << 1) | static_cast<uint8_t>(state.check_flags(Carry));
   state.update_nz(result);
 
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 
   if (value & 0x80) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 
   return result;
@@ -383,13 +386,13 @@ uint8_t cpu::rotate_left(uint8_t value)
 
 uint8_t cpu::rotate_right(uint8_t value)
 {
-  uint8_t result = (value >> 1) | (state.check_flags(flags::Carry) << 7);
+  uint8_t result = (value >> 1) | (state.check_flags(Carry) << 7);
   state.update_nz(result);
 
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 
   if (value & 0x01) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 
   return result;
@@ -399,10 +402,10 @@ void cpu::compare(uint8_t reg, uint8_t value)
 {
   state.update_nz(reg - value);
 
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 
   if (reg >= value) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 }
 
@@ -718,43 +721,43 @@ template <auto Mode> void cpu::ROR()
 void cpu::CLC()
 {
   tick();
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 }
 
 void cpu::CLD()
 {
   tick();
-  state.clear_flags(flags::Decimal);
+  state.clear_flags(Decimal);
 }
 
 void cpu::CLI()
 {
   tick();
-  state.clear_flags(flags::Interrupt);
+  state.clear_flags(Interrupt);
 }
 
 void cpu::CLV()
 {
   tick();
-  state.clear_flags(flags::Overflow);
+  state.clear_flags(Overflow);
 }
 
 void cpu::SEC()
 {
   tick();
-  state.set_flags(flags::Carry);
+  state.set_flags(Carry);
 }
 
 void cpu::SED()
 {
   tick();
-  state.set_flags(flags::Decimal);
+  state.set_flags(Decimal);
 }
 
 void cpu::SEI()
 {
   tick();
-  state.set_flags(flags::Interrupt);
+  state.set_flags(Interrupt);
 }
 
 template <auto Mode> void cpu::CMP()
@@ -786,18 +789,18 @@ template <auto Mode> void cpu::BIT()
   auto addr  = get_operand<Mode>();
   auto value = memory_read(addr);
 
-  state.clear_flags(flags::Zero | flags::Overflow | flags::Negative);
+  state.clear_flags(Zero | Overflow | Negative);
 
   if (!(state.a & value)) {
-    state.set_flags(flags::Zero);
+    state.set_flags(Zero);
   }
 
   if (value & 0x40) {
-    state.set_flags(flags::Overflow);
+    state.set_flags(Overflow);
   }
 
   if (value & 0x80) {
-    state.set_flags(flags::Negative);
+    state.set_flags(Negative);
   }
 }
 
@@ -821,42 +824,42 @@ void cpu::JSR()
 
 void cpu::BCC()
 {
-  branch(state.check_flags(flags::Carry) == false);
+  branch(!state.check_flags(Carry));
 }
 
 void cpu::BCS()
 {
-  branch(state.check_flags(flags::Carry) == true);
+  branch(state.check_flags(Carry));
 }
 
 void cpu::BEQ()
 {
-  branch(state.check_flags(flags::Zero) == true);
+  branch(state.check_flags(Zero));
 }
 
 void cpu::BMI()
 {
-  branch(state.check_flags(flags::Negative) == true);
+  branch(state.check_flags(Negative));
 }
 
 void cpu::BNE()
 {
-  branch(state.check_flags(flags::Zero) == false);
+  branch(!state.check_flags(Zero));
 }
 
 void cpu::BPL()
 {
-  branch(state.check_flags(flags::Negative) == false);
+  branch(!state.check_flags(Negative));
 }
 
 void cpu::BVC()
 {
-  branch(state.check_flags(flags::Overflow) == false);
+  branch(!state.check_flags(Overflow));
 }
 
 void cpu::BVS()
 {
-  branch(state.check_flags(flags::Overflow) == true);
+  branch(state.check_flags(Overflow));
 }
 
 void cpu::RTS()
@@ -895,7 +898,7 @@ void cpu::PLA()
 void cpu::PHP()
 {
   tick();
-  push(state.ps | flags::Break | flags::Reserved);
+  push(state.ps | Break | Reserved);
 }
 
 void cpu::PLP()
@@ -918,7 +921,7 @@ void cpu::INT_NMI()
   push(state.pc & 0xFF);
   push(state.ps);
 
-  state.set_flags(flags::Interrupt);
+  state.set_flags(Interrupt);
 
   constexpr uint16_t jmp_addr = 0xFFFA;
 
@@ -936,7 +939,7 @@ void cpu::INT_RST()
   tick();
   tick();
 
-  state.set_flags(flags::Interrupt);
+  state.set_flags(Interrupt);
 
   constexpr uint16_t jmp_addr = 0xFFFC;
   state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
@@ -951,7 +954,7 @@ void cpu::INT_IRQ()
   push(state.pc & 0xFF);
   push(state.ps);
 
-  state.set_flags(flags::Interrupt);
+  state.set_flags(Interrupt);
 
   constexpr uint16_t jmp_addr = 0xFFFE;
   state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
@@ -963,9 +966,9 @@ void cpu::INT_BRK()
 
   push((state.pc + 1) >> 8);
   push((state.pc + 1) & 0xFF);
-  push(state.ps | flags::Break | flags::Reserved);
+  push(state.ps | Break | Reserved);
 
-  state.set_flags(flags::Interrupt);
+  state.set_flags(Interrupt);
 
   constexpr uint16_t jmp_addr = 0xFFFE;
   state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
@@ -1009,10 +1012,10 @@ template <auto Mode> void cpu::DCP()
 
   tick();
 
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 
   if (state.a >= value) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 
   state.update_nz(state.a - value);
@@ -1088,10 +1091,10 @@ template <auto Mode> void cpu::AAC()
   auto addr = get_operand<Mode>();
   state.set_a(state.a & memory_read(addr));
 
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 
-  if (state.check_flags(flags::Negative)) {
-    state.set_flags(flags::Carry);
+  if (state.check_flags(Negative)) {
+    state.set_flags(Carry);
   }
 }
 
@@ -1100,10 +1103,10 @@ template <auto Mode> void cpu::ASR()
   auto addr = get_operand<Mode>();
   state.set_a(state.a & memory_read(addr));
 
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 
   if (state.a & 0x01) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 
   state.set_a(state.a >> 1);
@@ -1114,19 +1117,18 @@ template <auto Mode> void cpu::ARR()
   auto addr = get_operand<Mode>();
   state.set_a((state.a & memory_read(addr)) >> 1);
 
-  if (state.check_flags(flags::Carry)) {
+  if (state.check_flags(Carry)) {
     state.set_a(state.a | 0x80);
   }
 
-  state.clear_flags(flags::Carry | flags::Overflow);
+  state.clear_flags(Carry | Overflow);
 
   if (state.a & 0x40) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 
-  if ((state.check_flags(flags::Carry) ? 0x01 : 0x00) ^
-      ((state.a >> 5) & 0x01)) {
-    state.set_flags(flags::Overflow);
+  if ((state.check_flags(Carry) ? 0x01 : 0x00) ^ ((state.a >> 5) & 0x01)) {
+    state.set_flags(Overflow);
   }
 }
 
@@ -1143,10 +1145,10 @@ template <auto Mode> void cpu::AXS()
   auto    value  = memory_read(get_operand<Mode>());
   uint8_t result = (state.a & state.x) - value;
 
-  state.clear_flags(flags::Carry);
+  state.clear_flags(Carry);
 
   if ((state.a & state.x) >= value) {
-    state.set_flags(flags::Carry);
+    state.set_flags(Carry);
   }
 
   state.set_x(result);

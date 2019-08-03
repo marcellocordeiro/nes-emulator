@@ -4,8 +4,8 @@
 
 #include <SDL.h>
 
-#include "types/forward_decl.h"
 #include "common.h"
+#include "types/forward_decl.h"
 
 namespace SDL2 {
 struct Deleter {
@@ -39,7 +39,7 @@ using Texture  = std::unique_ptr<SDL_Texture, Deleter>;
 namespace nes {
 class io {
 public:
-  io(nes::cpu&, nes::cartridge&);
+  io(nes::emulator&);
   ~io();
 
   void close();
@@ -51,16 +51,21 @@ public:
   void run();
 
 private:
-  nes::cpu& cpu;
-  nes::cartridge& cartridge;
+  nes::emulator& emulator;
 
   static constexpr int width  = 256;
   static constexpr int height = 240;
+
+  bool running = false;
 
   SDL2::Window   window;
   SDL2::Renderer renderer;
   SDL2::Texture  texture;
   const uint8_t* keys;
+
+  SDL_Scancode PAUSE = SDL_SCANCODE_ESCAPE;
+  SDL_Scancode SAVE_SNAPSHOT = SDL_SCANCODE_F1;
+  SDL_Scancode LOAD_SNAPSHOT = SDL_SCANCODE_F3;
 
   SDL_Scancode KEY_A[2]      = {SDL_SCANCODE_A, SDL_SCANCODE_ESCAPE};
   SDL_Scancode KEY_B[2]      = {SDL_SCANCODE_S, SDL_SCANCODE_ESCAPE};

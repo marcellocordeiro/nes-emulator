@@ -13,15 +13,19 @@ public:
 
   void scanline_counter() override;
 
+  void save(std::ofstream&) override;
+  void load(std::ifstream&) override;
+
 private:
-  uint8_t reg_8000;
-  uint8_t regs[8];
-  bool    horizontal_mirroring;
+  void apply();
+
+  std::array<uint8_t, 8> regs;
+  uint8_t                reg_8000;
+
+  bool horizontal_mirroring;
 
   uint8_t irq_period;
   uint8_t irq_counter;
   bool    irq_enabled;
-
-  void apply();
 };
 }  // namespace nes

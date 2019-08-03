@@ -6,13 +6,11 @@
 #include "common.h"
 #include "types/forward_decl.h"
 
-#include "Nes_Apu.h"
-#include "Sound_Queue.h"
-
 namespace nes {
 class apu {
 public:
-  apu(nes::cpu&);
+  apu(nes::emulator&);
+  ~apu();  // Has to be defined in the cpp
 
   void power_on();
 
@@ -22,14 +20,14 @@ public:
   void run_frame(int);
 
 private:
-  nes::cpu& cpu;
+  nes::emulator& emulator;
 
   static constexpr int buffer_size = 4096;
 
-  std::unique_ptr<Nes_Apu>     nes_apu{new Nes_Apu};
-  std::unique_ptr<Blip_Buffer> buffer{new Blip_Buffer};
-  std::unique_ptr<Sound_Queue> sound_queue{new Sound_Queue};
+  std::unique_ptr<Nes_Apu>     nes_apu;
+  std::unique_ptr<Blip_Buffer> buffer;
+  std::unique_ptr<Sound_Queue> sound_queue;
 
-  std::array<blip_sample_t, buffer_size> out_buffer;
+  std::array<int16_t, buffer_size> out_buffer;
 };
 }  // namespace nes

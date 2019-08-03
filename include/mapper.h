@@ -6,9 +6,10 @@
 #include "common.h"
 #include "types/cartridge.h"
 #include "types/forward_decl.h"
+#include "utility/snapshotable.h"
 
 namespace nes {
-class mapper {
+class mapper : public util::snapshotable {
 public:
   mapper(nes::cartridge&);
   virtual ~mapper() = default;
@@ -31,6 +32,9 @@ public:
   template <auto> void set_chr_map(int, int);
 
   virtual void scanline_counter() {}
+
+  virtual void save(std::ofstream&) override {};
+  virtual void load(std::ifstream&) override {};
 
 protected:
   nes::cartridge& cartridge;

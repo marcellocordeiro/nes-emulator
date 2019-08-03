@@ -1,8 +1,10 @@
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 
 #include "emulator.h"
+#include "log.h"
 #include "system_utils.h"
 #include "utility/file_manager.h"
 
@@ -13,14 +15,14 @@ int main(int argc, char* argv[])
     return 1;
   }
 
-  auto main_path = lib::get_executable_path();
-
-  std::ofstream log_file{main_path / "nes-emulator.log"};
-  lib::log::get().set_stream(log_file);
-
   try {
+    auto working_path = nes::util::fmngr.get_working_path();
+
+    std::ofstream log_file{working_path / "nes-emulator.log"};
+    lib::log::get().set_stream(log_file);
+
     nes::util::fmngr.set_rom(argv[1]);
-    nes::util::fmngr.set_palette(main_path / "palette.pal");
+    nes::util::fmngr.set_palette(working_path / "palette.pal");
 
     nes::emulator emulator;
 

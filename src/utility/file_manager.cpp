@@ -1,16 +1,34 @@
 #include "utility/file_manager.h"
 
 #include "log.h"
+#include "system_utils.h"
 
 namespace nes::util {
+file_manager::file_manager()
+{
+  try {
+    set_working_path(lib::get_working_path());
+  } catch (const std::exception& e) {
+    lib::message_box(e.what());
+    std::exit(1);
+  }
+}
+
+void file_manager::set_working_path(const std::filesystem::path& value)
+{
+  working_path = std::filesystem::canonical(value);  // May throw
+}
+
 void file_manager::set_rom(const std::filesystem::path& value)
 {
-  rom     = std::filesystem::canonical(value);  // May throw
-  prg_ram = rom;
-  patch   = rom;
+  rom      = std::filesystem::canonical(value);  // May throw
+  prg_ram  = rom;
+  patch    = rom;
+  snapshot = rom;
 
   prg_ram.replace_extension(".srm");
   patch.replace_extension(".ips");
+  snapshot.replace_extension(".state");
 
   if (std::filesystem::exists(prg_ram)) {
     LOG(lib::log::Info) << "Found PRG-RAM file";
@@ -19,11 +37,20 @@ void file_manager::set_rom(const std::filesystem::path& value)
   if (std::filesystem::exists(patch)) {
     LOG(lib::log::Info) << "Found IPS patch file";
   }
+
+  if (std::filesystem::exists(snapshot)) {
+    LOG(lib::log::Info) << "Found snapshot file";
+  }
 }
 
 void file_manager::set_palette(const std::filesystem::path& value)
 {
   palette = std::filesystem::canonical(value);  // May throw
+}
+
+std::filesystem::path file_manager::get_working_path() const
+{
+  return working_path;
 }
 
 std::filesystem::path file_manager::get_rom() const
@@ -44,6 +71,11 @@ std::filesystem::path file_manager::get_prg_ram() const
 std::filesystem::path file_manager::get_palette() const
 {
   return palette;
+}
+
+std::filesystem::path file_manager::get_snapshot() const
+{
+  return snapshot;
 }
 
 bool file_manager::has_patch() const

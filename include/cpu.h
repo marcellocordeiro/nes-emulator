@@ -5,11 +5,12 @@
 #include "common.h"
 #include "types/cpu.h"
 #include "types/forward_decl.h"
+#include "utility/snapshotable.h"
 
 namespace nes {
-class cpu {
+class cpu : public util::snapshotable {
 public:
-  cpu(nes::ppu&, nes::apu&, nes::cartridge&, nes::controller&);
+  cpu(nes::emulator&);
 
   void power_on();
   void reset();
@@ -22,13 +23,11 @@ public:
 
   void run_frame();
 
-  // friend class debugger;
+  void save(std::ofstream&) override;
+  void load(std::ifstream&) override;
 
 private:
-  nes::ppu&        ppu;
-  nes::apu&        apu;
-  nes::cartridge&  cartridge;
-  nes::controller& controller;
+  nes::emulator& emulator;
 
   nes::types::cpu::state     state;
   std::array<uint8_t, 0x800> ram = {};
@@ -54,11 +53,6 @@ private:
   uint16_t peek_ind() const;
   uint16_t peek_indx() const;
   uint16_t peek_indy() const;
-
-  int elapsed() const;
-
-  const int total_cycles     = 29781;
-  int       remaining_cycles = 0;
 
   //
   // All functions defined here are

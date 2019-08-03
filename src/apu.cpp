@@ -1,12 +1,23 @@
 #include "apu.h"
 
+#include "Nes_Apu.h"
+#include "Sound_Queue.h"
+
 #include "cpu.h"
+#include "emulator.h"
 
 namespace nes {
-apu::apu(nes::cpu& cpu_ref) : cpu(cpu_ref) {}
+apu::apu(nes::emulator& emulator_ref)
+  : emulator{emulator_ref}, nes_apu{std::make_unique<Nes_Apu>()},
+    buffer{std::make_unique<Blip_Buffer>()},
+    sound_queue{std::make_unique<Sound_Queue>()}
+{}
+
+apu::~apu() = default;
 
 void apu::power_on()
 {
+  return;
   buffer->sample_rate(44100);
   buffer->clock_rate(1789773);
 
@@ -20,21 +31,24 @@ void apu::power_on()
         auto a_cpu = static_cast<nes::cpu*>(user_data);
         return a_cpu->dmc_reader(addr);
       },
-      &cpu);
+      emulator.get_cpu());
 }
 
 uint8_t apu::read(int elapsed)
 {
+  return 0;
   return static_cast<uint8_t>(nes_apu->read_status(elapsed));
 }
 
 void apu::write(int elapsed, uint16_t addr, uint8_t value)
 {
+  return;
   nes_apu->write_register(elapsed, addr, value);
 }
 
 void apu::run_frame(int elapsed)
 {
+  return;
   nes_apu->end_frame(elapsed);
   buffer->end_frame(elapsed);
 

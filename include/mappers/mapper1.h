@@ -11,6 +11,9 @@ public:
 
   void prg_write(uint16_t, uint8_t) override;
 
+  void save(std::ofstream&) override;
+  void load(std::ifstream&) override;
+
 private:
   void apply();
 

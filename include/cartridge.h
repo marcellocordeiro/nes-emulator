@@ -3,14 +3,16 @@
 #include <memory>
 
 #include "common.h"
-#include "mapper.h"
 #include "types/cartridge.h"
 #include "types/forward_decl.h"
 
 namespace nes {
 class cartridge {
 public:
-  cartridge(nes::cpu&, nes::ppu&);
+  cartridge(nes::emulator&);
+  ~cartridge();  // Has to be defined in the cpp
+
+  nes::mapper* get_mapper();
 
   void load(const char*);
 
@@ -28,11 +30,10 @@ public:
   void set_cpu_irq(bool);
 
 private:
-  nes::cpu& cpu;
-  nes::ppu& ppu;
+  nes::emulator& emulator;
 
   nes::cartridge_info info{};
 
-  std::unique_ptr<nes::mapper> mapper = nullptr;
+  std::unique_ptr<nes::mapper> mapper;
 };
 }  // namespace nes

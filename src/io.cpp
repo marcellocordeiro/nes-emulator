@@ -2,9 +2,10 @@
 
 #include "cartridge.h"
 #include "cpu.h"
+#include "emulator.h"
 
 namespace nes {
-io::io(nes::cpu& cpu_ref, nes::cartridge& cartridge_ref) : cpu(cpu_ref), cartridge(cartridge_ref)
+io::io(nes::emulator& emulator_ref) : emulator{emulator_ref}
 {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
   // Bilinear filter
@@ -80,6 +81,8 @@ void io::draw()
 
 void io::run()
 {
+  running = true;
+
   uint32_t frame_rate = 60;
   uint32_t frame_time = 1000 / frame_rate;
 
@@ -90,12 +93,18 @@ void io::run()
 
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
-        case SDL_QUIT: cartridge.dump_prg_ram(); return;
+        case SDL_QUIT: emulator.get_cartridge()->dump_prg_ram(); return;
+        case SDL_KEYDOWN:
+          if (keys[PAUSE]) running = !running;
+          else if (keys[SAVE_SNAPSHOT]) emulator.save_snapshot();
+          else if (keys[LOAD_SNAPSHOT]) emulator.load_snapshot();
+          break;
       }
     }
 
     // nestest();
-    cpu.run_frame();
+    if (running) emulator.get_cpu()->run_frame();
+
     this->draw();
 
     uint32_t current = SDL_GetTicks() - start;
