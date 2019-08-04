@@ -30,7 +30,7 @@ void ppu::set_palette()
   std::ifstream palette(util::fmngr.get_palette(), std::ios::binary);
 
   if (!palette) {
-    throw std::runtime_error("Couldnt't open the palette file");
+    throw std::runtime_error("Couldn't open the palette file");
   }
 
   std::array<uint8_t, 64 * 3> pal_buffer;
@@ -261,7 +261,7 @@ void ppu::clear_sec_oam()
 
 void ppu::sprite_evaluation()
 {
-  for (uint8_t i = 0; i < 64 && sec_oam.size() < 8; ++i) {
+  for (size_t i = 0; i < 64 && sec_oam.size() < 8; ++i) {
     int line = scanline - oam_mem[i * 4];
 
     if (line >= 0 && line < sprite_height) {
@@ -597,37 +597,6 @@ void ppu::save(std::ofstream& out)
   for (const auto& value : ci_ram) dump_snapshot(out, value);
   for (const auto& value : cg_ram) dump_snapshot(out, value);
   for (const auto& value : oam_mem) dump_snapshot(out, value);
-  // Dump these?
-  // std::vector<sprite_info> oam     = {};  // Sprite buffer
-  // std::vector<sprite_info> sec_oam = {};  // Sprite buffer
-
-  dump_snapshot(out, oam.size());
-
-  for (const auto& value : oam) {
-    dump_snapshot(
-        out,
-        value.y,
-        value.tile,
-        value.attr,
-        value.x,
-        value.id,
-        value.data_l,
-        value.data_h);
-  }
-
-  dump_snapshot(out, sec_oam.size());
-
-  for (const auto& value : sec_oam) {
-    dump_snapshot(
-        out,
-        value.y,
-        value.tile,
-        value.attr,
-        value.x,
-        value.id,
-        value.data_l,
-        value.data_h);
-  }
 
   dump_snapshot(out, mirroring_mode);
   dump_snapshot(out, ppu_state, ppu_addr);
@@ -655,45 +624,6 @@ void ppu::load(std::ifstream& in)
   for (auto& value : ci_ram) get_snapshot(in, value);
   for (auto& value : cg_ram) get_snapshot(in, value);
   for (auto& value : oam_mem) get_snapshot(in, value);
-  // Dump these?
-  // std::vector<sprite_info> oam     = {};  // Sprite buffer
-  // std::vector<sprite_info> sec_oam = {};  // Sprite buffer
-
-  {
-    size_t size;
-    get_snapshot(in, size);
-    oam.resize(size);
-  }
-
-  for (auto& value : oam) {
-    get_snapshot(
-        in,
-        value.y,
-        value.tile,
-        value.attr,
-        value.x,
-        value.id,
-        value.data_l,
-        value.data_h);
-  }
-
-  {
-    size_t size;
-    get_snapshot(in, size);
-    sec_oam.resize(size);
-  }
-
-  for (auto& value : sec_oam) {
-    get_snapshot(
-        in,
-        value.y,
-        value.tile,
-        value.attr,
-        value.x,
-        value.id,
-        value.data_l,
-        value.data_h);
-  }
 
   get_snapshot(in, mirroring_mode);
   get_snapshot(in, ppu_state, ppu_addr);
@@ -722,7 +652,9 @@ void ppu::load(std::ifstream& in)
   sprite_height  = ctrl.spr_size ? 16 : 8;
   addr_increment = ctrl.addr_inc ? 32 : 1;
 
-  // Clear buffers
+  // Evaluate and load sprites
+  // Might be enough to restore the state
   sprite_evaluation();
+  load_sprites();
 }
 }  // namespace nes

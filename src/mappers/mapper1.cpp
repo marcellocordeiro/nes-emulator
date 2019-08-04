@@ -90,6 +90,8 @@ void mapper1::prg_write(const uint16_t addr, const uint8_t value)
 void mapper1::save(std::ofstream& out)
 {
   for (const auto& value : prg_ram) dump_snapshot(out, value);
+  for (const auto& value : chr) dump_snapshot(out, value);
+
   dump_snapshot(out, write_counter, shift_reg);
   dump_snapshot(out, control, chr_bank_0, chr_bank_1, prg_bank);
 }
@@ -97,7 +99,11 @@ void mapper1::save(std::ofstream& out)
 void mapper1::load(std::ifstream& in)
 {
   for (auto& value : prg_ram) get_snapshot(in, value);
+  for (auto& value : chr) get_snapshot(in, value);
+
   get_snapshot(in, write_counter, shift_reg);
   get_snapshot(in, control, chr_bank_0, chr_bank_1, prg_bank);
+
+  apply();
 }
 }  // namespace nes

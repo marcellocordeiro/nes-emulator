@@ -7,9 +7,7 @@ mapper4::mapper4(nes::cartridge& cartridge_ref) : mapper{cartridge_ref} {}
 
 void mapper4::reset()
 {
-  for (int i = 0; i < 8; ++i) {
-    regs[i] = 0;
-  }
+  regs.fill(0);
 
   horizontal_mirroring = true;
   irq_enabled          = false;
@@ -98,7 +96,10 @@ void mapper4::scanline_counter()
 
 void mapper4::save(std::ofstream& out)
 {
+  for (const auto& value : prg_ram) dump_snapshot(out, value);
+  for (const auto& value : chr) dump_snapshot(out, value);
   for (const auto& value : regs) dump_snapshot(out, value);
+
   dump_snapshot(out, reg_8000);
   dump_snapshot(out, horizontal_mirroring);
   dump_snapshot(out, irq_period, irq_counter, irq_enabled);
@@ -106,9 +107,14 @@ void mapper4::save(std::ofstream& out)
 
 void mapper4::load(std::ifstream& in)
 {
+  for (auto& value : prg_ram) get_snapshot(in, value);
+  for (auto& value : chr) get_snapshot(in, value);
   for (auto& value : regs) get_snapshot(in, value);
+
   get_snapshot(in, reg_8000);
   get_snapshot(in, horizontal_mirroring);
   get_snapshot(in, irq_period, irq_counter, irq_enabled);
+
+  apply();
 }
 }  // namespace nes

@@ -67,7 +67,7 @@ struct sprite_info {
   uint8_t attr = 0xFF;  // Attributes
   uint8_t x    = 0xFF;  // X position
 
-  uint8_t id     = 0xFF;  // Index in OAM
+  size_t  id     = 0xFF;  // Index in OAM
   uint8_t data_l = 0;     // Tile data (low)
   uint8_t data_h = 0;     // Tile data (high)
 };

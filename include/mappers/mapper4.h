@@ -19,13 +19,13 @@ public:
 private:
   void apply();
 
-  std::array<uint8_t, 8> regs;
-  uint8_t                reg_8000;
+  std::array<uint8_t, 8> regs{};
+  uint8_t                reg_8000 = 0;
 
-  bool horizontal_mirroring;
+  bool horizontal_mirroring = false;
 
-  uint8_t irq_period;
-  uint8_t irq_counter;
-  bool    irq_enabled;
+  bool    irq_enabled = false;
+  uint8_t irq_period  = 0;
+  uint8_t irq_counter = 0;
 };
 }  // namespace nes

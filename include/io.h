@@ -63,7 +63,7 @@ private:
   SDL2::Texture  texture;
   const uint8_t* keys;
 
-  SDL_Scancode PAUSE = SDL_SCANCODE_ESCAPE;
+  SDL_Scancode PAUSE         = SDL_SCANCODE_ESCAPE;
   SDL_Scancode SAVE_SNAPSHOT = SDL_SCANCODE_F1;
   SDL_Scancode LOAD_SNAPSHOT = SDL_SCANCODE_F3;
 

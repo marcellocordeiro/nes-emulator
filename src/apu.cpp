@@ -17,7 +17,6 @@ apu::~apu() = default;
 
 void apu::power_on()
 {
-  return;
   buffer->sample_rate(44100);
   buffer->clock_rate(1789773);
 
@@ -36,19 +35,16 @@ void apu::power_on()
 
 uint8_t apu::read(int elapsed)
 {
-  return 0;
   return static_cast<uint8_t>(nes_apu->read_status(elapsed));
 }
 
 void apu::write(int elapsed, uint16_t addr, uint8_t value)
 {
-  return;
   nes_apu->write_register(elapsed, addr, value);
 }
 
 void apu::run_frame(int elapsed)
 {
-  return;
   nes_apu->end_frame(elapsed);
   buffer->end_frame(elapsed);
 

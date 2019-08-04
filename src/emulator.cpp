@@ -1,13 +1,10 @@
 #include "emulator.h"
 
-#include "common.h"
-
 #include "apu.h"
 #include "cartridge.h"
 #include "controller.h"
 #include "cpu.h"
 #include "io.h"
-#include "log.h"
 #include "mapper.h"
 #include "ppu.h"
 #include "utility/file_manager.h"
@@ -42,6 +39,7 @@ void emulator::run()
   snapshotable.push_back(cpu.get());
   snapshotable.push_back(ppu.get());
   snapshotable.push_back(cartridge->get_mapper());
+  snapshotable.push_back(controller.get());
 
   io->run();
 }

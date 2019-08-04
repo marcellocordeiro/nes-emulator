@@ -95,9 +95,12 @@ void io::run()
       switch (e.type) {
         case SDL_QUIT: emulator.get_cartridge()->dump_prg_ram(); return;
         case SDL_KEYDOWN:
-          if (keys[PAUSE]) running = !running;
-          else if (keys[SAVE_SNAPSHOT]) emulator.save_snapshot();
-          else if (keys[LOAD_SNAPSHOT]) emulator.load_snapshot();
+          if (keys[PAUSE])
+            running = !running;
+          else if (keys[SAVE_SNAPSHOT])
+            emulator.save_snapshot();
+          else if (keys[LOAD_SNAPSHOT])
+            emulator.load_snapshot();
           break;
       }
     }

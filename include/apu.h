@@ -28,6 +28,6 @@ private:
   std::unique_ptr<Blip_Buffer> buffer;
   std::unique_ptr<Sound_Queue> sound_queue;
 
-  std::array<int16_t, buffer_size> out_buffer;
+  std::array<int16_t, buffer_size> out_buffer{};
 };
 }  // namespace nes
