@@ -3,7 +3,7 @@
 #include "cartridge.h"
 
 namespace nes {
-mapper4::mapper4(nes::cartridge& cartridge_ref) : mapper{cartridge_ref} {}
+mapper4::mapper4(nes::cartridge& cartridge_ref) : mapper(cartridge_ref) {}
 
 void mapper4::reset()
 {

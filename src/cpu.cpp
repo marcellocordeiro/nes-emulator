@@ -13,7 +13,7 @@
 using namespace nes::types::cpu;
 
 namespace nes {
-cpu::cpu(nes::emulator& emulator_ref) : emulator{emulator_ref} {}
+cpu::cpu(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
 
 void cpu::power_on()
 {

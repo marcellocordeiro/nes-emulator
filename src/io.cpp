@@ -5,7 +5,7 @@
 #include "emulator.h"
 
 namespace nes {
-io::io(nes::emulator& emulator_ref) : emulator{emulator_ref}
+io::io(nes::emulator& emulator_ref) : emulator(emulator_ref)
 {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
   // Bilinear filter

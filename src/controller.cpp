@@ -4,7 +4,7 @@
 #include "io.h"
 
 namespace nes {
-controller::controller(nes::emulator& emulator_ref) : emulator{emulator_ref} {}
+controller::controller(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
 
 uint8_t controller::read(size_t port)
 {

@@ -5,7 +5,7 @@
 
 namespace nes::util {
 ips_patch::ips_patch(const std::filesystem::path& path)
-  : ips_file{path, std::ios::binary}
+  : ips_file(path, std::ios::binary)
 {
   build();
 }

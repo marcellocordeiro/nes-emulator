@@ -12,12 +12,12 @@
 
 namespace nes {
 emulator::emulator()
-  : cpu{std::make_unique<nes::cpu>(*this)},
-    ppu{std::make_unique<nes::ppu>(*this)}, apu{std::make_unique<nes::apu>(
-                                                *this)},
-    cartridge{std::make_unique<nes::cartridge>(*this)},
-    controller{std::make_unique<nes::controller>(*this)},
-    io{std::make_unique<nes::io>(*this)}
+  : cpu(std::make_unique<nes::cpu>(*this)),
+    ppu(std::make_unique<nes::ppu>(*this)),
+    apu(std::make_unique<nes::apu>(*this)),
+    cartridge(std::make_unique<nes::cartridge>(*this)),
+    controller(std::make_unique<nes::controller>(*this)),
+    io(std::make_unique<nes::io>(*this))
 {}
 
 emulator::~emulator() = default;

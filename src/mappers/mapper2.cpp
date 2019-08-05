@@ -1,7 +1,7 @@
 #include "mappers/mapper2.h"
 
 namespace nes {
-mapper2::mapper2(nes::cartridge& cartridge_ref) : mapper{cartridge_ref} {}
+mapper2::mapper2(nes::cartridge& cartridge_ref) : mapper(cartridge_ref) {}
 
 void mapper2::reset()
 {

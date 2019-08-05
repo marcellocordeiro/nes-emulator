@@ -4,7 +4,7 @@
 #include "log.h"
 
 namespace nes {
-mapper::mapper(nes::cartridge& cartridge_ref) : cartridge{cartridge_ref} {}
+mapper::mapper(nes::cartridge& cartridge_ref) : cartridge(cartridge_ref) {}
 
 void mapper::set_prg_rom(std::vector<uint8_t>&& vec)
 {

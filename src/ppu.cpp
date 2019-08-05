@@ -12,7 +12,7 @@
 #include "utility/file_manager.h"
 
 namespace nes {
-ppu::ppu(nes::emulator& emulator_ref) : emulator{emulator_ref} {}
+ppu::ppu(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
 
 void ppu::power_on()
 {

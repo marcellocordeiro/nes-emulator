@@ -8,9 +8,9 @@
 
 namespace nes {
 apu::apu(nes::emulator& emulator_ref)
-  : emulator{emulator_ref}, nes_apu{std::make_unique<Nes_Apu>()},
-    buffer{std::make_unique<Blip_Buffer>()},
-    sound_queue{std::make_unique<Sound_Queue>()}
+  : emulator(emulator_ref), nes_apu(std::make_unique<Nes_Apu>()),
+    buffer(std::make_unique<Blip_Buffer>()),
+    sound_queue(std::make_unique<Sound_Queue>())
 {}
 
 apu::~apu() = default;

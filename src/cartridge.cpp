@@ -21,7 +21,7 @@
 #include "utility/ips_patch.h"
 
 namespace nes {
-cartridge::cartridge(nes::emulator& emulator_ref) : emulator{emulator_ref} {}
+cartridge::cartridge(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
 
 cartridge::~cartridge() = default;
 
