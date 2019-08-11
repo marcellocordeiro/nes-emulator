@@ -25,6 +25,17 @@ public:
 
   void step();
 
+  //
+  // Read registers and VRAM without side effects
+  //
+
+  uint8_t peek_reg(uint16_t) const;
+  uint8_t peek_vram(uint16_t) const;
+
+  //
+  // Snapshot
+  //
+
   void save(std::ofstream&) override;
   void load(std::ifstream&) override;
 
@@ -75,15 +86,6 @@ private:
   void scanline_cycle_nmi();
 
   //
-  // Auxiliary
-  //
-
-  bool    is_rendering   = false;
-  uint8_t sprite_height  = 8;
-  uint8_t addr_increment = 1;
-  uint8_t grayscale_mask = 0x3F;
-
-  //
   // Addresses
   //
 
@@ -118,26 +120,26 @@ private:
   using ppumask     = nes::types::ppu::ppumask;
   using ppustatus   = nes::types::ppu::ppustatus;
 
-  std::array<uint8_t, 0x800> ci_ram  = {};  // Console-Internal RAM
-  std::array<uint8_t, 0x20>  cg_ram  = {};  // Colour generator RAM
-  std::array<uint8_t, 0x100> oam_mem = {};  // Object Attribute Memory (sprites)
+  std::array<uint8_t, 0x800> ci_ram{};   // Console-Internal RAM
+  std::array<uint8_t, 0x20>  cg_ram{};   // Colour generator RAM
+  std::array<uint8_t, 0x100> oam_mem{};  // Object Attribute Memory (sprites)
 
-  std::vector<sprite_info> oam     = {};  // Sprite buffer
-  std::vector<sprite_info> sec_oam = {};  // Sprite buffer
+  std::vector<sprite_info> oam{};      // Sprite buffer
+  std::vector<sprite_info> sec_oam{};  // Sprite buffer
 
-  std::array<uint32_t, 256 * 240> frame_buffer = {};  // Frame buffer
+  std::array<uint32_t, 256 * 240> frame_buffer{};  // Frame buffer
 
   std::array<std::array<uint32_t, 64>, 8> full_nes_palette;
-  uint32_t* nes_to_rgb = full_nes_palette[0].data();
+  const uint32_t* nes_to_rgb = full_nes_palette[0].data();
 
-  loopy_addr vram_addr = {0};
-  loopy_addr temp_addr = {0};
-  uint8_t    fine_x    = 0;
-  uint8_t    oam_addr  = 0;
+  loopy_addr vram_addr{0};
+  loopy_addr temp_addr{0};
+  uint8_t    fine_x   = 0;
+  uint8_t    oam_addr = 0;
 
-  ppuctrl   ctrl   = {0};  // PPUCTRL   ($2000) register
-  ppumask   mask   = {0};  // PPUMASK   ($2001) register
-  ppustatus status = {0};  // PPUSTATUS ($2002) register
+  ppuctrl   ctrl{0};    // PPUCTRL   ($2000) register
+  ppumask   mask{0};    // PPUMASK   ($2001) register
+  ppustatus status{0};  // PPUSTATUS ($2002) register
 
   //
   // Background latches
@@ -164,5 +166,14 @@ private:
   int  scanline     = 0;      // Scanline counter
   int  tick         = 0;      // Cycle counter
   bool is_odd_frame = false;  // Is an odd frame?
+
+  //
+  // Auxiliary
+  //
+
+  bool    is_rendering   = false;
+  uint8_t sprite_height  = 8;
+  uint8_t addr_increment = 1;
+  uint8_t grayscale_mask = 0x3F;
 };
 }  // namespace nes

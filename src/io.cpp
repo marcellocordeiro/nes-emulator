@@ -1,8 +1,12 @@
 #include "io.h"
 
+#include <algorithm>
+
+#include "apu.h"
 #include "cartridge.h"
 #include "cpu.h"
 #include "emulator.h"
+#include "ppu.h"
 
 namespace nes {
 io::io(nes::emulator& emulator_ref) : emulator(emulator_ref)
@@ -82,6 +86,7 @@ void io::draw()
 void io::run()
 {
   running = true;
+  emulator.get_apu()->volume(volume);
 
   uint32_t frame_rate = 60;
   uint32_t frame_time = 1000 / frame_rate;
@@ -95,12 +100,33 @@ void io::run()
       switch (e.type) {
         case SDL_QUIT: emulator.get_cartridge()->dump_prg_ram(); return;
         case SDL_KEYDOWN:
-          if (keys[PAUSE])
+          if (keys[PAUSE]) {
             running = !running;
-          else if (keys[SAVE_SNAPSHOT])
+          }
+
+          if (keys[RESET]) {
+            emulator.get_cpu()->reset();
+            emulator.get_ppu()->reset();
+          }
+
+          if (keys[SAVE_SNAPSHOT]) {
             emulator.save_snapshot();
-          else if (keys[LOAD_SNAPSHOT])
+          }
+
+          if (keys[LOAD_SNAPSHOT]) {
             emulator.load_snapshot();
+          }
+
+          if (keys[VOLUME_UP]) {
+            volume = std::min(1.0, volume + 0.1);
+            emulator.get_apu()->volume(volume);
+          }
+
+          if (keys[VOLUME_DOWN]) {
+            volume = std::max(0.0, volume - 0.1);
+            emulator.get_apu()->volume(volume);
+          }
+
           break;
       }
     }

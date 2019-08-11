@@ -19,9 +19,29 @@ public:
   void set_nmi(bool = true);
   void set_irq(bool = true);
 
-  int dmc_reader(uint16_t);
-
   void run_frame();
+
+  //
+  // Read memory without side effects
+  //
+
+  uint8_t peek(uint16_t) const;
+
+  uint16_t peek_imm() const;
+  uint16_t peek_rel() const;
+  uint16_t peek_zp() const;
+  uint16_t peek_zpx() const;
+  uint16_t peek_zpy() const;
+  uint16_t peek_ab() const;
+  uint16_t peek_abx() const;
+  uint16_t peek_aby() const;
+  uint16_t peek_ind() const;
+  uint16_t peek_indx() const;
+  uint16_t peek_indy() const;
+
+  //
+  // Snapshot
+  //
 
   void save(std::ofstream&) override;
   void load(std::ifstream&) override;
@@ -39,20 +59,6 @@ private:
 
   uint8_t memory_read(uint16_t);
   void    memory_write(uint16_t, uint8_t);
-
-  uint8_t peek(uint16_t) const;
-
-  uint16_t peek_imm() const;
-  uint16_t peek_rel() const;
-  uint16_t peek_zp() const;
-  uint16_t peek_zpx() const;
-  uint16_t peek_zpy() const;
-  uint16_t peek_ab() const;
-  uint16_t peek_abx() const;
-  uint16_t peek_aby() const;
-  uint16_t peek_ind() const;
-  uint16_t peek_indx() const;
-  uint16_t peek_indy() const;
 
   //
   // All functions defined here are
@@ -189,19 +195,19 @@ private:
   //
 
   template <auto Mode> void NOP();
-  template <auto Mode> void LAX();  // LDA then TXA
-  template <auto Mode> void SAX();  // A & X
-  template <auto Mode> void DCP();  // DEC then CMP
-  template <auto Mode> void ISB();  // INC then SBC
-  template <auto Mode> void SLO();  // ASL then ORA
-  template <auto Mode> void RLA();  // ROL then AND
-  template <auto Mode> void SRE();  // LSR then EOR
-  template <auto Mode> void RRA();  // ROR then ADC
-  template <auto Mode> void AAC();  // A &= get_operand
-  template <auto Mode> void ASR();  // A &= get_operand then A >>= 1
-  template <auto Mode> void ARR();  // Same as ASR, but setting different flags
-  template <auto Mode> void ATX();  // LDA then TAX
-  template <auto Mode> void AXS();  // CMP then DEX
+  template <auto Mode> void LAX();
+  template <auto Mode> void SAX();
+  template <auto Mode> void DCP();
+  template <auto Mode> void ISB();
+  template <auto Mode> void SLO();
+  template <auto Mode> void RLA();
+  template <auto Mode> void SRE();
+  template <auto Mode> void RRA();
+  template <auto Mode> void AAC();
+  template <auto Mode> void ASR();
+  template <auto Mode> void ARR();
+  template <auto Mode> void ATX();
+  template <auto Mode> void AXS();
   template <auto Mode> void SYA();
   template <auto Mode> void SXA();
 };

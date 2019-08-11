@@ -310,8 +310,7 @@ void cpu::execute()
 #endif
 
     default: {
-      LOG(lib::log::Error) << "Invalid opcode: 0x" << std::uppercase << std::hex
-                           << +opcode;
+      LOG(Error, "Invalid opcode: 0x" << std::uppercase << std::hex << +opcode)
       throw std::runtime_error("Invalid opcode");
       return;
     }

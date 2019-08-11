@@ -14,6 +14,16 @@ public:
   uint8_t read(size_t);
   void    write(bool);
 
+  //
+  // Read status without side effects
+  //
+
+  uint8_t peek(size_t) const;
+
+  //
+  // Snapshot
+  //
+
   void save(std::ofstream&) override;
   void load(std::ifstream&) override;
 

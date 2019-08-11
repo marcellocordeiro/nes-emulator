@@ -15,12 +15,20 @@ public:
   void power_on();
   void run();
 
+  //
+  // Component access
+  //
+
   nes::cpu*        get_cpu();
   nes::ppu*        get_ppu();
   nes::apu*        get_apu();
   nes::cartridge*  get_cartridge();
   nes::controller* get_controller();
   nes::io*         get_io();
+
+  //
+  // Snapshot
+  //
 
   void save_snapshot();
   void load_snapshot();

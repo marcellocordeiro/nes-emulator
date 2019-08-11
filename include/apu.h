@@ -13,6 +13,7 @@ public:
   ~apu();  // Has to be defined in the cpp
 
   void power_on();
+  void volume(double);
 
   uint8_t read(int);
   void    write(int, uint16_t, uint8_t);

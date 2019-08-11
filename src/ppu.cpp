@@ -17,12 +17,38 @@ ppu::ppu(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
 void ppu::power_on()
 {
   this->set_palette();
-  this->reset();
+
+  ctrl.raw   = 0;
+  mask.raw   = 0;
+  status.raw = 0;
+  oam_addr   = 0;
+  addr_latch = false;
+
+  vram_addr.raw = 0;
+  temp_addr.raw = 0;
+  fine_x        = 0;
+  oam_addr      = 0;
+
+  bus_latch      = 0;
+  ppudata_buffer = 0;
+
+  is_odd_frame = false;
 }
 
 void ppu::reset()
 {
-  // todo
+  ctrl.raw   = 0;
+  mask.raw   = 0;
+  addr_latch = false;
+
+  vram_addr.raw = 0;
+  temp_addr.raw = 0;
+  fine_x        = 0;
+
+  bus_latch      = 0;
+  ppudata_buffer = 0;
+
+  is_odd_frame = false;
 }
 
 void ppu::set_palette()
@@ -124,6 +150,25 @@ void ppu::step()
       scanline     = 0;
       is_odd_frame = !is_odd_frame;
     }
+  }
+}
+
+uint8_t ppu::peek_reg(uint16_t addr) const
+{
+  using namespace nes::types::ppu::memory;
+
+  switch (addr % 8) {
+    case PPUSTATUS: return (bus_latch & 0x1F) | status.raw;
+
+    case OAMDATA: return oam_mem[oam_addr];
+    case PPUDATA:
+      if (vram_addr.addr <= 0x3EFF) {
+        return ppudata_buffer;
+      } else {
+        return peek_vram(vram_addr.addr);
+      }
+
+    default: throw std::runtime_error("Invalid PPU register address");
   }
 }
 
@@ -229,6 +274,11 @@ void ppu::write(uint16_t addr, uint8_t value)
       break;
     }
   }
+}
+
+uint8_t ppu::peek_vram(uint16_t addr) const
+{
+  return vram_read(addr);
 }
 
 uint8_t ppu::vram_read(uint16_t addr) const

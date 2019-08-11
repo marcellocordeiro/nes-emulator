@@ -56,6 +56,8 @@ private:
   static constexpr int width  = 256;
   static constexpr int height = 240;
 
+  double volume = 0.1;
+
   bool running = false;
 
   SDL2::Window   window;
@@ -64,8 +66,12 @@ private:
   const uint8_t* keys;
 
   SDL_Scancode PAUSE         = SDL_SCANCODE_ESCAPE;
+  SDL_Scancode RESET         = SDL_SCANCODE_R;
   SDL_Scancode SAVE_SNAPSHOT = SDL_SCANCODE_F1;
   SDL_Scancode LOAD_SNAPSHOT = SDL_SCANCODE_F3;
+
+  SDL_Scancode VOLUME_UP   = SDL_SCANCODE_KP_PLUS;
+  SDL_Scancode VOLUME_DOWN = SDL_SCANCODE_KP_MINUS;
 
   SDL_Scancode KEY_A[2]      = {SDL_SCANCODE_A, SDL_SCANCODE_ESCAPE};
   SDL_Scancode KEY_B[2]      = {SDL_SCANCODE_S, SDL_SCANCODE_ESCAPE};

@@ -6,6 +6,15 @@
 namespace nes {
 controller::controller(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
 
+uint8_t controller::peek(size_t port) const
+{
+  if (strobe) {
+    return 0x40 | (emulator.get_io()->get_controller(port) & 1);  // 1 == A
+  } else {
+    return 0x40 | (controller_bits[port] & 1);
+  }
+}
+
 uint8_t controller::read(size_t port)
 {
   if (strobe) {

@@ -71,13 +71,12 @@ void cartridge::load(const char* rom_path)
           "Mapper #" + std::to_string(info.mapper_num) + " not implemented");
   }
 
-  LOG(lib::log::Info) << "PRG-ROM size (16KB banks): " << info.prg_size;
-  LOG(lib::log::Info) << "CHR-ROM size (8KB banks): " << info.chr_size;
-  LOG(lib::log::Info) << "Nametable mirroring: " << +(header[6] & 0xB);
-  LOG(lib::log::Info) << "Mirroring: "
-                      << (info.mirroring ? "Vertical" : "Horizontal");
-  LOG(lib::log::Info) << "Mapper #: " << info.mapper_num;
-  LOG(lib::log::Info) << "PRG RAM size: " << info.prg_ram_size;
+  LOG(Info, "PRG-ROM size (16KB banks): " << info.prg_size)
+  LOG(Info, "CHR-ROM size (8KB banks): " << info.chr_size)
+  LOG(Info, "Nametable mirroring: " << +(header[6] & 0xB))
+  LOG(Info, "Mirroring: " << (info.mirroring ? "Vertical" : "Horizontal"))
+  LOG(Info, "Mapper #: " << info.mapper_num)
+  LOG(Info, "PRG RAM size: " << info.prg_ram_size)
 
   auto prg_start = 16;
   auto prg_end   = 16 + info.prg_size;

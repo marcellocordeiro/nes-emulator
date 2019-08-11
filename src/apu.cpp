@@ -21,16 +21,19 @@ void apu::power_on()
   buffer->clock_rate(1789773);
 
   nes_apu->output(buffer.get());
-  nes_apu->volume(0.1);
 
   sound_queue->init(44100);
 
   nes_apu->dmc_reader(
       [](void* user_data, cpu_addr_t addr) -> int {
-        auto a_cpu = static_cast<nes::cpu*>(user_data);
-        return a_cpu->dmc_reader(addr);
+        return static_cast<nes::cpu*>(user_data)->peek(addr);
       },
       emulator.get_cpu());
+}
+
+void apu::volume(double value)
+{
+  nes_apu->volume(value);
 }
 
 uint8_t apu::read(int elapsed)

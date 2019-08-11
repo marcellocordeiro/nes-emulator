@@ -17,15 +17,20 @@ cpu::cpu(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
 
 void cpu::power_on()
 {
+  state.a  = 0;
+  state.x  = 0;
+  state.y  = 0;
+  state.pc = (peek(0xFFFC + 1) << 8) | peek(0xFFFC);
+  state.sp = 0xFD;
+
   state.cycle_count = 0;
-  ram.fill(0);
   state.set_ps(0x34);
-  INT_RST();
+  ram.fill(0);
 }
 
 void cpu::reset()
 {
-  // todo
+  INT_RST();
 }
 
 void cpu::set_nmi(bool value)
@@ -44,11 +49,6 @@ void cpu::dma_oam(uint8_t addr)
     // 0x2004 == OAMDATA
     memory_write(0x2004, memory_read((addr * 0x100) + i));
   }
-}
-
-int cpu::dmc_reader(uint16_t addr)
-{
-  return read(addr);
 }
 
 void cpu::run_frame()
@@ -78,12 +78,30 @@ void cpu::tick()
   ++state.cycle_count;
 }
 
+uint8_t cpu::peek(uint16_t addr) const
+{
+  using namespace nes::types::cpu::memory;
+
+  switch (get_map<Read>(addr)) {
+    case CPU_RAM: return ram[addr & 0x07FF];
+    case PPU_Access: return emulator.get_ppu()->peek_reg(addr);
+    case APU_Access: return 0;  // Avoids APU side effects
+    case Controller_1: return emulator.get_controller()->peek(0);
+    case Controller_2: return emulator.get_controller()->peek(1);
+    case Cartridge: return emulator.get_cartridge()->prg_read(addr);
+    case Unknown:
+    default:
+      LOG(Error, "Invalid read address:" << std::showbase << std::hex << addr)
+      return 0;
+  }
+}
+
 uint8_t cpu::read(uint16_t addr) const
 {
   using namespace nes::types::cpu::memory;
 
   switch (get_map<Read>(addr)) {
-    case CPU_RAM: return ram[addr % 0x800];
+    case CPU_RAM: return ram[addr & 0x07FF];
     case PPU_Access: return emulator.get_ppu()->read(addr);
     case APU_Access: return emulator.get_apu()->read(state.cycle_count);
     case Controller_1: return emulator.get_controller()->read(0);
@@ -91,8 +109,7 @@ uint8_t cpu::read(uint16_t addr) const
     case Cartridge: return emulator.get_cartridge()->prg_read(addr);
     case Unknown:
     default:
-      LOG(lib::log::Error) << "Invalid read address:" << std::showbase
-                           << std::hex << addr;
+      LOG(Error, "Invalid read address:" << std::showbase << std::hex << addr)
       return 0;
   }
 }
@@ -102,7 +119,7 @@ void cpu::write(uint16_t addr, uint8_t value)
   using namespace nes::types::cpu::memory;
 
   switch (get_map<Write>(addr)) {
-    case CPU_RAM: ram[addr % 0x800] = value; break;
+    case CPU_RAM: ram[addr & 0x07FF] = value; break;
     case PPU_Access: emulator.get_ppu()->write(addr, value); break;
     case APU_Access:
       emulator.get_apu()->write(state.cycle_count, addr, value);
@@ -124,11 +141,6 @@ void cpu::memory_write(uint16_t addr, uint8_t value)
 {
   tick();
   write(addr, value);
-}
-
-uint8_t cpu::peek(uint16_t addr) const
-{
-  return read(addr);
 }
 
 uint16_t cpu::peek_imm() const

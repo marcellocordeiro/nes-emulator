@@ -31,15 +31,15 @@ void file_manager::set_rom(const std::filesystem::path& value)
   snapshot.replace_extension(".state");
 
   if (std::filesystem::exists(prg_ram)) {
-    LOG(lib::log::Info) << "Found PRG-RAM file";
+    LOG(Info, "Found PRG-RAM file")
   }
 
   if (std::filesystem::exists(patch)) {
-    LOG(lib::log::Info) << "Found IPS patch file";
+    LOG(Info, "Found IPS patch file")
   }
 
   if (std::filesystem::exists(snapshot)) {
-    LOG(lib::log::Info) << "Found snapshot file";
+    LOG(Info, "Found snapshot file")
   }
 }
 
