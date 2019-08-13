@@ -1,12 +1,14 @@
 #include "io.h"
 
 #include <algorithm>
+#include <string>
 
 #include "apu.h"
 #include "cartridge.h"
 #include "cpu.h"
 #include "emulator.h"
 #include "ppu.h"
+#include "timer.h"
 
 namespace nes {
 io::io(nes::emulator& emulator_ref) : emulator(emulator_ref)
@@ -49,9 +51,9 @@ void io::close()
   // valgrind --log-file='valgrind%p.log' --track-origins=yes --leak-check=full
   // ./nes-emulator
 
-  texture  = nullptr;
-  renderer = nullptr;
-  window   = nullptr;
+  // texture  = nullptr;
+  // renderer = nullptr;
+  // window   = nullptr;
   SDL_Quit();
 }
 
@@ -71,16 +73,29 @@ uint8_t io::get_controller(size_t n) const
   return state;
 }
 
-void io::update_frame(const uint32_t* frame)
+void io::update_frame(std::array<uint32_t, 256 * 240>& back_buffer)
 {
-  SDL_UpdateTexture(texture.get(), nullptr, frame, width * sizeof(uint32_t));
+  while (frame_ready) {
+    // Wait until the frame is rendered
+    // todo: improve this
+  }
+
+  front_buffer.swap(back_buffer);
+  SDL_UpdateTexture(
+      texture.get(), nullptr, front_buffer.data(), width * sizeof(uint32_t));
+  frame_ready = true;
 }
 
-void io::draw()
+void io::render()
 {
-  SDL_RenderClear(renderer.get());
-  SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
-  SDL_RenderPresent(renderer.get());
+  while (true) {
+    if (pending_exit) return;
+    if (!frame_ready) continue;
+
+    SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
+    SDL_RenderPresent(renderer.get());
+    frame_ready = false;
+  }
 }
 
 void io::run()
@@ -88,17 +103,30 @@ void io::run()
   running = true;
   emulator.get_apu()->volume(volume);
 
-  uint32_t frame_rate = 60;
-  uint32_t frame_time = 1000 / frame_rate;
+  std::thread render_thread(&nes::io::render, this);
+
+  using namespace std::chrono;
+  using namespace std::chrono_literals;
+
+  // todo: find a better way to limit the frame rate
+  constexpr auto frame_time =
+      round<system_clock::duration>(duration<long long, std::ratio<1, 60>>{1});
+  auto frame_begin = system_clock::now();
+  auto frame_end   = frame_begin + frame_time;
+
+  lib::timer fps_timer;
 
   while (true) {
-    uint32_t start = SDL_GetTicks();
-
     SDL_Event e;
 
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
-        case SDL_QUIT: emulator.get_cartridge()->dump_prg_ram(); return;
+        case SDL_QUIT:
+          emulator.get_cartridge()->dump_prg_ram();
+          pending_exit = true;
+          render_thread.join();
+          return;
+
         case SDL_KEYDOWN:
           if (keys[PAUSE]) {
             running = !running;
@@ -131,15 +159,28 @@ void io::run()
       }
     }
 
-    // nestest();
-    if (running) emulator.get_cpu()->run_frame();
+    if (fps_timer.elapsed_time() > 1) {
+      float fps = elapsed_frames / (fps_timer.elapsed_time());
+      fps_timer.restart();
+      elapsed_frames = 0;
 
-    this->draw();
-
-    uint32_t current = SDL_GetTicks() - start;
-    if (current < frame_time) {
-      SDL_Delay(frame_time - current);
+      if (running) {
+        auto title =
+            "[" + std::to_string(fps).substr(0, 5) + "fps] - " + "nes-emulator";
+        SDL_SetWindowTitle(window.get(), title.c_str());
+      } else {
+        SDL_SetWindowTitle(window.get(), "[paused] - nes-emulator");
+      }
     }
+
+    if (running) {
+      emulator.get_cpu()->run_frame();
+      ++elapsed_frames;
+    }
+
+    std::this_thread::sleep_until(frame_end);
+    frame_begin = frame_end;
+    frame_end   = frame_begin + frame_time;
   }
 }
 }  // namespace nes

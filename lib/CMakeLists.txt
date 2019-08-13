@@ -10,6 +10,7 @@ target_sources(nes-emulator-lib PRIVATE
   "src/bit_utils.cpp"
   "src/log.cpp"
   "src/system_utils.cpp"
+  "src/timer.cpp"
 )
 
 target_include_directories(nes-emulator-lib SYSTEM PUBLIC "include")

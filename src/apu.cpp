@@ -6,6 +6,8 @@
 #include "cpu.h"
 #include "emulator.h"
 
+#define DISABLE_APU
+
 namespace nes {
 apu::apu(nes::emulator& emulator_ref)
   : emulator(emulator_ref), nes_apu(std::make_unique<Nes_Apu>()),
@@ -17,6 +19,10 @@ apu::~apu() = default;
 
 void apu::power_on()
 {
+#ifdef DISABLE_APU
+  return;
+#endif
+
   buffer->sample_rate(44100);
   buffer->clock_rate(1789773);
 
@@ -33,21 +39,37 @@ void apu::power_on()
 
 void apu::volume(double value)
 {
+#ifdef DISABLE_APU
+  return;
+#endif
+
   nes_apu->volume(value);
 }
 
 uint8_t apu::read(int elapsed)
 {
+#ifdef DISABLE_APU
+  return 0;
+#endif
+
   return static_cast<uint8_t>(nes_apu->read_status(elapsed));
 }
 
 void apu::write(int elapsed, uint16_t addr, uint8_t value)
 {
+#ifdef DISABLE_APU
+  return;
+#endif
+
   nes_apu->write_register(elapsed, addr, value);
 }
 
 void apu::run_frame(int elapsed)
 {
+#ifdef DISABLE_APU
+  return;
+#endif
+
   nes_apu->end_frame(elapsed);
   buffer->end_frame(elapsed);
 
@@ -55,6 +77,8 @@ void apu::run_frame(int elapsed)
     sound_queue->write(
         out_buffer.data(),
         buffer->read_samples(out_buffer.data(), buffer_size));
+
+    // buffer->read_samples(out_buffer.data(), buffer_size);
   }
 }
 }  // namespace nes

@@ -1,6 +1,10 @@
 #pragma once
 
+#include <array>
+#include <atomic>
 #include <memory>
+#include <mutex>
+#include <thread>
 
 #include <SDL.h>
 
@@ -45,10 +49,16 @@ public:
   void close();
 
   uint8_t get_controller(size_t) const;
-  void    update_frame(const uint32_t*);
-  void    draw();
+  void    update_frame(std::array<uint32_t, 256 * 240>&);
+  void    put_pixel(size_t, size_t, uint32_t);
+  // void    frame_ready();
+  void render();
+
+  void poll_events();
+  void handle_keys();
 
   void run();
+  void run_cpu();
 
 private:
   nes::emulator& emulator;
@@ -56,9 +66,16 @@ private:
   static constexpr int width  = 256;
   static constexpr int height = 240;
 
+  std::array<uint32_t, 256 * 240> front_buffer{};
+
   double volume = 0.1;
 
-  bool running = false;
+  std::mutex        event_lock;
+  std::mutex        render_lock;
+  std::atomic<bool> frame_ready    = false;
+  std::atomic<bool> pending_exit   = false;
+  std::atomic<bool> running        = false;
+  std::atomic<int>  elapsed_frames = 0;
 
   SDL2::Window   window;
   SDL2::Renderer renderer;

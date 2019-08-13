@@ -131,7 +131,7 @@ void ppu::step()
     ++scanline;
 
     if (scanline == 240) {
-      emulator.get_io()->update_frame(frame_buffer.data());
+      emulator.get_io()->update_frame(frame_buffer);
       ppu_state = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
