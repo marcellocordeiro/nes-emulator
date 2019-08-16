@@ -96,9 +96,9 @@ void mapper4::scanline_counter()
 
 void mapper4::save(std::ofstream& out)
 {
-  for (const auto& value : prg_ram) dump_snapshot(out, value);
-  for (const auto& value : chr) dump_snapshot(out, value);
-  for (const auto& value : regs) dump_snapshot(out, value);
+  dump_snapshot(out, prg_ram);
+  dump_snapshot(out, chr);
+  dump_snapshot(out, regs);
 
   dump_snapshot(out, reg_8000);
   dump_snapshot(out, horizontal_mirroring);
@@ -107,9 +107,9 @@ void mapper4::save(std::ofstream& out)
 
 void mapper4::load(std::ifstream& in)
 {
-  for (auto& value : prg_ram) get_snapshot(in, value);
-  for (auto& value : chr) get_snapshot(in, value);
-  for (auto& value : regs) get_snapshot(in, value);
+  get_snapshot(in, prg_ram);
+  get_snapshot(in, chr);
+  get_snapshot(in, regs);
 
   get_snapshot(in, reg_8000);
   get_snapshot(in, horizontal_mirroring);

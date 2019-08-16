@@ -211,7 +211,7 @@ uint16_t cpu::peek_indy() const
 
 void cpu::save(std::ofstream& out)
 {
-  for (const auto& value : ram) dump_snapshot(out, value);
+  dump_snapshot(out, ram);
   dump_snapshot(
       out,
       state.a,
@@ -228,7 +228,7 @@ void cpu::save(std::ofstream& out)
 
 void cpu::load(std::ifstream& in)
 {
-  for (auto& value : ram) get_snapshot(in, value);
+  get_snapshot(in, ram);
   get_snapshot(
       in,
       state.a,

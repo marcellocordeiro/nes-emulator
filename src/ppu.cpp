@@ -644,9 +644,9 @@ template <typename T> uint8_t ppu::get_palette(T low, T high, int offset) const
 
 void ppu::save(std::ofstream& out)
 {
-  for (const auto& value : ci_ram) dump_snapshot(out, value);
-  for (const auto& value : cg_ram) dump_snapshot(out, value);
-  for (const auto& value : oam_mem) dump_snapshot(out, value);
+  dump_snapshot(out, ci_ram);
+  dump_snapshot(out, cg_ram);
+  dump_snapshot(out, oam_mem);
 
   dump_snapshot(out, mirroring_mode);
   dump_snapshot(out, ppu_state, ppu_addr);
@@ -671,9 +671,9 @@ void ppu::save(std::ofstream& out)
 
 void ppu::load(std::ifstream& in)
 {
-  for (auto& value : ci_ram) get_snapshot(in, value);
-  for (auto& value : cg_ram) get_snapshot(in, value);
-  for (auto& value : oam_mem) get_snapshot(in, value);
+  get_snapshot(in, ci_ram);
+  get_snapshot(in, cg_ram);
+  get_snapshot(in, oam_mem);
 
   get_snapshot(in, mirroring_mode);
   get_snapshot(in, ppu_state, ppu_addr);

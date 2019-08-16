@@ -12,66 +12,68 @@
 
 namespace nes {
 emulator::emulator()
-  : cpu(std::make_unique<nes::cpu>(*this)),
-    ppu(std::make_unique<nes::ppu>(*this)),
-    apu(std::make_unique<nes::apu>(*this)),
-    cartridge(std::make_unique<nes::cartridge>(*this)),
-    controller(std::make_unique<nes::controller>(*this)),
-    io(std::make_unique<nes::io>(*this))
+  : cpu_ptr(std::make_unique<cpu>(*this)),
+    ppu_ptr(std::make_unique<ppu>(*this)),
+    apu_ptr(std::make_unique<apu>(*this)),
+    cartridge_ptr(std::make_unique<cartridge>(*this)),
+    controller_ptr(std::make_unique<controller>(*this)),
+    io_ptr(std::make_unique<io>(*this))
 {}
 
 emulator::~emulator() = default;
 
 void emulator::load_rom(const char* path)
 {
-  cartridge->load(path);
+  cartridge_ptr->load(path);
 }
 
 void emulator::power_on()
 {
-  cpu->power_on();
-  ppu->power_on();
-  apu->power_on();
+  cpu_ptr->power_on();
+  ppu_ptr->power_on();
+  apu_ptr->power_on();
+
+  io_ptr->start();
 }
 
 void emulator::run()
 {
-  snapshotable.push_back(cpu.get());
-  snapshotable.push_back(ppu.get());
-  snapshotable.push_back(cartridge->get_mapper());
-  snapshotable.push_back(controller.get());
+  snapshotable.push_back(cpu_ptr.get());
+  snapshotable.push_back(ppu_ptr.get());
+  snapshotable.push_back(cartridge_ptr->get_mapper());
+  snapshotable.push_back(controller_ptr.get());
 
-  io->run();
+  io_ptr->run();
 }
 
-nes::cpu* emulator::get_cpu()
+cpu* emulator::get_cpu()
 {
-  return cpu.get();
+  return cpu_ptr.get();
 }
 
-nes::ppu* emulator::get_ppu()
+ppu* emulator::get_ppu()
 {
-  return ppu.get();
+  return ppu_ptr.get();
 }
 
-nes::apu* emulator::get_apu()
+apu* emulator::get_apu()
 {
-  return apu.get();
+  return apu_ptr.get();
 }
 
-nes::cartridge* emulator::get_cartridge()
+cartridge* emulator::get_cartridge()
 {
-  return cartridge.get();
+  return cartridge_ptr.get();
 }
 
-nes::controller* emulator::get_controller()
+controller* emulator::get_controller()
 {
-  return controller.get();
+  return controller_ptr.get();
 }
 
-nes::io* emulator::get_io()
+io* emulator::get_io()
 {
-  return io.get();
+  return io_ptr.get();
 }
 
 //

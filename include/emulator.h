@@ -19,12 +19,12 @@ public:
   // Component access
   //
 
-  nes::cpu*        get_cpu();
-  nes::ppu*        get_ppu();
-  nes::apu*        get_apu();
-  nes::cartridge*  get_cartridge();
-  nes::controller* get_controller();
-  nes::io*         get_io();
+  cpu*        get_cpu();
+  ppu*        get_ppu();
+  apu*        get_apu();
+  cartridge*  get_cartridge();
+  controller* get_controller();
+  io*         get_io();
 
   //
   // Snapshot
@@ -34,13 +34,13 @@ public:
   void load_snapshot();
 
 private:
-  std::unique_ptr<nes::cpu>        cpu;
-  std::unique_ptr<nes::ppu>        ppu;
-  std::unique_ptr<nes::apu>        apu;
-  std::unique_ptr<nes::cartridge>  cartridge;
-  std::unique_ptr<nes::controller> controller;
-  std::unique_ptr<nes::io>         io;
+  std::unique_ptr<cpu>        cpu_ptr;
+  std::unique_ptr<ppu>        ppu_ptr;
+  std::unique_ptr<apu>        apu_ptr;
+  std::unique_ptr<cartridge>  cartridge_ptr;
+  std::unique_ptr<controller> controller_ptr;
+  std::unique_ptr<io>         io_ptr;
 
-  std::vector<nes::util::snapshotable*> snapshotable;
+  std::vector<util::snapshotable*> snapshotable;
 };
 }  // namespace nes

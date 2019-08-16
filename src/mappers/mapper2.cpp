@@ -27,15 +27,15 @@ void mapper2::prg_write(const uint16_t addr, const uint8_t value)
 
 void mapper2::save(std::ofstream& out)
 {
-  for (const auto& value : prg_ram) dump_snapshot(out, value);
-  for (const auto& value : chr) dump_snapshot(out, value);
+  dump_snapshot(out, prg_ram);
+  dump_snapshot(out, chr);
   dump_snapshot(out, mode);
 }
 
 void mapper2::load(std::ifstream& in)
 {
-  for (auto& value : prg_ram) get_snapshot(in, value);
-  for (auto& value : chr) get_snapshot(in, value);
+  get_snapshot(in, prg_ram);
+  get_snapshot(in, chr);
   get_snapshot(in, mode);
 
   apply();

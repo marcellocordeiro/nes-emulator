@@ -11,9 +11,11 @@
 #include "timer.h"
 
 namespace nes {
-io::io(nes::emulator& emulator_ref) : emulator(emulator_ref)
+io::io(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
+
+void io::start()
 {
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+  // SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
   // Bilinear filter
   // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
@@ -40,11 +42,6 @@ io::io(nes::emulator& emulator_ref) : emulator(emulator_ref)
   keys = SDL_GetKeyboardState(nullptr);
 }
 
-io::~io()
-{
-  this->close();
-}
-
 void io::close()
 {
   // leak?
@@ -54,7 +51,7 @@ void io::close()
   // texture  = nullptr;
   // renderer = nullptr;
   // window   = nullptr;
-  SDL_Quit();
+  // SDL_Quit();
 }
 
 uint8_t io::get_controller(size_t n) const
@@ -110,8 +107,8 @@ void io::run()
 
   // todo: find a better way to limit the frame rate
   constexpr auto frame_time =
-      round<system_clock::duration>(duration<long long, std::ratio<1, 60>>{1});
-  auto frame_begin = system_clock::now();
+      round<steady_clock::duration>(duration<long long, std::ratio<1, 60>>{1});
+  auto frame_begin = steady_clock::now();
   auto frame_end   = frame_begin + frame_time;
 
   lib::timer fps_timer;
@@ -159,18 +156,19 @@ void io::run()
       }
     }
 
-    if (fps_timer.elapsed_time() > 1) {
-      float fps = elapsed_frames / (fps_timer.elapsed_time());
-      fps_timer.restart();
-      elapsed_frames = 0;
-
+    if (fps_timer.elapsed_time() > 1s) {
       if (running) {
+        auto fps =
+            elapsed_frames / duration<double>(fps_timer.elapsed_time()).count();
         auto title =
             "[" + std::to_string(fps).substr(0, 5) + "fps] - " + "nes-emulator";
         SDL_SetWindowTitle(window.get(), title.c_str());
       } else {
         SDL_SetWindowTitle(window.get(), "[paused] - nes-emulator");
       }
+
+      elapsed_frames = 0;
+      fps_timer.restart();
     }
 
     if (running) {

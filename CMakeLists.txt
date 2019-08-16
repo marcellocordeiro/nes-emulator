@@ -38,7 +38,7 @@ set_target_properties(nes-emulator
 target_compile_options(nes-emulator
   PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/W4 /permissive- /diagnostics:caret>
-    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -pedantic -Wuseless-cast -Wshadow -Wformat=2 -Wdisabled-optimization>
+    $<$<CXX_COMPILER_ID:GNU,Clang>:-Wall -Wextra -pedantic -Wshadow -Wformat=2 -Wdisabled-optimization>
 )
 
 # Copy resource files

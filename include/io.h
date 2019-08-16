@@ -12,6 +12,18 @@
 #include "types/forward_decl.h"
 
 namespace SDL2 {
+struct Instance {
+  Instance()
+  {
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+  }
+
+  ~Instance()
+  {
+    SDL_Quit();
+  }
+};
+
 struct Deleter {
   void operator()(SDL_Window* ptr)
   {
@@ -44,15 +56,14 @@ namespace nes {
 class io {
 public:
   io(nes::emulator&);
-  ~io();
 
+  void start();
   void close();
 
   uint8_t get_controller(size_t) const;
   void    update_frame(std::array<uint32_t, 256 * 240>&);
   void    put_pixel(size_t, size_t, uint32_t);
-  // void    frame_ready();
-  void render();
+  void    render();
 
   void poll_events();
   void handle_keys();
@@ -81,6 +92,8 @@ private:
   SDL2::Renderer renderer;
   SDL2::Texture  texture;
   const uint8_t* keys;
+
+  SDL2::Instance SDL2_guard;
 
   SDL_Scancode PAUSE         = SDL_SCANCODE_ESCAPE;
   SDL_Scancode RESET         = SDL_SCANCODE_R;

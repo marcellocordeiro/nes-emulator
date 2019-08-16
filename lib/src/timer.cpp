@@ -1,16 +1,13 @@
 #include "timer.h"
 
 namespace lib {
-float timer::elapsed_time()
+std::chrono::nanoseconds timer::elapsed_time()
 {
-  const auto end = std::chrono::high_resolution_clock::now();
-  const std::chrono::duration<float> elapsed = end - start;
-
-  return elapsed.count();
+  return std::chrono::steady_clock::now() - start;
 }
 
 void timer::restart()
 {
-  start = std::chrono::high_resolution_clock::now();
+  start = std::chrono::steady_clock::now();
 }
 }  // namespace lib

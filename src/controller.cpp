@@ -39,13 +39,13 @@ void controller::write(bool signal)
 
 void controller::save(std::ofstream& out)
 {
-  for (const auto& value : controller_bits) dump_snapshot(out, value);
+  dump_snapshot(out, controller_bits);
   dump_snapshot(out, strobe);
 }
 
 void controller::load(std::ifstream& in)
 {
-  for (auto& value : controller_bits) get_snapshot(in, value);
+  get_snapshot(in, controller_bits);
   get_snapshot(in, strobe);
 }
 }  // namespace nes
