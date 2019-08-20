@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <string>
 
+#include <fmt/format.h>
+
 #include "apu.h"
 #include "cartridge.h"
 #include "cpu.h"
@@ -10,8 +12,12 @@
 #include "ppu.h"
 #include "timer.h"
 
+// todo: reimplement this
+#include "Sound_Queue.h"
+
 namespace nes {
 io::io(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
+io::~io() = default;
 
 void io::start()
 {
@@ -40,6 +46,9 @@ void io::start()
       height));
 
   keys = SDL_GetKeyboardState(nullptr);
+
+  sound_queue = std::make_unique<Sound_Queue>();
+  sound_queue->init(44100);
 }
 
 void io::close()
@@ -81,6 +90,11 @@ void io::update_frame(std::array<uint32_t, 256 * 240>& back_buffer)
   SDL_UpdateTexture(
       texture.get(), nullptr, front_buffer.data(), width * sizeof(uint32_t));
   frame_ready = true;
+}
+
+void io::write_samples(int16_t* buffer, long samples)
+{
+  sound_queue->write(buffer, samples);
 }
 
 void io::render()
@@ -134,6 +148,10 @@ void io::run()
             emulator.get_ppu()->reset();
           }
 
+          if (keys[TOGGLE_LIMITER]) {
+            fps_limiter = !fps_limiter;
+          }
+
           if (keys[SAVE_SNAPSHOT]) {
             emulator.save_snapshot();
           }
@@ -161,7 +179,7 @@ void io::run()
         auto fps =
             elapsed_frames / duration<double>(fps_timer.elapsed_time()).count();
         auto title =
-            "[" + std::to_string(fps).substr(0, 5) + "fps] - " + "nes-emulator";
+            fmt::format("[{:.5} fps] - nes-emulator", std::to_string(fps));
         SDL_SetWindowTitle(window.get(), title.c_str());
       } else {
         SDL_SetWindowTitle(window.get(), "[paused] - nes-emulator");
@@ -176,7 +194,8 @@ void io::run()
       ++elapsed_frames;
     }
 
-    std::this_thread::sleep_until(frame_end);
+    if (fps_limiter) std::this_thread::sleep_until(frame_end);
+
     frame_begin = frame_end;
     frame_end   = frame_begin + frame_time;
   }

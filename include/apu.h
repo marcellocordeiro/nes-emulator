@@ -27,7 +27,6 @@ private:
 
   std::unique_ptr<Nes_Apu>     nes_apu;
   std::unique_ptr<Blip_Buffer> buffer;
-  std::unique_ptr<Sound_Queue> sound_queue;
 
   std::array<int16_t, buffer_size> out_buffer{};
 };

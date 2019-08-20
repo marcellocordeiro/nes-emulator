@@ -49,6 +49,7 @@ private:
 
   template <typename T> void dump(std::ofstream& out, std::vector<T>& vec)
   {
+    dump(out, vec.size());
     for (auto value : vec) dump(out, value);
   }
 
@@ -71,6 +72,12 @@ private:
 
   template <typename T> void get(std::ifstream& in, std::vector<T>& vec)
   {
+    {
+      std::size_t size = 0;
+      get(in, size);
+      vec.resize(size);
+    }
+
     for (auto& ref : vec) get(in, ref);
   }
 };

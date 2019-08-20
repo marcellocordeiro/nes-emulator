@@ -56,13 +56,14 @@ namespace nes {
 class io {
 public:
   io(nes::emulator&);
+  ~io();
 
   void start();
   void close();
 
   uint8_t get_controller(size_t) const;
   void    update_frame(std::array<uint32_t, 256 * 240>&);
-  void    put_pixel(size_t, size_t, uint32_t);
+  void    write_samples(int16_t*, long);  // todo: reimplement this
   void    render();
 
   void poll_events();
@@ -86,6 +87,7 @@ private:
   std::atomic<bool> frame_ready    = false;
   std::atomic<bool> pending_exit   = false;
   std::atomic<bool> running        = false;
+  std::atomic<bool> fps_limiter    = true;
   std::atomic<int>  elapsed_frames = 0;
 
   SDL2::Window   window;
@@ -95,10 +97,11 @@ private:
 
   SDL2::Instance SDL2_guard;
 
-  SDL_Scancode PAUSE         = SDL_SCANCODE_ESCAPE;
-  SDL_Scancode RESET         = SDL_SCANCODE_R;
-  SDL_Scancode SAVE_SNAPSHOT = SDL_SCANCODE_F1;
-  SDL_Scancode LOAD_SNAPSHOT = SDL_SCANCODE_F3;
+  SDL_Scancode PAUSE          = SDL_SCANCODE_ESCAPE;
+  SDL_Scancode RESET          = SDL_SCANCODE_R;
+  SDL_Scancode SAVE_SNAPSHOT  = SDL_SCANCODE_F1;
+  SDL_Scancode LOAD_SNAPSHOT  = SDL_SCANCODE_F3;
+  SDL_Scancode TOGGLE_LIMITER = SDL_SCANCODE_TAB;
 
   SDL_Scancode VOLUME_UP   = SDL_SCANCODE_KP_PLUS;
   SDL_Scancode VOLUME_DOWN = SDL_SCANCODE_KP_MINUS;
@@ -111,5 +114,8 @@ private:
   SDL_Scancode KEY_DOWN[2]   = {SDL_SCANCODE_DOWN, SDL_SCANCODE_ESCAPE};
   SDL_Scancode KEY_LEFT[2]   = {SDL_SCANCODE_LEFT, SDL_SCANCODE_ESCAPE};
   SDL_Scancode KEY_RIGHT[2]  = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_ESCAPE};
+
+  // todo: reimplement this
+  std::unique_ptr<Sound_Queue> sound_queue;
 };
 }  // namespace nes
