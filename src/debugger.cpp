@@ -1,6 +1,5 @@
 #include "debugger.h"
 
-#if 0
 #include <array>
 #include <iomanip>
 #include <sstream>
@@ -8,8 +7,17 @@
 
 #include <fmt/format.h>
 
+#include "cpu.h"
+#include "emulator.h"
+#include "ppu.h"
+#include "types/cpu.h"
+
 namespace nes {
-void debugger::nestest() {
+debugger::debugger(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
+
+void debugger::cpu_log()
+{
+  // clang-format off
   constexpr std::array<std::string_view, 0x100> instruction = {
       // 0     1      2      3       4       5      6      7       8      9      A       B       C       D      E      F
       "BRK",  "ORA", "inv", "*SLO", "*NOP", "ORA", "ASL", "*SLO", "PHP", "ORA", "ASL",  "inv",  "*NOP", "ORA", "ASL", "*SLO",  // 0
@@ -49,26 +57,50 @@ void debugger::nestest() {
       imm,  indx, inv, indx, zp,  zp,  zp,  zp,  impl, imm, impl, imm, ab,  ab,  ab,  ab,   // E
       rel,  indy, inv, indy, zpx, zpx, zpx, zpx, impl, aby, impl, aby, abx, abx, abx, abx,  // F
   };
+  // clang-format on
 
-  auto read_word    = [this](const uint16_t addr) -> uint16_t { return cpu.read(addr + 1) << 8 | cpu.read(addr); };
-  auto read_word_zp = [this](const uint16_t addr) -> uint16_t { return cpu.read((addr + 1) & 0xFF) << 8 | cpu.read(addr); };
+  auto cpu_ptr = emulator.get_cpu();
+
+  auto peek      = [&](uint16_t addr) { return cpu_ptr->peek(addr); };
+  auto peek_imm  = [&]() { return cpu_ptr->peek_imm(); };
+  auto peek_rel  = [&]() { return cpu_ptr->peek_rel(); };
+  auto peek_zp   = [&]() { return cpu_ptr->peek_zp(); };
+  auto peek_zpx  = [&]() { return cpu_ptr->peek_zpx(); };
+  auto peek_zpy  = [&]() { return cpu_ptr->peek_zpy(); };
+  auto peek_ab   = [&]() { return cpu_ptr->peek_ab(); };
+  auto peek_abx  = [&]() { return cpu_ptr->peek_abx(); };
+  auto peek_aby  = [&]() { return cpu_ptr->peek_aby(); };
+  auto peek_ind  = [&]() { return cpu_ptr->peek_ind(); };
+  auto peek_indx = [&]() { return cpu_ptr->peek_indx(); };
+  auto peek_indy = [&]() { return cpu_ptr->peek_indy(); };
+
+  auto read_word = [&](uint16_t addr) -> uint16_t {
+    return peek(addr + 1) << 8 | peek(addr);
+  };
+  auto read_word_zp = [&](uint16_t addr) -> uint16_t {
+    return peek((addr + 1) & 0xFF) << 8 | peek(addr);
+  };
+
+  auto state = cpu_ptr->get_state();
 
   std::stringstream ss;
 
-  const auto inst   = instruction[cpu.read(cpu.state.pc)];
-  const auto addr_m = addressing_mode[cpu.read(cpu.state.pc)];
+  const auto inst   = instruction[peek(state.pc)];
+  const auto addr_m = addressing_mode[peek(state.pc)];
 
-  ss << fmt::format("{:04X}  {:02X} ", cpu.state.pc, cpu.read(cpu.state.pc));
+  ss << fmt::format("{:04X}  {:02X} ", state.pc, peek(state.pc));
 
-  uint8_t  arg8   = cpu.read(cpu.state.pc + 1);
-  uint8_t  arg8_2 = cpu.read(cpu.state.pc + 2);
+  uint8_t  arg8   = peek(state.pc + 1);
+  uint8_t  arg8_2 = peek(state.pc + 2);
   uint16_t arg16  = arg8 | (arg8_2 << 8);
 
   switch (addr_m) {
     case addr_mode2::ab:
     case addr_mode2::abx:
     case addr_mode2::aby:
-    case addr_mode2::ind: ss << fmt::format("{:02X} {:02X} ", arg8, arg8_2); break;
+    case addr_mode2::ind:
+      ss << fmt::format("{:02X} {:02X} ", arg8, arg8_2);
+      break;
     case addr_mode2::indy:
     case addr_mode2::indx:
     case addr_mode2::zp:
@@ -96,77 +128,110 @@ void debugger::nestest() {
       }
       break;
     case addr_mode2::imm: {
-      const auto addr = cpu.peek_imm();
-      ss << fmt::format("#${:02X}", cpu.peek(addr));
+      const auto addr = peek_imm();
+      ss << fmt::format("#${:02X}", peek(addr));
       break;
     }
     case addr_mode2::zp: {
-      const auto addr = cpu.peek(cpu.peek_imm());
-      ss << fmt::format("${:02X} = {:02X}", addr, cpu.peek(addr));
+      const auto addr = peek(peek_imm());
+      ss << fmt::format("${:02X} = {:02X}", addr, peek(addr));
       break;
     }
     case addr_mode2::zpx: {
-      const auto zp_addr = cpu.peek_zp();
-      const auto addr    = cpu.peek_zpx();  // (zp_addr + state.x) & 0xFF
-      ss << fmt::format("${:02X},X @ {:02X} = {:02X}", zp_addr, addr, cpu.peek(addr));
+      const auto zp_addr = peek_zp();
+      const auto addr    = peek_zpx();  // (zp_addr + state.x) & 0xFF
+      ss << fmt::format(
+          "${:02X},X @ {:02X} = {:02X}", zp_addr, addr, peek(addr));
       break;
     }
     case addr_mode2::zpy: {
-      const auto zp_addr = cpu.peek_zp();
-      const auto addr    = cpu.peek_zpy();
-      ss << fmt::format("${:02X},Y @ {:02X} = {:02X}", zp_addr, addr, cpu.peek(addr));
+      const auto zp_addr = peek_zp();
+      const auto addr    = peek_zpy();
+      ss << fmt::format(
+          "${:02X},Y @ {:02X} = {:02X}", zp_addr, addr, peek(addr));
       break;
     }
     case addr_mode2::rel: {
-      const uint16_t addr = cpu.state.pc + 2 + static_cast<int8_t>(cpu.peek(cpu.peek_imm()));
+      const uint16_t addr =
+          state.pc + 2 + static_cast<int8_t>(peek(peek_imm()));
       ss << fmt::format("${:04X}", addr);
       break;
     }
     case addr_mode2::ab: {
-      const auto addr = read_word(cpu.peek_imm());
-      
+      const auto addr = read_word(peek_imm());
+
       if (inst == "JMP" || inst == "JSR") {
         ss << fmt::format("${:04X}", addr);
       } else {
         // read about this
-        ss << fmt::format("${:04X} = {:02X}", addr, cpu.peek(addr));
+        ss << fmt::format("${:04X} = {:02X}", addr, peek(addr));
       }
       break;
     }
     case addr_mode2::abx: {
-      ss << fmt::format("${:04X},X @ {:04X} = {:02X}", arg16, uint16_t(arg16 + cpu.state.x), cpu.read(arg16 + cpu.state.x));
+      ss << fmt::format(
+          "${:04X},X @ {:04X} = {:02X}",
+          arg16,
+          uint16_t(arg16 + state.x),
+          peek(arg16 + state.x));
       break;
     }
     case addr_mode2::aby: {
-      ss << fmt::format("${:04X},Y @ {:04X} = {:02X}", arg16, uint16_t(arg16 + cpu.state.y), cpu.read(arg16 + cpu.state.y));
+      ss << fmt::format(
+          "${:04X},Y @ {:04X} = {:02X}",
+          arg16,
+          uint16_t(arg16 + state.y),
+          peek(arg16 + state.y));
       break;
     }
     case addr_mode2::ind: {
       // read about this
-      const uint16_t base_addr = cpu.peek_ab();
-      const uint16_t addr      = cpu.peek_ind();
+      const uint16_t base_addr = peek_ab();
+      const uint16_t addr      = peek_ind();
       ss << fmt::format("(${:04X}) = {:04X}", base_addr, addr);
       break;
     }
     case addr_mode2::indx: {
-      ss << fmt::format("(${:02X},X) @ {:02X} = {:04X} = {:02X}", arg8, uint8_t(cpu.state.x + arg8), read_word_zp((cpu.state.x + arg8) % 0x100), cpu.read(read_word_zp((cpu.state.x + arg8) % 0x100)));
+      ss << fmt::format(
+          "(${:02X},X) @ {:02X} = {:04X} = {:02X}",
+          arg8,
+          uint8_t(state.x + arg8),
+          read_word_zp((state.x + arg8) % 0x100),
+          peek(read_word_zp((state.x + arg8) % 0x100)));
       break;
     }
     case addr_mode2::indy: {
-      ss << fmt::format("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", arg8, read_word_zp(arg8), uint16_t(read_word_zp(arg8) + cpu.state.y), cpu.read(read_word_zp(arg8) + cpu.state.y));
+      ss << fmt::format(
+          "(${:02X}),Y = {:04X} @ {:04X} = {:02X}",
+          arg8,
+          read_word_zp(arg8),
+          uint16_t(read_word_zp(arg8) + state.y),
+          peek(read_word_zp(arg8) + state.y));
       break;
     }
     default: ss << " "; break;
   }
 
-  ss << fmt::format("A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} CYC:{:3d}\n", cpu.state.a, cpu.state.x, cpu.state.y, (cpu.state.ps | 0x20), cpu.state.sp, (cpu.state.cycle_count - 7) * 3 % 341);
+  auto ppu_cycle    = emulator.get_ppu()->cycle_count();
+  auto ppu_scanline = emulator.get_ppu()->scanline_count();
+
+  ss << fmt::format(
+      "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} PPU:{:3d},{:3d} "
+      "CYC:{:d}\n",
+      state.a,
+      state.x,
+      state.y,
+      (state.ps | 0x20),
+      state.sp,
+      ppu_cycle,
+      ppu_scanline,
+      state.cycle_count);
 
   nestest_log << ss.str();
 
-  if (cpu.state.pc == 0xC66E) {
+  if (state.pc == 0xC66E) {
     nestest_log.close();
     exit(0);
   }
 }
 }  // namespace nes
-#endif

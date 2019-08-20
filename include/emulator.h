@@ -25,6 +25,7 @@ public:
   cartridge*  get_cartridge();
   controller* get_controller();
   io*         get_io();
+  debugger*   get_debugger();
 
   //
   // Snapshot
@@ -40,6 +41,7 @@ private:
   std::unique_ptr<cartridge>  cartridge_ptr;
   std::unique_ptr<controller> controller_ptr;
   std::unique_ptr<io>         io_ptr;
+  std::unique_ptr<debugger>   debugger_ptr;
 
   std::vector<util::snapshotable*> snapshotable;
 };

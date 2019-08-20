@@ -1,22 +1,20 @@
 #pragma once
 
-#if 0
-
 #include <fstream>
 
-#include "cpu.h"
-#include "types.h"
+#include "types/forward_decl.h"
+#include "utility/file_manager.h"
 
 namespace nes {
 class debugger {
 public:
-  debugger(const nes::cpu& cpu_in) : cpu(cpu_in) {}
+  debugger(nes::emulator&);
 
-  void nestest();
+  void cpu_log();
 
 private:
-  std::ofstream   nestest_log{"../roms/nestest_out.log"};
-  const nes::cpu& cpu;
+  std::ofstream  nestest_log{util::fmngr.get_working_path() / "nestest_out.log"};
+  nes::emulator& emulator;
 
   enum addr_mode2 {
     impl,
@@ -39,4 +37,3 @@ private:
   };
 };
 }  // namespace nes
-#endif

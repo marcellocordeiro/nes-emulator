@@ -4,6 +4,7 @@
 #include "cartridge.h"
 #include "controller.h"
 #include "cpu.h"
+#include "debugger.h"
 #include "io.h"
 #include "mapper.h"
 #include "ppu.h"
@@ -17,7 +18,8 @@ emulator::emulator()
     apu_ptr(std::make_unique<apu>(*this)),
     cartridge_ptr(std::make_unique<cartridge>(*this)),
     controller_ptr(std::make_unique<controller>(*this)),
-    io_ptr(std::make_unique<io>(*this))
+    io_ptr(std::make_unique<io>(*this)),
+    debugger_ptr(std::make_unique<debugger>(*this))
 {}
 
 emulator::~emulator() = default;
@@ -74,6 +76,11 @@ controller* emulator::get_controller()
 io* emulator::get_io()
 {
   return io_ptr.get();
+}
+
+debugger* emulator::get_debugger()
+{
+  return debugger_ptr.get();
 }
 
 //

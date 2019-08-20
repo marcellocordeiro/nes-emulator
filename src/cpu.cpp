@@ -6,6 +6,7 @@
 #include "apu.h"
 #include "cartridge.h"
 #include "controller.h"
+#include "debugger.h"
 #include "emulator.h"
 #include "log.h"
 #include "ppu.h"
@@ -26,6 +27,10 @@ void cpu::power_on()
   state.cycle_count = 0;
   state.set_ps(0x34);
   ram.fill(0);
+
+  // nestest
+  state.pc = 0xC000;
+  state.cycle_count = 7;
 }
 
 void cpu::reset()
@@ -64,6 +69,7 @@ void cpu::run_frame()
       INT_IRQ();
     }
 
+    emulator.get_debugger()->cpu_log();
     execute();
   }
 
@@ -141,6 +147,11 @@ void cpu::memory_write(uint16_t addr, uint8_t value)
 {
   tick();
   write(addr, value);
+}
+
+types::cpu::state cpu::get_state() const
+{
+  return state;
 }
 
 uint16_t cpu::peek_imm() const

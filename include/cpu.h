@@ -22,8 +22,10 @@ public:
   void run_frame();
 
   //
-  // Read memory without side effects
+  // Read without side effects
   //
+
+  types::cpu::state get_state() const;
 
   uint8_t peek(uint16_t) const;
 
@@ -90,6 +92,7 @@ private:
 
   bool crosses_page(uint16_t, uint8_t) const;
   bool crosses_page(uint16_t, int8_t) const;
+  bool crossed_page(uint16_t, uint16_t) const;
 
   //
   // Storage

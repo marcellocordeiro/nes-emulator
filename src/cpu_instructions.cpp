@@ -181,7 +181,7 @@ void cpu::execute()
     case 0xFD: return SBC<AbsoluteX>();
     case 0xFE: return INC<AbsoluteX_Exception>();
 
-#if 0  // Disabling all unofficial instructions for now
+#if 1  // Disabling all unofficial instructions for now
     //
     // Unofficial instructions
     //
@@ -414,13 +414,15 @@ void cpu::branch(bool taken)
   auto offset = static_cast<int8_t>(memory_read(addr));
 
   if (taken) {
-    if (crosses_page(state.pc, offset)) {
+    uint16_t jump_addr = state.pc + offset;
+
+    if (crossed_page(state.pc, jump_addr)) {
       tick();
     }
 
     tick();
 
-    this->state.pc += offset;
+    state.pc = jump_addr;
   }
 }
 
@@ -444,6 +446,11 @@ bool cpu::crosses_page(uint16_t addr, uint8_t i) const
 bool cpu::crosses_page(uint16_t addr, int8_t i) const
 {
   return ((addr + i) & 0xFF00) != ((addr & 0xFF00));
+}
+
+bool cpu::crossed_page(uint16_t addr, uint16_t jump_addr) const
+{
+  return (addr & 0xFF00) != (jump_addr & 0xFF00);
 }
 
 //
