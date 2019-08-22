@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+#include <fmt/format.h>
+
 #include "log.h"
 
 using namespace nes::types::cpu;
@@ -310,9 +312,9 @@ void cpu::execute()
 #endif
 
     default: {
-      LOG(Error, "Invalid opcode: 0x" << std::uppercase << std::hex << +opcode)
-      throw std::runtime_error("Invalid opcode");
-      return;
+      auto error_message = fmt::format("Invalid opcode: 0x{:02X}", opcode);
+      LOG(Error, error_message)
+      throw std::runtime_error(error_message);
     }
   }
 }
@@ -436,16 +438,6 @@ uint8_t cpu::pop()
 {
   ++state.sp;
   return memory_read(0x100 + state.sp);
-}
-
-bool cpu::crosses_page(uint16_t addr, uint8_t i) const
-{
-  return ((addr + i) & 0xFF00) != ((addr & 0xFF00));
-}
-
-bool cpu::crosses_page(uint16_t addr, int8_t i) const
-{
-  return ((addr + i) & 0xFF00) != ((addr & 0xFF00));
 }
 
 bool cpu::crossed_page(uint16_t addr, uint16_t jump_addr) const
@@ -1220,13 +1212,14 @@ template <> uint16_t cpu::get_operand<Absolute>()
 
 template <> uint16_t cpu::get_operand<AbsoluteX>()
 {
-  auto base_addr = get_operand<Absolute>();
+  auto     base_addr = get_operand<Absolute>();
+  uint16_t addr      = base_addr + state.x;
 
-  if (crosses_page(base_addr, state.x)) {
+  if (crossed_page(base_addr, addr)) {
     tick();
   }
 
-  return base_addr + state.x;
+  return addr;
 }
 
 template <> uint16_t cpu::get_operand<AbsoluteX_Exception>()
@@ -1236,13 +1229,14 @@ template <> uint16_t cpu::get_operand<AbsoluteX_Exception>()
 
 template <> uint16_t cpu::get_operand<AbsoluteY>()
 {
-  auto base_addr = get_operand<Absolute>();
+  auto     base_addr = get_operand<Absolute>();
+  uint16_t addr      = base_addr + state.y;
 
-  if (crosses_page(base_addr, state.y)) {
+  if (crossed_page(base_addr, addr)) {
     tick();
   }
 
-  return base_addr + state.y;
+  return addr;
 }
 
 template <> uint16_t cpu::get_operand<AbsoluteY_Exception>()
@@ -1268,12 +1262,13 @@ template <> uint16_t cpu::get_operand<IndirectY>()
   auto     zp_addr = get_operand<ZeroPage>();
   uint16_t base_addr =
       ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+  uint16_t addr = base_addr + state.y;
 
-  if (crosses_page(base_addr, state.y)) {
+  if (crossed_page(base_addr, addr)) {
     tick();
   }
 
-  return base_addr + state.y;
+  return addr;
 }
 
 template <> uint16_t cpu::get_operand<IndirectY_Exception>()

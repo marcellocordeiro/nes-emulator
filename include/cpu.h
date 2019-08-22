@@ -90,8 +90,6 @@ private:
   void    push(uint8_t);
   uint8_t pop();
 
-  bool crosses_page(uint16_t, uint8_t) const;
-  bool crosses_page(uint16_t, int8_t) const;
   bool crossed_page(uint16_t, uint16_t) const;
 
   //

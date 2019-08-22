@@ -29,8 +29,8 @@ void cpu::power_on()
   ram.fill(0);
 
   // nestest
-  state.pc = 0xC000;
-  state.cycle_count = 7;
+  // state.pc = 0xC000;
+  // state.cycle_count = 7;
 }
 
 void cpu::reset()
@@ -69,7 +69,7 @@ void cpu::run_frame()
       INT_IRQ();
     }
 
-    emulator.get_debugger()->cpu_log();
+    // emulator.get_debugger()->cpu_log();
     execute();
   }
 

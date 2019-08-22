@@ -18,8 +18,8 @@ int main(int argc, char* argv[])
   try {
     auto working_path = nes::util::fmngr.get_working_path();
 
-    std::ofstream log_file{working_path / "nes-emulator.log"};
-    lib::log::get().set_stream(log_file);
+    // std::ofstream log_file{working_path / "nes-emulator.log"};
+    // lib::log::get().set_stream(log_file);
 
     nes::util::fmngr.set_rom(argv[1]);
     nes::util::fmngr.set_palette(working_path / "palette.pal");

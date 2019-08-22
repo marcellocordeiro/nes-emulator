@@ -7,6 +7,7 @@
 
 #include <fmt/format.h>
 
+#include "common.h"
 #include "cpu.h"
 #include "emulator.h"
 #include "ppu.h"
@@ -128,27 +129,27 @@ void debugger::cpu_log()
       }
       break;
     case addr_mode2::imm: {
-      const auto addr = peek_imm();
-      ss << fmt::format("#${:02X}", peek(addr));
+      ss << fmt::format("#${:02X}", peek(peek_imm()));
       break;
     }
     case addr_mode2::zp: {
-      const auto addr = peek(peek_imm());
-      ss << fmt::format("${:02X} = {:02X}", addr, peek(addr));
+      ss << fmt::format("${:02X} = {:02X}", peek_zp(), peek(peek_zp()));
       break;
     }
     case addr_mode2::zpx: {
-      const auto zp_addr = peek_zp();
-      const auto addr    = peek_zpx();  // (zp_addr + state.x) & 0xFF
       ss << fmt::format(
-          "${:02X},X @ {:02X} = {:02X}", zp_addr, addr, peek(addr));
+          "${:02X},X @ {:02X} = {:02X}",
+          peek_zp(),
+          peek_zpx(),
+          peek(peek_zpx()));
       break;
     }
     case addr_mode2::zpy: {
-      const auto zp_addr = peek_zp();
-      const auto addr    = peek_zpy();
       ss << fmt::format(
-          "${:02X},Y @ {:02X} = {:02X}", zp_addr, addr, peek(addr));
+          "${:02X},Y @ {:02X} = {:02X}",
+          peek_zp(),
+          peek_zpy(),
+          peek(peek_zpy()));
       break;
     }
     case addr_mode2::rel: {
@@ -158,37 +159,25 @@ void debugger::cpu_log()
       break;
     }
     case addr_mode2::ab: {
-      const auto addr = read_word(peek_imm());
-
       if (inst == "JMP" || inst == "JSR") {
-        ss << fmt::format("${:04X}", addr);
+        ss << fmt::format("${:04X}", peek_ab());
       } else {
-        // read about this
-        ss << fmt::format("${:04X} = {:02X}", addr, peek(addr));
+        ss << fmt::format("${:04X} = {:02X}", peek_ab(), peek(peek_ab()));
       }
       break;
     }
     case addr_mode2::abx: {
       ss << fmt::format(
-          "${:04X},X @ {:04X} = {:02X}",
-          arg16,
-          uint16_t(arg16 + state.x),
-          peek(arg16 + state.x));
+          "${:04X},X @ {:04X} = {:02X}", arg16, peek_abx(), peek(peek_abx()));
       break;
     }
     case addr_mode2::aby: {
       ss << fmt::format(
-          "${:04X},Y @ {:04X} = {:02X}",
-          arg16,
-          uint16_t(arg16 + state.y),
-          peek(arg16 + state.y));
+          "${:04X},Y @ {:04X} = {:02X}", arg16, peek_aby(), peek(peek_aby()));
       break;
     }
     case addr_mode2::ind: {
-      // read about this
-      const uint16_t base_addr = peek_ab();
-      const uint16_t addr      = peek_ind();
-      ss << fmt::format("(${:04X}) = {:04X}", base_addr, addr);
+      ss << fmt::format("(${:04X}) = {:04X}", peek_ab(), peek_ind());
       break;
     }
     case addr_mode2::indx: {
@@ -221,7 +210,7 @@ void debugger::cpu_log()
       state.a,
       state.x,
       state.y,
-      (state.ps | 0x20),
+      (state.ps),
       state.sp,
       ppu_cycle,
       ppu_scanline,

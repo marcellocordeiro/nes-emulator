@@ -17,7 +17,12 @@
 
 namespace nes {
 io::io(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
-io::~io() = default;
+// io::~io() = default;
+io::~io()
+{
+  pending_exit = true;
+  render_thread.join();
+}
 
 void io::start()
 {
@@ -33,8 +38,8 @@ void io::start()
       height * 2,
       0));
 
-  renderer.reset(SDL_CreateRenderer(
-      window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC));
+  renderer.reset(
+      SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED));
 
   SDL_RenderSetLogicalSize(renderer.get(), width, height);
 
@@ -114,7 +119,7 @@ void io::run()
   running = true;
   emulator.get_apu()->volume(volume);
 
-  std::thread render_thread(&nes::io::render, this);
+  render_thread = std::thread(&nes::io::render, this);
 
   using namespace std::chrono;
   using namespace std::chrono_literals;
@@ -132,12 +137,7 @@ void io::run()
 
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
-        case SDL_QUIT:
-          emulator.get_cartridge()->dump_prg_ram();
-          pending_exit = true;
-          render_thread.join();
-          return;
-
+        case SDL_QUIT: emulator.get_cartridge()->dump_prg_ram(); return;
         case SDL_KEYDOWN:
           if (keys[PAUSE]) {
             running = !running;

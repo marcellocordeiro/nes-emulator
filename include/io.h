@@ -82,6 +82,7 @@ private:
 
   double volume = 0.1;
 
+  std::thread       render_thread;
   std::mutex        event_lock;
   std::mutex        render_lock;
   std::atomic<bool> frame_ready    = false;

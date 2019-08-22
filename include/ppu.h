@@ -33,6 +33,7 @@ public:
   {
     return tick;
   }
+  
   int scanline_count() const
   {
     return scanline;
