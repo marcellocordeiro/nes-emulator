@@ -17,6 +17,9 @@ target_include_directories(nes-emulator-lib SYSTEM PUBLIC "include")
 
 # Dependencies
 
+find_package(fmt REQUIRED)
+target_link_libraries(nes-emulator-lib PRIVATE fmt::fmt-header-only)
+
 add_subdirectory("external/Nes_Snd_Emu")
 target_link_libraries(nes-emulator-lib INTERFACE Nes_Snd_Emu)
 

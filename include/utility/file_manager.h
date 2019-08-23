@@ -7,11 +7,11 @@ class file_manager {
 public:
   file_manager();
 
-  void set_working_path(const std::filesystem::path&);
+  void set_app_path(const std::filesystem::path&);
   void set_rom(const std::filesystem::path&);
   void set_palette(const std::filesystem::path&);
 
-  std::filesystem::path get_working_path() const;
+  std::filesystem::path get_app_path() const;
   std::filesystem::path get_rom() const;
   std::filesystem::path get_patch() const;
   std::filesystem::path get_prg_ram() const;
@@ -20,9 +20,10 @@ public:
 
   bool has_prg_ram() const;
   bool has_patch() const;
+  bool has_snapshot() const;
 
 private:
-  std::filesystem::path working_path;
+  std::filesystem::path app_path;
   std::filesystem::path rom;
   std::filesystem::path patch;
   std::filesystem::path prg_ram;

@@ -55,7 +55,7 @@ void mapper1::apply()
   }
 }
 
-void mapper1::prg_write(const uint16_t addr, const uint8_t value)
+void mapper1::prg_write(uint16_t addr, uint8_t value)
 {
   if (addr < 0x8000) {
     prg_ram[addr - 0x6000] = value;
@@ -89,8 +89,7 @@ void mapper1::prg_write(const uint16_t addr, const uint8_t value)
 
 void mapper1::save(std::ofstream& out)
 {
-  dump_snapshot(out, prg_ram);
-  dump_snapshot(out, chr);
+  mapper::save(out);
 
   dump_snapshot(out, write_counter, shift_reg);
   dump_snapshot(out, control, chr_bank_0, chr_bank_1, prg_bank);
@@ -98,8 +97,7 @@ void mapper1::save(std::ofstream& out)
 
 void mapper1::load(std::ifstream& in)
 {
-  get_snapshot(in, prg_ram);
-  get_snapshot(in, chr);
+  mapper::load(in);
 
   get_snapshot(in, write_counter, shift_reg);
   get_snapshot(in, control, chr_bank_0, chr_bank_1, prg_bank);

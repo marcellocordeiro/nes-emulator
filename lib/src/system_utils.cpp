@@ -35,7 +35,7 @@ void show_console()
 #endif
 }
 
-std::filesystem::path get_working_path()
+std::filesystem::path get_app_path()
 {
   std::string path;
   path.resize(300);

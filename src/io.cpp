@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <string>
 
+#include <SDL.h>
 #include <fmt/format.h>
 
 #include "apu.h"
@@ -14,6 +15,57 @@
 
 // todo: reimplement this
 #include "Sound_Queue.h"
+
+SDL_Scancode PAUSE          = SDL_SCANCODE_ESCAPE;
+SDL_Scancode RESET          = SDL_SCANCODE_R;
+SDL_Scancode SAVE_SNAPSHOT  = SDL_SCANCODE_F1;
+SDL_Scancode LOAD_SNAPSHOT  = SDL_SCANCODE_F3;
+SDL_Scancode TOGGLE_LIMITER = SDL_SCANCODE_TAB;
+
+SDL_Scancode VOLUME_UP   = SDL_SCANCODE_KP_PLUS;
+SDL_Scancode VOLUME_DOWN = SDL_SCANCODE_KP_MINUS;
+
+SDL_Scancode KEY_A[2]      = {SDL_SCANCODE_A, SDL_SCANCODE_ESCAPE};
+SDL_Scancode KEY_B[2]      = {SDL_SCANCODE_S, SDL_SCANCODE_ESCAPE};
+SDL_Scancode KEY_SELECT[2] = {SDL_SCANCODE_BACKSPACE, SDL_SCANCODE_ESCAPE};
+SDL_Scancode KEY_START[2]  = {SDL_SCANCODE_RETURN, SDL_SCANCODE_ESCAPE};
+SDL_Scancode KEY_UP[2]     = {SDL_SCANCODE_UP, SDL_SCANCODE_ESCAPE};
+SDL_Scancode KEY_DOWN[2]   = {SDL_SCANCODE_DOWN, SDL_SCANCODE_ESCAPE};
+SDL_Scancode KEY_LEFT[2]   = {SDL_SCANCODE_LEFT, SDL_SCANCODE_ESCAPE};
+SDL_Scancode KEY_RIGHT[2]  = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_ESCAPE};
+
+namespace SDL2 {
+Instance::Instance()
+{
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+}
+
+Instance::~Instance()
+{
+  SDL_Quit();
+}
+
+void Deleter::operator()(SDL_Window* ptr)
+{
+  if (ptr) {
+    SDL_DestroyWindow(ptr);
+  }
+}
+
+void Deleter::operator()(SDL_Renderer* ptr)
+{
+  if (ptr) {
+    SDL_DestroyRenderer(ptr);
+  }
+}
+
+void Deleter::operator()(SDL_Texture* ptr)
+{
+  if (ptr) {
+    SDL_DestroyTexture(ptr);
+  }
+}
+}  // namespace SDL2
 
 namespace nes {
 io::io(nes::emulator& emulator_ref) : emulator(emulator_ref) {}

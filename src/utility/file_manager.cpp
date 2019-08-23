@@ -7,16 +7,16 @@ namespace nes::util {
 file_manager::file_manager()
 {
   try {
-    set_working_path(lib::get_working_path());
+    set_app_path(lib::get_app_path());
   } catch (const std::exception& e) {
     lib::message_box(e.what());
     std::exit(1);
   }
 }
 
-void file_manager::set_working_path(const std::filesystem::path& value)
+void file_manager::set_app_path(const std::filesystem::path& value)
 {
-  working_path = std::filesystem::canonical(value);  // May throw
+  app_path = std::filesystem::canonical(value);  // May throw
 }
 
 void file_manager::set_rom(const std::filesystem::path& value)
@@ -48,9 +48,9 @@ void file_manager::set_palette(const std::filesystem::path& value)
   palette = std::filesystem::canonical(value);  // May throw
 }
 
-std::filesystem::path file_manager::get_working_path() const
+std::filesystem::path file_manager::get_app_path() const
 {
-  return working_path;
+  return app_path;
 }
 
 std::filesystem::path file_manager::get_rom() const
@@ -86,5 +86,10 @@ bool file_manager::has_patch() const
 bool file_manager::has_prg_ram() const
 {
   return std::filesystem::exists(prg_ram);
+}
+
+bool file_manager::has_snapshot() const
+{
+  return std::filesystem::exists(snapshot);
 }
 }  // namespace nes::util

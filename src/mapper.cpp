@@ -8,22 +8,22 @@ mapper::mapper(nes::cartridge& cartridge_ref) : cartridge(cartridge_ref) {}
 
 void mapper::set_prg_rom(std::vector<uint8_t>&& vec)
 {
-  this->prg = std::move(vec);
+  prg = std::move(vec);
 }
 
 void mapper::set_chr_rom(std::vector<uint8_t>&& vec)
 {
-  this->chr = std::move(vec);
+  chr = std::move(vec);
 }
 
 void mapper::set_prg_ram(std::vector<uint8_t>&& vec)
 {
-  this->prg_ram = std::move(vec);
+  prg_ram = std::move(vec);
 }
 
-const std::vector<uint8_t>& mapper::get_prg_ram() const
+std::vector<uint8_t> mapper::get_prg_ram() const
 {
-  return this->prg_ram;
+  return prg_ram;
 }
 
 uint8_t mapper::prg_read(uint16_t addr) const
@@ -57,7 +57,7 @@ void mapper::chr_write(uint16_t addr, uint8_t value)
 }
 
 // Size must be in KBs
-template <auto size> void mapper::set_prg_map(int slot, int page)
+template <size_t size> void mapper::set_prg_map(int slot, int page)
 {
   constexpr size_t pages   = size / 8;
   constexpr size_t pages_b = size * 0x400;  // In bytes
@@ -71,7 +71,7 @@ template <auto size> void mapper::set_prg_map(int slot, int page)
   }
 }
 
-template <auto size> void mapper::set_chr_map(int slot, int page)
+template <size_t size> void mapper::set_chr_map(int slot, int page)
 {
   constexpr size_t pages   = size;
   constexpr size_t pages_b = size * 0x400;  // In bytes
@@ -89,4 +89,18 @@ template void mapper::set_chr_map<8>(int, int);
 template void mapper::set_chr_map<4>(int, int);
 template void mapper::set_chr_map<2>(int, int);
 template void mapper::set_chr_map<1>(int, int);
+
+void mapper::scanline_counter() {}
+
+void mapper::save(std::ofstream& out)
+{
+  dump_snapshot(out, prg_ram);
+  dump_snapshot(out, chr);
+};
+
+void mapper::load(std::ifstream& in)
+{
+  get_snapshot(in, prg_ram);
+  get_snapshot(in, chr);
+};
 }  // namespace nes

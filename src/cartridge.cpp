@@ -17,12 +17,10 @@
 #include "mappers/mapper4.h"
 #include "ppu.h"
 #include "utility/file_manager.h"
-
 #include "utility/ips_patch.h"
 
 namespace nes {
 cartridge::cartridge(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
-
 cartridge::~cartridge() = default;
 
 nes::mapper* cartridge::get_mapper()
@@ -68,24 +66,23 @@ void cartridge::load(const char* rom_path)
     case 4: mapper = std::make_unique<mapper4>(*this); break;
     default:
       throw std::runtime_error(
-          "Mapper #" + std::to_string(info.mapper_num) + " not implemented");
+          fmt::format("Mapper #{} not implemented", info.mapper_num));
   }
 
-  LOG(Info, "PRG-ROM size (16KB banks): " << info.prg_size)
-  LOG(Info, "CHR-ROM size (8KB banks): " << info.chr_size)
-  LOG(Info, "Nametable mirroring: " << +(header[6] & 0xB))
-  LOG(Info, "Mirroring: " << (info.mirroring ? "Vertical" : "Horizontal"))
-  LOG(Info, "Mapper #: " << info.mapper_num)
-  LOG(Info, "PRG RAM size: " << info.prg_ram_size)
+  LOG(Info, "PRG-ROM size (16KB banks): {}", info.prg_size)
+  LOG(Info, "CHR-ROM size (8KB banks): {}", info.chr_size)
+  LOG(Info, "Mirroring: {}", (info.mirroring ? "Vertical" : "Horizontal"))
+  LOG(Info, "Mapper #: {}", info.mapper_num)
+  LOG(Info, "PRG RAM size: {}", info.prg_ram_size)
 
   auto prg_start = 16;
   auto prg_end   = 16 + info.prg_size;
   auto chr_start = prg_end;
   auto chr_end   = prg_end + info.chr_size;
 
-  std::vector<uint8_t> prg(rom.begin() + prg_start, rom.begin() + prg_end);
-  std::vector<uint8_t> chr(rom.begin() + chr_start, rom.begin() + chr_end);
-  std::vector<uint8_t> prg_ram(info.prg_ram_size);
+  std::vector prg(rom.begin() + prg_start, rom.begin() + prg_end);
+  std::vector chr(rom.begin() + chr_start, rom.begin() + chr_end);
+  std::vector prg_ram(info.prg_ram_size, uint8_t{});
 
   if (info.chr_ram) {
     chr.resize(0x2000, 0);
@@ -121,7 +118,12 @@ uint8_t cartridge::chr_read(uint16_t addr) const
 
 void cartridge::chr_write(uint16_t addr, uint8_t value)
 {
-  mapper->chr_write(addr, value);
+  if (info.chr_ram) {
+    mapper->chr_write(addr, value);
+  } else {
+    LOG(Error, "This cartridge doesn't have CHR-RAM")
+    throw std::runtime_error("This cartridge doesn't have CHR-RAM");
+  }
 }
 
 void cartridge::scanline_counter()
@@ -141,10 +143,9 @@ void cartridge::set_cpu_irq(bool value)
 
 void cartridge::dump_prg_ram() const
 {
-  auto prg_ram = mapper->get_prg_ram();
+  const auto& prg_ram = mapper->get_prg_ram();
 
   std::ofstream prg_ram_file(util::fmngr.get_prg_ram(), std::ios::binary);
-
   prg_ram_file.write(
       reinterpret_cast<const char*>(prg_ram.data()), prg_ram.size());
 }

@@ -183,7 +183,6 @@ void cpu::execute()
     case 0xFD: return SBC<AbsoluteX>();
     case 0xFE: return INC<AbsoluteX_Exception>();
 
-#if 1  // Disabling all unofficial instructions for now
     //
     // Unofficial instructions
     //
@@ -309,7 +308,6 @@ void cpu::execute()
 
     // SXA
     case 0x9E: return SXA<AbsoluteY_Exception>();
-#endif
 
     default: {
       auto error_message = fmt::format("Invalid opcode: 0x{:02X}", opcode);

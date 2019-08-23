@@ -15,7 +15,7 @@ void mapper2::apply()
   set_prg_map<16>(0, mode);
 }
 
-void mapper2::prg_write(const uint16_t addr, const uint8_t value)
+void mapper2::prg_write(uint16_t addr, uint8_t value)
 {
   if (addr < 0x8000) {
     throw std::runtime_error("Mapper 2 does not have PRG-RAM");
@@ -27,15 +27,15 @@ void mapper2::prg_write(const uint16_t addr, const uint8_t value)
 
 void mapper2::save(std::ofstream& out)
 {
-  dump_snapshot(out, prg_ram);
-  dump_snapshot(out, chr);
+  mapper::save(out);
+
   dump_snapshot(out, mode);
 }
 
 void mapper2::load(std::ifstream& in)
 {
-  get_snapshot(in, prg_ram);
-  get_snapshot(in, chr);
+  mapper::load(in);
+
   get_snapshot(in, mode);
 
   apply();

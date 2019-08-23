@@ -97,7 +97,7 @@ uint8_t cpu::peek(uint16_t addr) const
     case Cartridge: return emulator.get_cartridge()->prg_read(addr);
     case Unknown:
     default:
-      LOG(Error, "Invalid read address:" << std::showbase << std::hex << addr)
+      LOG(Error, "Invalid read address: 0x{:04X}", addr)
       return 0;
   }
 }
@@ -115,7 +115,7 @@ uint8_t cpu::read(uint16_t addr) const
     case Cartridge: return emulator.get_cartridge()->prg_read(addr);
     case Unknown:
     default:
-      LOG(Error, "Invalid read address:" << std::showbase << std::hex << addr)
+      LOG(Error, "Invalid read address: 0x{:04X}", addr)
       return 0;
   }
 }

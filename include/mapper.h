@@ -19,8 +19,8 @@ public:
   void set_prg_rom(std::vector<uint8_t>&&);
   void set_chr_rom(std::vector<uint8_t>&&);
 
-  void                        set_prg_ram(std::vector<uint8_t>&&);
-  const std::vector<uint8_t>& get_prg_ram() const;
+  void                 set_prg_ram(std::vector<uint8_t>&&);
+  std::vector<uint8_t> get_prg_ram() const;
 
   uint8_t prg_read(uint16_t) const;
   uint8_t chr_read(uint16_t) const;
@@ -28,13 +28,13 @@ public:
   virtual void prg_write(uint16_t, uint8_t);
   virtual void chr_write(uint16_t, uint8_t);
 
-  template <auto> void set_prg_map(int, int);
-  template <auto> void set_chr_map(int, int);
+  template <size_t> void set_prg_map(int, int);
+  template <size_t> void set_chr_map(int, int);
 
-  virtual void scanline_counter() {}
+  virtual void scanline_counter();
 
-  virtual void save(std::ofstream&) override {};
-  virtual void load(std::ifstream&) override {};
+  virtual void save(std::ofstream&) override;
+  virtual void load(std::ifstream&) override;
 
 protected:
   nes::cartridge& cartridge;

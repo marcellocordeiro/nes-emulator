@@ -17,6 +17,11 @@ namespace nes::util {
 class snapshotable;
 }  // namespace nes::util
 
+// SDL2
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Texture;
+
 // blargg's Nes_Snd_Emu
 class Nes_Apu;
 class Blip_Buffer;

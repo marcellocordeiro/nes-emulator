@@ -23,7 +23,7 @@ void apu::power_on()
 
   nes_apu->dmc_reader(
       [](void* user_data, cpu_addr_t addr) -> int {
-        return static_cast<nes::cpu*>(user_data)->peek(addr);
+        return static_cast<cpu*>(user_data)->peek(addr);
       },
       emulator.get_cpu());
 }

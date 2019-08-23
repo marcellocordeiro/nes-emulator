@@ -6,6 +6,7 @@
 #include "cpu.h"
 #include "debugger.h"
 #include "io.h"
+#include "log.h"
 #include "mapper.h"
 #include "ppu.h"
 #include "utility/file_manager.h"
@@ -95,6 +96,11 @@ void emulator::save_snapshot()
 
 void emulator::load_snapshot()
 {
+  if (!util::fmngr.has_snapshot()) {
+    LOG(Info, "Attempting to load a non-existent snapshot file")
+    return;
+  }
+
   std::ifstream in{util::fmngr.get_snapshot(), std::ios::binary};
   for (auto& component : snapshotable) component->load(in);
 }

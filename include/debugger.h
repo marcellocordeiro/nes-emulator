@@ -13,7 +13,7 @@ public:
   void cpu_log();
 
 private:
-  std::ofstream  nestest_log{util::fmngr.get_working_path() / "nestest_out.log"};
+  std::ofstream  nestest_log{util::fmngr.get_app_path() / "nestest_out.log"};
   nes::emulator& emulator;
 
   enum addr_mode2 {
