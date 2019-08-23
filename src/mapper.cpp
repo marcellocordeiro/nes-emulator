@@ -96,11 +96,11 @@ void mapper::save(std::ofstream& out)
 {
   dump_snapshot(out, prg_ram);
   dump_snapshot(out, chr);
-};
+}
 
 void mapper::load(std::ifstream& in)
 {
   get_snapshot(in, prg_ram);
   get_snapshot(in, chr);
-};
+}
 }  // namespace nes

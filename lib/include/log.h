@@ -4,12 +4,6 @@
 
 #include <fmt/format.h>
 
-#define LOG(level, fmt_format, ...)                    \
-  if ((level) <= lib::log::get().get_level())          \
-    lib::log::get().get_stream()                       \
-        << fmt::format("[{}:{}] ", __FILE__, __LINE__) \
-        << fmt::format(fmt_format, __VA_ARGS__) << '\n';
-
 enum log_level { None, Error, Info, Verbose };
 
 namespace lib {
@@ -30,3 +24,8 @@ private:
   std::ostream* stream = &std::cout;
 };
 }  // namespace lib
+
+#define LOG(level, ...)                                                       \
+  if ((level) <= lib::log::get().get_level())                                 \
+  lib::log::get().get_stream() << fmt::format("[{}:{}] ", __FILE__, __LINE__) \
+                               << fmt::format(__VA_ARGS__) << '\n'

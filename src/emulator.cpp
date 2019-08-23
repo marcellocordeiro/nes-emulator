@@ -97,7 +97,7 @@ void emulator::save_snapshot()
 void emulator::load_snapshot()
 {
   if (!util::fmngr.has_snapshot()) {
-    LOG(Info, "Attempting to load a non-existent snapshot file")
+    LOG(Info, "Attempting to load a non-existent snapshot file");
     return;
   }
 

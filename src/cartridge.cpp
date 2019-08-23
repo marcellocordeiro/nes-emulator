@@ -69,11 +69,11 @@ void cartridge::load(const char* rom_path)
           fmt::format("Mapper #{} not implemented", info.mapper_num));
   }
 
-  LOG(Info, "PRG-ROM size (16KB banks): {}", info.prg_size)
-  LOG(Info, "CHR-ROM size (8KB banks): {}", info.chr_size)
-  LOG(Info, "Mirroring: {}", (info.mirroring ? "Vertical" : "Horizontal"))
-  LOG(Info, "Mapper #: {}", info.mapper_num)
-  LOG(Info, "PRG RAM size: {}", info.prg_ram_size)
+  LOG(Info, "PRG-ROM size (16KB banks): {}", info.prg_size);
+  LOG(Info, "CHR-ROM size (8KB banks): {}", info.chr_size);
+  LOG(Info, "Mirroring: {}", (info.mirroring ? "Vertical" : "Horizontal"));
+  LOG(Info, "Mapper #: {}", info.mapper_num);
+  LOG(Info, "PRG RAM size: {}", info.prg_ram_size);
 
   auto prg_start = 16;
   auto prg_end   = 16 + info.prg_size;
@@ -121,7 +121,7 @@ void cartridge::chr_write(uint16_t addr, uint8_t value)
   if (info.chr_ram) {
     mapper->chr_write(addr, value);
   } else {
-    LOG(Error, "This cartridge doesn't have CHR-RAM")
+    LOG(Error, "This cartridge doesn't have CHR-RAM");
     throw std::runtime_error("This cartridge doesn't have CHR-RAM");
   }
 }

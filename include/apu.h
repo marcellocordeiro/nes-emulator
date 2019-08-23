@@ -23,7 +23,7 @@ public:
 private:
   nes::emulator& emulator;
 
-  static constexpr size_t buffer_size = 4096;
+  static constexpr long buffer_size = 4096;
 
   std::unique_ptr<Nes_Apu>     nes_apu;
   std::unique_ptr<Blip_Buffer> buffer;

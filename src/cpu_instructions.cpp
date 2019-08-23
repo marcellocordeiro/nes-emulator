@@ -311,7 +311,7 @@ void cpu::execute()
 
     default: {
       auto error_message = fmt::format("Invalid opcode: 0x{:02X}", opcode);
-      LOG(Error, error_message)
+      LOG(Error, error_message);
       throw std::runtime_error(error_message);
     }
   }
