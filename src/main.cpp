@@ -12,26 +12,25 @@ int main(int argc, char* argv[])
 {
   if (argc == 1) {
     std::cout << "Too few arguments" << '\n';
-    //return 1;
+    return 1;
   }
 
-  //try {
+  try {
     auto app_path = nes::util::fmngr.get_app_path();
 
     // std::ofstream log_file{app_path / "nes-emulator.log"};
     // lib::log::get().set_stream(log_file);
 
-    //nes::util::fmngr.set_rom(argv[1]);
-    nes::util::fmngr.set_rom("D:\\Documents\\Programming\\nes-emulator\\roms\\nestest.nes");
+    nes::util::fmngr.set_rom(argv[1]);
     nes::util::fmngr.set_palette(app_path / "palette.pal");
 
     nes::emulator emulator;
 
-    emulator.load_rom("G:\\Programming\\nes-emulator\\roms\\smb3.nes");
+    emulator.load_rom("");
     emulator.power_on();
 
     emulator.run();
-  //} catch (const std::exception& e) {
-  //  lib::message_box(e.what());
-  //}
+  } catch (const std::exception& e) {
+    lib::message_box(e.what());
+  }
 }

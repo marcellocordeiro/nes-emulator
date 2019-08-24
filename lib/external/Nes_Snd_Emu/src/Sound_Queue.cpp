@@ -71,7 +71,7 @@ void Sound_Queue::write(const sample_t* in, int count)
   }
 }
 
-void Sound_Queue::fill_buffer(Uint8* out, int count)
+void Sound_Queue::fill_buffer(std::uint8_t* out, int count)
 {
   if (SDL_SemValue(free_sem) < buf_count - 1) {
     memcpy(out, buf(read_buf), count);
