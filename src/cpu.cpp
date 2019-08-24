@@ -73,6 +73,8 @@ void cpu::run_frame()
     execute();
   }
 
+  // exit(1);
+
   emulator.get_apu()->run_frame(state.cycle_count);
 }
 
@@ -96,9 +98,7 @@ uint8_t cpu::peek(uint16_t addr) const
     case Controller_2: return emulator.get_controller()->peek(1);
     case Cartridge: return emulator.get_cartridge()->prg_read(addr);
     case Unknown:
-    default:
-      LOG(Error, "Invalid read address: 0x{:04X}", addr);
-      return 0;
+    default: LOG(Error, "Invalid read address: 0x{:04X}", addr); return 0;
   }
 }
 
@@ -114,9 +114,7 @@ uint8_t cpu::read(uint16_t addr) const
     case Controller_2: return emulator.get_controller()->read(1);
     case Cartridge: return emulator.get_cartridge()->prg_read(addr);
     case Unknown:
-    default:
-      LOG(Error, "Invalid read address: 0x{:04X}", addr);
-      return 0;
+    default: LOG(Error, "Invalid read address: 0x{:04X}", addr); return 0;
   }
 }
 

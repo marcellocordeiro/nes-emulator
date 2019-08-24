@@ -159,7 +159,6 @@ uint8_t ppu::peek_reg(uint16_t addr) const
 
   switch (addr % 8) {
     case PPUSTATUS: return (bus_latch & 0x1F) | status.raw;
-
     case OAMDATA: return oam_mem[oam_addr];
     case PPUDATA:
       if (vram_addr.addr <= 0x3EFF) {
@@ -167,9 +166,11 @@ uint8_t ppu::peek_reg(uint16_t addr) const
       } else {
         return peek_vram(vram_addr.addr);
       }
-
-    default: throw std::runtime_error("Invalid PPU register address");
+      break;
+    default: break;
   }
+
+  return bus_latch;
 }
 
 uint8_t ppu::read(uint16_t addr)

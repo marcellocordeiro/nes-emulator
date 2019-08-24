@@ -21,6 +21,7 @@ class snapshotable;
 struct SDL_Window;
 struct SDL_Renderer;
 struct SDL_Texture;
+struct SDL_KeyboardEvent;
 
 // blargg's Nes_Snd_Emu
 class Nes_Apu;

@@ -47,6 +47,8 @@ public:
   void run_cpu();
 
 private:
+  void process_keypress(SDL_KeyboardEvent&);
+
   nes::emulator& emulator;
 
   static constexpr int width  = 256;
@@ -74,5 +76,6 @@ private:
 
   // todo: reimplement this
   std::unique_ptr<Sound_Queue> sound_queue;
+  bool sound_open = false;
 };
 }  // namespace nes

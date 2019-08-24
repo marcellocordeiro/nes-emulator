@@ -4,6 +4,7 @@
 #include <string>
 
 #include <SDL.h>
+#include <fmt/chrono.h>
 #include <fmt/format.h>
 
 #include "apu.h"
@@ -72,8 +73,13 @@ io::io(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
 // io::~io() = default;
 io::~io()
 {
-  pending_exit = true;
-  render_thread.join();
+  if (sound_open) {
+    // SDL_PauseAudio(true);
+    // SDL_CloseAudio();
+  }
+
+  // pending_exit = true;
+  // render_thread.join();
 }
 
 void io::start()
@@ -105,7 +111,24 @@ void io::start()
   keys = SDL_GetKeyboardState(nullptr);
 
   sound_queue = std::make_unique<Sound_Queue>();
-  sound_queue->init(44100);
+  sound_queue->init();
+
+  SDL_AudioSpec want;
+  SDL_zero(want);
+  want.freq     = 44100;
+  want.format   = AUDIO_S16SYS;
+  want.channels = 1;
+  want.samples  = Sound_Queue::buf_size;
+  want.userdata = sound_queue.get();
+  want.callback = [](void* user_data, Uint8* out, int count) {
+    static_cast<Sound_Queue*>(user_data)->fill_buffer(out, count);
+  };
+
+  // if (SDL_OpenAudio(&want, nullptr) < 0)
+  //  throw std::runtime_error("Couldn't open SDL audio");
+
+  // SDL_PauseAudio(false);
+  sound_open = true;
 }
 
 void io::close()
@@ -138,31 +161,43 @@ uint8_t io::get_controller(size_t n) const
 
 void io::update_frame(std::array<uint32_t, 256 * 240>& back_buffer)
 {
-  while (frame_ready) {
-    // Wait until the frame is rendered
-    // todo: improve this
-  }
-
   front_buffer.swap(back_buffer);
   SDL_UpdateTexture(
       texture.get(), nullptr, front_buffer.data(), width * sizeof(uint32_t));
-  frame_ready = true;
-}
-
-void io::write_samples(int16_t* buffer, long samples)
-{
-  sound_queue->write(buffer, samples);
 }
 
 void io::render()
 {
-  while (true) {
-    if (pending_exit) return;
-    if (!frame_ready) continue;
+  SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
+  SDL_RenderPresent(renderer.get());
+}
 
-    SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
-    SDL_RenderPresent(renderer.get());
-    frame_ready = false;
+void io::write_samples(int16_t* buffer, long samples)
+{
+  // sound_queue->write(buffer, samples);
+}
+
+void io::process_keypress(SDL_KeyboardEvent& key_event)
+{
+  auto key = key_event.keysym.scancode;
+
+  if (key == PAUSE) {
+    running = !running;
+  } else if (key == RESET) {
+    emulator.get_cpu()->reset();
+    emulator.get_ppu()->reset();
+  } else if (key == TOGGLE_LIMITER) {
+    fps_limiter = !fps_limiter;
+  } else if (key == SAVE_SNAPSHOT) {
+    emulator.save_snapshot();
+  } else if (key == LOAD_SNAPSHOT) {
+    emulator.load_snapshot();
+  } else if (key == VOLUME_UP) {
+    volume = std::min(1.0, volume + 0.1);
+    emulator.get_apu()->volume(volume);
+  } else if (key == VOLUME_DOWN) {
+    volume = std::max(0.0, volume - 0.1);
+    emulator.get_apu()->volume(volume);
   }
 }
 
@@ -170,8 +205,6 @@ void io::run()
 {
   running = true;
   emulator.get_apu()->volume(volume);
-
-  render_thread = std::thread(&nes::io::render, this);
 
   using namespace std::chrono;
   using namespace std::chrono_literals;
@@ -190,39 +223,7 @@ void io::run()
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
         case SDL_QUIT: emulator.get_cartridge()->dump_prg_ram(); return;
-        case SDL_KEYDOWN:
-          if (keys[PAUSE]) {
-            running = !running;
-          }
-
-          if (keys[RESET]) {
-            emulator.get_cpu()->reset();
-            emulator.get_ppu()->reset();
-          }
-
-          if (keys[TOGGLE_LIMITER]) {
-            fps_limiter = !fps_limiter;
-          }
-
-          if (keys[SAVE_SNAPSHOT]) {
-            emulator.save_snapshot();
-          }
-
-          if (keys[LOAD_SNAPSHOT]) {
-            emulator.load_snapshot();
-          }
-
-          if (keys[VOLUME_UP]) {
-            volume = std::min(1.0, volume + 0.1);
-            emulator.get_apu()->volume(volume);
-          }
-
-          if (keys[VOLUME_DOWN]) {
-            volume = std::max(0.0, volume - 0.1);
-            emulator.get_apu()->volume(volume);
-          }
-
-          break;
+        case SDL_KEYDOWN: process_keypress(e.key); break;
       }
     }
 
@@ -230,8 +231,7 @@ void io::run()
       if (running) {
         auto fps =
             elapsed_frames / duration<double>(fps_timer.elapsed_time()).count();
-        auto title =
-            fmt::format("[{:.5} fps] - nes-emulator", std::to_string(fps));
+        auto title = fmt::format("[{:5.2f}fps] - nes-emulator", fps);
         SDL_SetWindowTitle(window.get(), title.c_str());
       } else {
         SDL_SetWindowTitle(window.get(), "[paused] - nes-emulator");
@@ -246,7 +246,9 @@ void io::run()
       ++elapsed_frames;
     }
 
-    if (fps_limiter) std::this_thread::sleep_until(frame_end);
+    render();
+
+    // if (fps_limiter) std::this_thread::sleep_until(frame_end);
 
     frame_begin = frame_end;
     frame_end   = frame_begin + frame_time;

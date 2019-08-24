@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <cstring>
+#include <stdexcept>
 
 #include <SDL.h>
 
@@ -22,24 +23,11 @@ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
-Sound_Queue::Sound_Queue()
-{
-  bufs       = {};
-  free_sem   = nullptr;
-  write_buf  = 0;
-  write_pos  = 0;
-  read_buf   = 0;
-  sound_open = false;
-}
-
 Sound_Queue::~Sound_Queue()
 {
-  if (sound_open) {
-    SDL_PauseAudio(true);
-    SDL_CloseAudio();
-  }
-
   if (free_sem) SDL_DestroySemaphore(free_sem);
+
+  delete[] bufs;
 }
 
 int Sound_Queue::sample_count() const
@@ -48,34 +36,20 @@ int Sound_Queue::sample_count() const
   return buf_size * buf_count - buf_free;
 }
 
-void Sound_Queue::init(long sample_rate, int chan_count)
+void Sound_Queue::init()
 {
+  assert(!bufs);  // can only be initialized once
+
+  bufs = new sample_t[(long)buf_size * buf_count];
+
   free_sem = SDL_CreateSemaphore(buf_count - 1);
   if (!free_sem) throw std::runtime_error("Couldn't create semaphore");
-
-  SDL_AudioSpec as;
-  as.freq     = sample_rate;
-  as.format   = AUDIO_S16SYS;
-  as.channels = chan_count;
-  as.silence  = 0;
-  as.samples  = buf_size;
-  as.size     = 0;
-  as.userdata = this;
-  as.callback = [](void* user_data, Uint8* out, int count) {
-    static_cast<Sound_Queue*>(user_data)->fill_buffer(out, count);
-  };
-
-  if (SDL_OpenAudio(&as, nullptr) < 0)
-    throw std::runtime_error("Couldn't open SDL audio");
-
-  SDL_PauseAudio(false);
-  sound_open = true;
 }
 
-Sound_Queue::sample_t* Sound_Queue::buf(int index)
+inline Sound_Queue::sample_t* Sound_Queue::buf(int index)
 {
   assert((unsigned)index < buf_count);
-  return bufs.data() + (long)index * buf_size;
+  return bufs + (long)index * buf_size;
 }
 
 void Sound_Queue::write(const sample_t* in, int count)
@@ -97,7 +71,7 @@ void Sound_Queue::write(const sample_t* in, int count)
   }
 }
 
-void Sound_Queue::fill_buffer(uint8_t* out, int count)
+void Sound_Queue::fill_buffer(Uint8* out, int count)
 {
   if (SDL_SemValue(free_sem) < buf_count - 1) {
     memcpy(out, buf(read_buf), count);

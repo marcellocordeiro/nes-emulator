@@ -50,7 +50,7 @@ void cartridge::load(const char* rom_path)
   std::array<uint8_t, 16> header;
   std::copy(rom.begin(), rom.begin() + 16, header.begin());
 
-  info.path         = rom_path;
+  //info.path         = rom_path;
   info.rom_size     = rom.size();
   info.mapper_num   = (header[7] & 0xF0) | (header[6] >> 4);
   info.prg_size     = header[4] * ct::prg_bank_size;
