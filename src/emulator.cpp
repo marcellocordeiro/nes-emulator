@@ -25,9 +25,9 @@ emulator::emulator()
 
 emulator::~emulator() = default;
 
-void emulator::load_rom(const char* path)
+void emulator::load_rom()
 {
-  cartridge_ptr->load(path);
+  cartridge_ptr->load();
 }
 
 void emulator::power_on()
@@ -90,7 +90,7 @@ debugger* emulator::get_debugger()
 
 void emulator::save_snapshot()
 {
-  std::ofstream out{util::fmngr.get_snapshot(), std::ios::binary};
+  std::ofstream out{util::fmngr.get_snapshot_path(), std::ios::binary};
   for (auto& component : snapshotable) component->save(out);
 }
 
@@ -101,7 +101,7 @@ void emulator::load_snapshot()
     return;
   }
 
-  std::ifstream in{util::fmngr.get_snapshot(), std::ios::binary};
+  std::ifstream in{util::fmngr.get_snapshot_path(), std::ios::binary};
   for (auto& component : snapshotable) component->load(in);
 }
 }  // namespace nes

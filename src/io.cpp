@@ -74,8 +74,8 @@ io::io(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
 io::~io()
 {
   if (sound_open) {
-    // SDL_PauseAudio(true);
-    // SDL_CloseAudio();
+    SDL_PauseAudio(true);
+    SDL_CloseAudio();
   }
 
   // pending_exit = true;
@@ -124,10 +124,10 @@ void io::start()
     static_cast<Sound_Queue*>(user_data)->fill_buffer(out, count);
   };
 
-  // if (SDL_OpenAudio(&want, nullptr) < 0)
-  //  throw std::runtime_error("Couldn't open SDL audio");
+   if (SDL_OpenAudio(&want, nullptr) < 0)
+    throw std::runtime_error("Couldn't open SDL audio");
 
-  // SDL_PauseAudio(false);
+  SDL_PauseAudio(false);
   sound_open = true;
 }
 
@@ -174,7 +174,7 @@ void io::render()
 
 void io::write_samples(int16_t* buffer, long samples)
 {
-  // sound_queue->write(buffer, samples);
+  sound_queue->write(buffer, samples);
 }
 
 void io::process_keypress(SDL_KeyboardEvent& key_event)
@@ -248,7 +248,7 @@ void io::run()
 
     render();
 
-    // if (fps_limiter) std::this_thread::sleep_until(frame_end);
+    if (fps_limiter) std::this_thread::sleep_until(frame_end);
 
     frame_begin = frame_end;
     frame_end   = frame_begin + frame_time;

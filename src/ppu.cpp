@@ -53,7 +53,7 @@ void ppu::reset()
 
 void ppu::set_palette()
 {
-  std::ifstream palette(util::fmngr.get_palette(), std::ios::binary);
+  std::ifstream palette(util::fmngr.get_palette_path(), std::ios::binary);
 
   if (!palette) {
     throw std::runtime_error("Couldn't open the palette file");
@@ -62,7 +62,7 @@ void ppu::set_palette()
   std::array<uint8_t, 64 * 3> pal_buffer;
   palette.read(reinterpret_cast<char*>(pal_buffer.data()), 64 * 3);
 
-  for (int i = 0; i < 64; ++i) {
+  for (size_t i = 0; i < 64; ++i) {
     uint8_t r = pal_buffer[(i * 3) + 0];
     uint8_t g = pal_buffer[(i * 3) + 1];
     uint8_t b = pal_buffer[(i * 3) + 2];

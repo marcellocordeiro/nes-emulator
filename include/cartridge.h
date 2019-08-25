@@ -14,7 +14,7 @@ public:
 
   nes::mapper* get_mapper();
 
-  void load(const char*);
+  void load();
 
   uint8_t prg_read(uint16_t) const;
   uint8_t chr_read(uint16_t) const;

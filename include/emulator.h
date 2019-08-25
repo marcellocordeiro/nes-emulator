@@ -11,7 +11,7 @@ public:
   emulator();
   ~emulator();
 
-  void load_rom(const char*);
+  void load_rom();
   void power_on();
   void run();
 

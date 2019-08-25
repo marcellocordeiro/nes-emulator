@@ -4,8 +4,8 @@
 
 namespace nes {
 namespace ct {
-constexpr uint16_t prg_bank_size = 0x4000;  // 16384;
-constexpr uint16_t chr_bank_size = 0x2000;  // 8192;
+constexpr size_t prg_bank_size = 0x4000;  // 16384;
+constexpr size_t chr_bank_size = 0x2000;  // 8192;
 }  // namespace ct
 
 namespace mirroring {

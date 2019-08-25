@@ -28,23 +28,16 @@ nes::mapper* cartridge::get_mapper()
   return mapper.get();
 }
 
-void cartridge::load(const char* rom_path)
+void cartridge::load()
 {
   using namespace mirroring;
 
-  std::ifstream rom_stream(util::fmngr.get_rom(), std::ios::binary);
-
-  if (!rom_stream) {
-    throw std::runtime_error("Couldn't open the ROM");
-  }
-
-  std::vector<uint8_t> rom(std::filesystem::file_size(util::fmngr.get_rom()));
-  rom_stream.read(reinterpret_cast<char*>(rom.data()), rom.size());
+  auto rom = util::fmngr.get_rom();
 
   // todo
   // Patch the ROM here
   if (util::fmngr.has_patch()) {
-    rom = util::ips_patch(util::fmngr.get_patch()).patch(rom);
+    rom = util::ips_patch(util::fmngr.get_patch_path()).patch(rom);
   }
 
   std::array<uint8_t, 16> header;
@@ -89,7 +82,7 @@ void cartridge::load(const char* rom_path)
   }
 
   if (util::fmngr.has_prg_ram()) {
-    std::ifstream prg_ram_file(util::fmngr.get_prg_ram(), std::ios::binary);
+    std::ifstream prg_ram_file(util::fmngr.get_prg_ram_path(), std::ios::binary);
     prg_ram_file.read(reinterpret_cast<char*>(prg_ram.data()), prg_ram.size());
   }
 
@@ -145,7 +138,7 @@ void cartridge::dump_prg_ram() const
 {
   const auto& prg_ram = mapper->get_prg_ram();
 
-  std::ofstream prg_ram_file(util::fmngr.get_prg_ram(), std::ios::binary);
+  std::ofstream prg_ram_file(util::fmngr.get_prg_ram_path(), std::ios::binary);
   prg_ram_file.write(
       reinterpret_cast<const char*>(prg_ram.data()), prg_ram.size());
 }
