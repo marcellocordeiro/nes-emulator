@@ -14,11 +14,10 @@ int main(int argc, [[maybe_unused]] char* argv[])
 
   try {
     nes::util::fmngr.setup();
+    nes::util::fmngr.set_rom(argv[1]);
 
     // std::ofstream log_file{app_path / "nes-emulator.log"};
     // lib::log::get().set_stream(log_file);
-
-    nes::util::fmngr.set_rom(argv[1]);
 
     nes::emulator emulator;
 

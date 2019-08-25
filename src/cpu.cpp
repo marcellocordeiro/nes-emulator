@@ -29,7 +29,7 @@ void cpu::power_on()
   ram.fill(0);
 
   // nestest
-  // state.pc = 0xC000;
+  // state.pc          = 0xC000;
   // state.cycle_count = 7;
 }
 
@@ -73,8 +73,6 @@ void cpu::run_frame()
     execute();
   }
 
-  // exit(1);
-
   emulator.get_apu()->run_frame(state.cycle_count);
 }
 
@@ -93,7 +91,8 @@ uint8_t cpu::peek(uint16_t addr) const
   switch (get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
     case PPU_Access: return emulator.get_ppu()->peek_reg(addr);
-    case APU_Access: return 0;  // Avoids APU side effects
+    case APU_Access:
+      return 0xFF;  // Avoids APU side effects and satisfies nestest
     case Controller_1: return emulator.get_controller()->peek(0);
     case Controller_2: return emulator.get_controller()->peek(1);
     case Cartridge: return emulator.get_cartridge()->prg_read(addr);
@@ -159,7 +158,10 @@ uint16_t cpu::peek_imm() const
 
 uint16_t cpu::peek_rel() const
 {
-  return state.pc + 1;
+  auto addr   = peek_imm();
+  auto offset = static_cast<int8_t>(peek(addr));
+
+  return (state.pc + 2) + offset;
 }
 
 uint16_t cpu::peek_zp() const

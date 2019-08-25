@@ -4,7 +4,6 @@
 #include <string>
 
 #include <SDL.h>
-#include <fmt/chrono.h>
 #include <fmt/format.h>
 
 #include "apu.h"
@@ -82,7 +81,7 @@ io::~io()
   // render_thread.join();
 }
 
-void io::start()
+void io::init()
 {
   // SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
   // Bilinear filter
@@ -124,8 +123,9 @@ void io::start()
     static_cast<Sound_Queue*>(user_data)->fill_buffer(out, count);
   };
 
-   if (SDL_OpenAudio(&want, nullptr) < 0)
+  if (SDL_OpenAudio(&want, nullptr) < 0) {
     throw std::runtime_error("Couldn't open SDL audio");
+  }
 
   SDL_PauseAudio(false);
   sound_open = true;

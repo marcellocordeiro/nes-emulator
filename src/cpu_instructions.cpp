@@ -12,7 +12,7 @@ using namespace nes::types::cpu::flags;
 
 namespace nes {
 template uint16_t    cpu::get_operand<Immediate>();
-template uint16_t    cpu::get_operand<Relative>();
+template <> uint16_t cpu::get_operand<Relative>();
 template <> uint16_t cpu::get_operand<ZeroPage>();
 template <> uint16_t cpu::get_operand<ZeroPageX>();
 template <> uint16_t cpu::get_operand<ZeroPageY>();
@@ -410,11 +410,10 @@ void cpu::compare(uint8_t reg, uint8_t value)
 
 void cpu::branch(bool taken)
 {
-  auto addr   = get_operand<Relative>();
-  auto offset = static_cast<int8_t>(memory_read(addr));
+  auto jump_addr = get_operand<Relative>();
 
   if (taken) {
-    uint16_t jump_addr = state.pc + offset;
+    // uint16_t jump_addr = state.pc + offset;
 
     if (crossed_page(state.pc, jump_addr)) {
       tick();
@@ -1181,6 +1180,14 @@ template <auto Mode> uint16_t cpu::get_operand()
   ++state.pc;
 
   return addr;
+}
+
+template <> uint16_t cpu::get_operand<Relative>()
+{
+  auto addr   = get_operand<Immediate>();
+  auto offset = static_cast<int8_t>(memory_read(addr));
+
+  return state.pc + offset;
 }
 
 template <> uint16_t cpu::get_operand<ZeroPage>()

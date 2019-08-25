@@ -1,7 +1,6 @@
 #include "debugger.h"
 
 #include <array>
-#include <iomanip>
 #include <sstream>
 #include <string_view>
 
@@ -12,6 +11,8 @@
 #include "emulator.h"
 #include "ppu.h"
 #include "types/cpu.h"
+
+using namespace nes::types::cpu::addressing_mode;
 
 namespace nes {
 debugger::debugger(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
@@ -39,7 +40,7 @@ void debugger::cpu_log()
       "BEQ",  "SBC", "inv", "*ISB", "*NOP", "SBC", "INC", "*ISB", "SED", "SBC", "*NOP", "*ISB", "*NOP", "SBC", "INC", "*ISB",  // F
   };
 
-  constexpr std::array<addr_mode2, 0x100> addressing_mode = {
+  constexpr std::array<int, 0x100> addr_mode = {
       // 0  1     2    3     4    5    6    7    8     9    A     B    C    D    E    F
       impl, indx, inv, indx, zp,  zp,  zp,  zp,  impl, imm, acc,  inv, ab,  ab,  ab,  ab,   // 0
       rel,  indy, inv, indy, zpx, zpx, zpx, zpx, impl, aby, impl, aby, abx, abx, abx, abx,  // 1
@@ -75,9 +76,6 @@ void debugger::cpu_log()
   auto peek_indx = [&]() { return cpu_ptr->peek_indx(); };
   auto peek_indy = [&]() { return cpu_ptr->peek_indy(); };
 
-  auto read_word = [&](uint16_t addr) -> uint16_t {
-    return peek(addr + 1) << 8 | peek(addr);
-  };
   auto read_word_zp = [&](uint16_t addr) -> uint16_t {
     return peek((addr + 1) & 0xFF) << 8 | peek(addr);
   };
@@ -87,28 +85,26 @@ void debugger::cpu_log()
   std::stringstream ss;
 
   const auto inst   = instruction[peek(state.pc)];
-  const auto addr_m = addressing_mode[peek(state.pc)];
+  const auto addr_m = addr_mode[peek(state.pc)];
 
   ss << fmt::format("{:04X}  {:02X} ", state.pc, peek(state.pc));
 
   uint8_t  arg8   = peek(state.pc + 1);
   uint8_t  arg8_2 = peek(state.pc + 2);
-  uint16_t arg16  = arg8 | (arg8_2 << 8);
+  uint16_t arg16  = (arg8_2 << 8) | arg8;
 
   switch (addr_m) {
-    case addr_mode2::ab:
-    case addr_mode2::abx:
-    case addr_mode2::aby:
-    case addr_mode2::ind:
-      ss << fmt::format("{:02X} {:02X} ", arg8, arg8_2);
-      break;
-    case addr_mode2::indy:
-    case addr_mode2::indx:
-    case addr_mode2::zp:
-    case addr_mode2::zpx:
-    case addr_mode2::zpy:
-    case addr_mode2::rel:
-    case addr_mode2::imm: ss << fmt::format("{:02X}    ", arg8); break;
+    case Absolute:
+    case AbsoluteX:
+    case AbsoluteY:
+    case Indirect: ss << fmt::format("{:02X} {:02X} ", arg8, arg8_2); break;
+    case IndirectY:
+    case IndirectX:
+    case ZeroPage:
+    case ZeroPageX:
+    case ZeroPageY:
+    case Relative:
+    case Immediate: ss << fmt::format("{:02X}    ", arg8); break;
     default: ss << "      "; break;
   }
 
@@ -117,26 +113,30 @@ void debugger::cpu_log()
   ss << std::left << std::setw(28) << std::setfill(' ');
 
   switch (addr_m) {
-    case addr_mode2::impl: {
+    case Implicit: {
       ss << " ";
       break;
     }
-    case addr_mode2::acc:
+    case Accumulator:
       if (inst == "LSR" || inst == "ASL" || inst == "ROR" || inst == "ROL") {
         ss << "A";
       } else {
         ss << " ";
       }
       break;
-    case addr_mode2::imm: {
+    case Immediate: {
       ss << fmt::format("#${:02X}", peek(peek_imm()));
       break;
     }
-    case addr_mode2::zp: {
+    case Relative: {
+      ss << fmt::format("${:04X}", peek_rel());
+      break;
+    }
+    case ZeroPage: {
       ss << fmt::format("${:02X} = {:02X}", peek_zp(), peek(peek_zp()));
       break;
     }
-    case addr_mode2::zpx: {
+    case ZeroPageX: {
       ss << fmt::format(
           "${:02X},X @ {:02X} = {:02X}",
           peek_zp(),
@@ -144,7 +144,7 @@ void debugger::cpu_log()
           peek(peek_zpx()));
       break;
     }
-    case addr_mode2::zpy: {
+    case ZeroPageY: {
       ss << fmt::format(
           "${:02X},Y @ {:02X} = {:02X}",
           peek_zp(),
@@ -152,13 +152,7 @@ void debugger::cpu_log()
           peek(peek_zpy()));
       break;
     }
-    case addr_mode2::rel: {
-      const uint16_t addr =
-          state.pc + 2 + static_cast<int8_t>(peek(peek_imm()));
-      ss << fmt::format("${:04X}", addr);
-      break;
-    }
-    case addr_mode2::ab: {
+    case Absolute: {
       if (inst == "JMP" || inst == "JSR") {
         ss << fmt::format("${:04X}", peek_ab());
       } else {
@@ -166,36 +160,36 @@ void debugger::cpu_log()
       }
       break;
     }
-    case addr_mode2::abx: {
+    case AbsoluteX: {
       ss << fmt::format(
           "${:04X},X @ {:04X} = {:02X}", arg16, peek_abx(), peek(peek_abx()));
       break;
     }
-    case addr_mode2::aby: {
+    case AbsoluteY: {
       ss << fmt::format(
           "${:04X},Y @ {:04X} = {:02X}", arg16, peek_aby(), peek(peek_aby()));
       break;
     }
-    case addr_mode2::ind: {
+    case Indirect: {
       ss << fmt::format("(${:04X}) = {:04X}", peek_ab(), peek_ind());
       break;
     }
-    case addr_mode2::indx: {
+    case IndirectX: {
       ss << fmt::format(
           "(${:02X},X) @ {:02X} = {:04X} = {:02X}",
           arg8,
-          uint8_t(state.x + arg8),
-          read_word_zp((state.x + arg8) % 0x100),
-          peek(read_word_zp((state.x + arg8) % 0x100)));
+          peek_zpx(),
+          peek_indx(),
+          peek(peek_indx()));
       break;
     }
-    case addr_mode2::indy: {
+    case IndirectY: {
       ss << fmt::format(
           "(${:02X}),Y = {:04X} @ {:04X} = {:02X}",
           arg8,
           read_word_zp(arg8),
-          uint16_t(read_word_zp(arg8) + state.y),
-          peek(read_word_zp(arg8) + state.y));
+          peek_indy(),
+          peek(peek_indy()));
       break;
     }
     default: ss << " "; break;
@@ -210,7 +204,7 @@ void debugger::cpu_log()
       state.a,
       state.x,
       state.y,
-      (state.ps),
+      (state.ps | 0x20),
       state.sp,
       ppu_cycle,
       ppu_scanline,

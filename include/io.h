@@ -32,7 +32,8 @@ public:
   io(nes::emulator&);
   ~io();
 
-  void start();
+  void init();
+  void run();
   void close();
 
   uint8_t get_controller(size_t) const;
@@ -42,9 +43,6 @@ public:
 
   void poll_events();
   void handle_keys();
-
-  void run();
-  void run_cpu();
 
 private:
   void process_keypress(SDL_KeyboardEvent&);
@@ -73,9 +71,8 @@ private:
   SDL2::Texture  texture;
   const uint8_t* keys;
 
-
   // todo: reimplement this
   std::unique_ptr<Sound_Queue> sound_queue;
-  bool sound_open = false;
+  bool                         sound_open = false;
 };
 }  // namespace nes

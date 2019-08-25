@@ -27,7 +27,7 @@ target_link_libraries(nes-emulator PRIVATE SDL2::SDL2)
 target_compile_definitions(nes-emulator PRIVATE $<$<CXX_COMPILER_ID:MSVC>:SDL_MAIN_HANDLED>)
 
 find_package(fmt REQUIRED)
-target_link_libraries(nes-emulator PRIVATE fmt::fmt-header-only)
+target_link_libraries(nes-emulator PRIVATE fmt::fmt)
 
 # Compiler settings
 
@@ -38,11 +38,11 @@ set_target_properties(nes-emulator
     CXX_EXTENSIONS NO
 )
 
-target_compile_options(nes-emulator
-  PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:/WX /W4 /permissive- /diagnostics:caret>
-    $<$<CXX_COMPILER_ID:GNU,Clang>:-Werror -Wall -Wextra -pedantic -Wshadow -Wformat=2 -Wdisabled-optimization>
-)
+if(MSVC)
+  target_compile_options(nes-emulator PRIVATE /WX /W4 /permissive- /diagnostics:caret)
+elseif(UNIX)
+  target_compile_options(nes-emulator PRIVATE -Werror -Wall -Wextra -pedantic -Wshadow -Wformat=2 -Wdisabled-optimization)
+endif()
 
 # Copy resource files
 

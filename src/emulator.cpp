@@ -35,8 +35,6 @@ void emulator::power_on()
   cpu_ptr->power_on();
   ppu_ptr->power_on();
   apu_ptr->power_on();
-
-  io_ptr->start();
 }
 
 void emulator::run()
@@ -46,6 +44,7 @@ void emulator::run()
   snapshotable.push_back(cartridge_ptr->get_mapper());
   snapshotable.push_back(controller_ptr.get());
 
+  io_ptr->init();
   io_ptr->run();
 }
 
