@@ -11,17 +11,18 @@
 namespace nes {
 class ppu : public util::snapshotable {
 public:
-  ppu(nes::emulator&);
+  ppu(emulator&);
 
   void power_on();
   void reset();
 
+  std::array<uint32_t, 256 * 240> get_back_buffer() const;
+
   void set_palette();
+  void set_mirroring(int);
 
   uint8_t read(uint16_t);
   void    write(uint16_t, uint8_t);
-
-  void set_mirroring(int);
 
   void step();
 
@@ -33,7 +34,7 @@ public:
   {
     return tick;
   }
-  
+
   int scanline_count() const
   {
     return scanline;
@@ -107,7 +108,7 @@ private:
 
   template <typename T> uint8_t get_palette(T, T, int) const;  // Get palette
 
-  nes::emulator& emulator;
+  emulator& emu;
 
   enum timing { Idle, Visible, VBlank, PreRender };
 
@@ -124,11 +125,11 @@ private:
 
   int mirroring_mode;
 
-  using sprite_info = nes::types::ppu::sprite_info;
-  using loopy_addr  = nes::types::ppu::loopy_addr;
-  using ppuctrl     = nes::types::ppu::ppuctrl;
-  using ppumask     = nes::types::ppu::ppumask;
-  using ppustatus   = nes::types::ppu::ppustatus;
+  using sprite_info = types::ppu::sprite_info;
+  using loopy_addr  = types::ppu::loopy_addr;
+  using ppuctrl     = types::ppu::ppuctrl;
+  using ppumask     = types::ppu::ppumask;
+  using ppustatus   = types::ppu::ppustatus;
 
   std::array<uint8_t, 0x800> ci_ram{};   // Console-Internal RAM
   std::array<uint8_t, 0x20>  cg_ram{};   // Colour generator RAM
@@ -138,6 +139,7 @@ private:
   std::vector<sprite_info> sec_oam{};  // Sprite buffer
 
   std::array<uint32_t, 256 * 240> frame_buffer{};  // Frame buffer
+  std::array<uint32_t, 256 * 240> back_buffer{};   // Back buffer
 
   std::array<std::array<uint32_t, 64>, 8> full_nes_palette;
   const uint32_t* nes_to_rgb = full_nes_palette[0].data();

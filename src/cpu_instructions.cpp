@@ -6,11 +6,11 @@
 
 #include "log.h"
 
-using namespace nes::types::cpu;
-using namespace nes::types::cpu::addressing_mode;
-using namespace nes::types::cpu::flags;
-
 namespace nes {
+using namespace types::cpu;
+using namespace types::cpu::addressing_mode;
+using namespace types::cpu::flags;
+
 template uint16_t    cpu::get_operand<Immediate>();
 template <> uint16_t cpu::get_operand<Relative>();
 template <> uint16_t cpu::get_operand<ZeroPage>();

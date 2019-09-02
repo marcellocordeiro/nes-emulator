@@ -1,11 +1,11 @@
 #pragma once
 
-#include "mapper.h"
+#include "base_mapper.h"
 
 namespace nes {
-class mapper0 : public mapper {
+class mapper0 : public base_mapper {
 public:
-  mapper0(nes::cartridge&);
+  mapper0(cartridge&);
 
   void reset() override;
 };

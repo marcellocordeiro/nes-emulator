@@ -14,7 +14,7 @@
 using namespace nes::types::cpu;
 
 namespace nes {
-cpu::cpu(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
+cpu::cpu(emulator& emu_ref) : emu(emu_ref) {}
 
 void cpu::power_on()
 {
@@ -69,18 +69,18 @@ void cpu::run_frame()
       INT_IRQ();
     }
 
-    // emulator.get_debugger()->cpu_log();
+    // emu.get_debugger()->cpu_log();
     execute();
   }
 
-  emulator.get_apu()->run_frame(state.cycle_count);
+  emu.get_apu()->run_frame(state.cycle_count);
 }
 
 void cpu::tick()
 {
-  emulator.get_ppu()->step();
-  emulator.get_ppu()->step();
-  emulator.get_ppu()->step();
+  emu.get_ppu()->step();
+  emu.get_ppu()->step();
+  emu.get_ppu()->step();
   ++state.cycle_count;
 }
 
@@ -90,12 +90,12 @@ uint8_t cpu::peek(uint16_t addr) const
 
   switch (get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
-    case PPU_Access: return emulator.get_ppu()->peek_reg(addr);
+    case PPU_Access: return emu.get_ppu()->peek_reg(addr);
     case APU_Access:
       return 0xFF;  // Avoids APU side effects and satisfies nestest
-    case Controller_1: return emulator.get_controller()->peek(0);
-    case Controller_2: return emulator.get_controller()->peek(1);
-    case Cartridge: return emulator.get_cartridge()->prg_read(addr);
+    case Controller_1: return emu.get_controller()->peek(0);
+    case Controller_2: return emu.get_controller()->peek(1);
+    case Cartridge: return emu.get_cartridge()->prg_read(addr);
     case Unknown:
     default: LOG(Error, "Invalid read address: 0x{:04X}", addr); return 0;
   }
@@ -107,11 +107,11 @@ uint8_t cpu::read(uint16_t addr) const
 
   switch (get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
-    case PPU_Access: return emulator.get_ppu()->read(addr);
-    case APU_Access: return emulator.get_apu()->read(state.cycle_count);
-    case Controller_1: return emulator.get_controller()->read(0);
-    case Controller_2: return emulator.get_controller()->read(1);
-    case Cartridge: return emulator.get_cartridge()->prg_read(addr);
+    case PPU_Access: return emu.get_ppu()->read(addr);
+    case APU_Access: return emu.get_apu()->read(state.cycle_count);
+    case Controller_1: return emu.get_controller()->read(0);
+    case Controller_2: return emu.get_controller()->read(1);
+    case Cartridge: return emu.get_cartridge()->prg_read(addr);
     case Unknown:
     default: LOG(Error, "Invalid read address: 0x{:04X}", addr); return 0;
   }
@@ -123,13 +123,13 @@ void cpu::write(uint16_t addr, uint8_t value)
 
   switch (get_map<Write>(addr)) {
     case CPU_RAM: ram[addr & 0x07FF] = value; break;
-    case PPU_Access: emulator.get_ppu()->write(addr, value); break;
+    case PPU_Access: emu.get_ppu()->write(addr, value); break;
     case APU_Access:
-      emulator.get_apu()->write(state.cycle_count, addr, value);
+      emu.get_apu()->write(state.cycle_count, addr, value);
       break;
     case OAMDMA: dma_oam(value); break;
-    case Controller: emulator.get_controller()->write(value & 1); break;
-    case Cartridge: emulator.get_cartridge()->prg_write(addr, value); break;
+    case Controller: emu.get_controller()->write(value & 1); break;
+    case Cartridge: emu.get_cartridge()->prg_write(addr, value); break;
     default: throw std::runtime_error("Invalid write address");
   }
 }

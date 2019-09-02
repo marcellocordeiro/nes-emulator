@@ -7,8 +7,8 @@
 #include "io.h"
 
 namespace nes {
-apu::apu(nes::emulator& emulator_ref)
-  : emulator(emulator_ref), nes_apu(std::make_unique<Nes_Apu>()),
+apu::apu(emulator& emu_ref)
+  : emu(emu_ref), nes_apu(std::make_unique<Nes_Apu>()),
     buffer(std::make_unique<Blip_Buffer>())
 {}
 
@@ -25,7 +25,7 @@ void apu::power_on()
       [](void* user_data, cpu_addr_t addr) -> int {
         return static_cast<cpu*>(user_data)->peek(addr);
       },
-      emulator.get_cpu());
+      emu.get_cpu());
 }
 
 void apu::volume(double value)
@@ -49,7 +49,7 @@ void apu::run_frame(int elapsed)
   buffer->end_frame(elapsed);
 
   if (buffer->samples_avail() >= buffer_size) {
-    emulator.get_io()->write_samples(
+    emu.get_io()->write_samples(
         out_buffer.data(),
         buffer->read_samples(out_buffer.data(), buffer_size));
   }

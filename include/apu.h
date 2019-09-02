@@ -9,7 +9,7 @@
 namespace nes {
 class apu {
 public:
-  apu(nes::emulator&);
+  apu(emulator&);
   ~apu();  // Has to be defined in the cpp
 
   void power_on();
@@ -21,7 +21,7 @@ public:
   void run_frame(int);
 
 private:
-  nes::emulator& emulator;
+  emulator& emu;
 
   static constexpr long buffer_size = 4096;
 

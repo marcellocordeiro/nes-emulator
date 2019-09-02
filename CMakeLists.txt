@@ -39,9 +39,9 @@ set_target_properties(nes-emulator
 )
 
 if(MSVC)
-  target_compile_options(nes-emulator PRIVATE /WX /W4 /permissive- /diagnostics:caret)
+  target_compile_options(nes-emulator PRIVATE /W4 /permissive- /diagnostics:caret)
 elseif(UNIX)
-  target_compile_options(nes-emulator PRIVATE -Werror -Wall -Wextra -pedantic -Wshadow -Wformat=2 -Wdisabled-optimization)
+  target_compile_options(nes-emulator PRIVATE -Wall -Wextra -pedantic -Wshadow -Wformat=2 -Wdisabled-optimization)
 endif()
 
 # Copy resource files

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "mapper.h"
+#include "base_mapper.h"
 
 namespace nes {
-class mapper1 : public mapper {
+class mapper1 : public base_mapper {
 public:
-  mapper1(nes::cartridge&);
+  mapper1(cartridge&);
 
   void reset() override;
 
@@ -17,8 +17,8 @@ public:
 private:
   void apply();
 
-  int     write_counter = 0;
-  uint8_t shift_reg     = 0;
+  int     write_delay = 5;
+  uint8_t shift_reg   = 0;
 
   uint8_t control    = 0x0C;
   uint8_t chr_bank_0 = 0;

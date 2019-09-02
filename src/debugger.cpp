@@ -12,10 +12,11 @@
 #include "ppu.h"
 #include "types/cpu.h"
 
-using namespace nes::types::cpu::addressing_mode;
 
 namespace nes {
-debugger::debugger(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
+using namespace types::cpu::addressing_mode;
+
+debugger::debugger(emulator& emu_ref) : emu(emu_ref) {}
 
 void debugger::cpu_log()
 {
@@ -61,7 +62,7 @@ void debugger::cpu_log()
   };
   // clang-format on
 
-  auto cpu_ptr = emulator.get_cpu();
+  auto cpu_ptr = emu.get_cpu();
 
   auto peek      = [&](uint16_t addr) { return cpu_ptr->peek(addr); };
   auto peek_imm  = [&]() { return cpu_ptr->peek_imm(); };
@@ -195,8 +196,8 @@ void debugger::cpu_log()
     default: ss << " "; break;
   }
 
-  auto ppu_cycle    = emulator.get_ppu()->cycle_count();
-  auto ppu_scanline = emulator.get_ppu()->scanline_count();
+  auto ppu_cycle    = emu.get_ppu()->cycle_count();
+  auto ppu_scanline = emu.get_ppu()->scanline_count();
 
   ss << fmt::format(
       "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} PPU:{:3d},{:3d} "

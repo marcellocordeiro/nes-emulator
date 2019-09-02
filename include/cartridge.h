@@ -9,10 +9,10 @@
 namespace nes {
 class cartridge {
 public:
-  cartridge(nes::emulator&);
+  cartridge(emulator&);
   ~cartridge();  // Has to be defined in the cpp
 
-  nes::mapper* get_mapper();
+  base_mapper* get_mapper();
 
   void load();
 
@@ -30,10 +30,10 @@ public:
   void set_cpu_irq(bool);
 
 private:
-  nes::emulator& emulator;
+  emulator& emu;
 
-  nes::cartridge_info info{};
+  cartridge_info info{};
 
-  std::unique_ptr<nes::mapper> mapper;
+  std::unique_ptr<base_mapper> mapper;
 };
 }  // namespace nes

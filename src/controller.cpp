@@ -1,24 +1,15 @@
 #include "controller.h"
 
-#include "emulator.h"
-#include "io.h"
-
 namespace nes {
-controller::controller(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
-
-uint8_t controller::peek(size_t port) const
+void controller::update_state(size_t port, uint8_t state)
 {
-  if (strobe) {
-    return 0x40 | (emulator.get_io()->get_controller(port) & 1);  // 1 == A
-  } else {
-    return 0x40 | (controller_bits[port] & 1);
-  }
+  controller_state[port] = state;
 }
 
 uint8_t controller::read(size_t port)
 {
   if (strobe) {
-    return 0x40 | (emulator.get_io()->get_controller(port) & 1);  // 1 == A
+    return 0x40 | (controller_state[port] & 1);  // 1 == A
   }
 
   uint8_t status        = 0x40 | (controller_bits[port] & 1);
@@ -30,11 +21,19 @@ uint8_t controller::read(size_t port)
 void controller::write(bool signal)
 {
   if (strobe && !signal) {
-    controller_bits[0] = emulator.get_io()->get_controller(0);
-    controller_bits[1] = emulator.get_io()->get_controller(1);
+    controller_bits = controller_state;
   }
 
   strobe = signal;
+}
+
+uint8_t controller::peek(size_t port) const
+{
+  if (strobe) {
+    return 0x40 | (controller_state[port] & 1);  // 1 == A
+  } else {
+    return 0x40 | (controller_bits[port] & 1);
+  }
 }
 
 void controller::save(std::ofstream& out)

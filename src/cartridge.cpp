@@ -20,10 +20,10 @@
 #include "utility/ips_patch.h"
 
 namespace nes {
-cartridge::cartridge(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
+cartridge::cartridge(emulator& emu_ref) : emu(emu_ref) {}
 cartridge::~cartridge() = default;
 
-nes::mapper* cartridge::get_mapper()
+base_mapper* cartridge::get_mapper()
 {
   return mapper.get();
 }
@@ -43,7 +43,7 @@ void cartridge::load()
   std::array<uint8_t, 16> header;
   std::copy(rom.begin(), rom.begin() + 16, header.begin());
 
-  //info.path         = rom_path;
+  // info.path         = rom_path;
   info.rom_size     = rom.size();
   info.mapper_num   = (header[7] & 0xF0) | (header[6] >> 4);
   info.prg_size     = header[4] * ct::prg_bank_size;
@@ -82,7 +82,8 @@ void cartridge::load()
   }
 
   if (util::fmngr.has_prg_ram()) {
-    std::ifstream prg_ram_file(util::fmngr.get_prg_ram_path(), std::ios::binary);
+    std::ifstream prg_ram_file(
+        util::fmngr.get_prg_ram_path(), std::ios::binary);
     prg_ram_file.read(reinterpret_cast<char*>(prg_ram.data()), prg_ram.size());
   }
 
@@ -126,12 +127,12 @@ void cartridge::scanline_counter()
 
 void cartridge::set_mirroring(int mode)
 {
-  emulator.get_ppu()->set_mirroring(mode);
+  emu.get_ppu()->set_mirroring(mode);
 }
 
 void cartridge::set_cpu_irq(bool value)
 {
-  emulator.get_cpu()->set_irq(value);
+  emu.get_cpu()->set_irq(value);
 }
 
 void cartridge::dump_prg_ram() const

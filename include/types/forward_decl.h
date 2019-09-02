@@ -9,7 +9,7 @@ class cpu;
 class apu;
 class ppu;
 class cartridge;
-class mapper;
+class base_mapper;
 class controller;
 }  // namespace nes
 

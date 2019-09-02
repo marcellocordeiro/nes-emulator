@@ -3,7 +3,7 @@
 #include "cartridge.h"
 
 namespace nes {
-mapper4::mapper4(nes::cartridge& cartridge_ref) : mapper(cartridge_ref) {}
+mapper4::mapper4(cartridge& cart_ref) : base_mapper(cart_ref) {}
 
 void mapper4::reset()
 {
@@ -49,7 +49,7 @@ void mapper4::apply()
 
   using namespace mirroring;
 
-  cartridge.set_mirroring(horizontal_mirroring ? Horizontal : Vertical);
+  cart.set_mirroring(horizontal_mirroring ? Horizontal : Vertical);
 }
 
 void mapper4::prg_write(uint16_t addr, uint8_t value)
@@ -64,7 +64,7 @@ void mapper4::prg_write(uint16_t addr, uint8_t value)
       case 0xC000: irq_period = value; break;
       case 0xC001: irq_counter = 0; break;
       case 0xE000:
-        cartridge.set_cpu_irq(false);
+        cart.set_cpu_irq(false);
         irq_enabled = false;
         break;
       case 0xE001: irq_enabled = true; break;
@@ -83,13 +83,13 @@ void mapper4::scanline_counter()
   }
 
   if (irq_enabled && irq_counter == 0) {
-    cartridge.set_cpu_irq(true);
+    cart.set_cpu_irq(true);
   }
 }
 
 void mapper4::save(std::ofstream& out)
 {
-  mapper::save(out);
+  base_mapper::save(out);
 
   dump_snapshot(out, regs);
   dump_snapshot(out, reg_8000);
@@ -99,7 +99,7 @@ void mapper4::save(std::ofstream& out)
 
 void mapper4::load(std::ifstream& in)
 {
-  mapper::load(in);
+  base_mapper::load(in);
 
   get_snapshot(in, regs);
   get_snapshot(in, reg_8000);

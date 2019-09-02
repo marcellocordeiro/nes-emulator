@@ -10,7 +10,7 @@
 namespace nes {
 class cpu : public util::snapshotable {
 public:
-  cpu(nes::emulator&);
+  cpu(emulator&);
 
   void power_on();
   void reset();
@@ -49,10 +49,10 @@ public:
   void load(std::ifstream&) override;
 
 private:
-  nes::emulator& emulator;
+  emulator& emu;
 
-  nes::types::cpu::state     state;
-  std::array<uint8_t, 0x800> ram = {};
+  types::cpu::state          state;
+  std::array<uint8_t, 0x800> ram{};
 
   void tick();
 

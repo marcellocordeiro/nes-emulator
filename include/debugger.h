@@ -8,13 +8,13 @@
 namespace nes {
 class debugger {
 public:
-  debugger(nes::emulator&);
+  debugger(emulator&);
 
   void cpu_log();
 
 private:
   std::ofstream  nestest_log{util::fmngr.get_app_path() / "nestest_out.log"};
-  nes::emulator& emulator;
+  emulator& emu;
 
   enum addr_mode2 {
     impl,

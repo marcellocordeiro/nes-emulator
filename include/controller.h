@@ -3,13 +3,14 @@
 #include <array>
 
 #include "common.h"
-#include "types/forward_decl.h"
 #include "utility/snapshotable.h"
 
 namespace nes {
 class controller : public util::snapshotable {
 public:
-  controller(nes::emulator&);
+  controller() = default;
+
+  void update_state(size_t, uint8_t);
 
   uint8_t read(size_t);
   void    write(bool);
@@ -28,9 +29,8 @@ public:
   void load(std::ifstream&) override;
 
 private:
-  nes::emulator& emulator;
-
-  bool                   strobe = false;   // Controller strobe latch
-  std::array<uint8_t, 2> controller_bits{};  // Controller shift registers
+  bool                   strobe = false;      // Controller strobe latch
+  std::array<uint8_t, 2> controller_bits = {0, 0};   // Controller shift registers
+  std::array<uint8_t, 2> controller_state = {0, 0};  // Controller states
 };
 }  // namespace nes

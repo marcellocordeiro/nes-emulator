@@ -1,7 +1,7 @@
 #include "mappers/mapper2.h"
 
 namespace nes {
-mapper2::mapper2(nes::cartridge& cartridge_ref) : mapper(cartridge_ref) {}
+mapper2::mapper2(cartridge& cart_ref) : base_mapper(cart_ref) {}
 
 void mapper2::reset()
 {
@@ -27,14 +27,14 @@ void mapper2::prg_write(uint16_t addr, uint8_t value)
 
 void mapper2::save(std::ofstream& out)
 {
-  mapper::save(out);
+  base_mapper::save(out);
 
   dump_snapshot(out, mode);
 }
 
 void mapper2::load(std::ifstream& in)
 {
-  mapper::load(in);
+  base_mapper::load(in);
 
   get_snapshot(in, mode);
 

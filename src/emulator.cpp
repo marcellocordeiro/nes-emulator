@@ -7,7 +7,7 @@
 #include "debugger.h"
 #include "io.h"
 #include "log.h"
-#include "mapper.h"
+#include "base_mapper.h"
 #include "ppu.h"
 #include "utility/file_manager.h"
 #include "utility/snapshotable.h"
@@ -18,7 +18,7 @@ emulator::emulator()
     ppu_ptr(std::make_unique<ppu>(*this)),
     apu_ptr(std::make_unique<apu>(*this)),
     cartridge_ptr(std::make_unique<cartridge>(*this)),
-    controller_ptr(std::make_unique<controller>(*this)),
+    controller_ptr(std::make_unique<controller>()),
     io_ptr(std::make_unique<io>(*this)),
     debugger_ptr(std::make_unique<debugger>(*this))
 {}

@@ -12,7 +12,7 @@
 #include "utility/file_manager.h"
 
 namespace nes {
-ppu::ppu(nes::emulator& emulator_ref) : emulator(emulator_ref) {}
+ppu::ppu(emulator& emu_ref) : emu(emu_ref) {}
 
 void ppu::power_on()
 {
@@ -49,6 +49,11 @@ void ppu::reset()
   ppudata_buffer = 0;
 
   is_odd_frame = false;
+}
+
+std::array<uint32_t, 256 * 240> ppu::get_back_buffer() const
+{
+  return back_buffer;
 }
 
 void ppu::set_palette()
@@ -131,8 +136,9 @@ void ppu::step()
     ++scanline;
 
     if (scanline == 240) {
-      emulator.get_io()->update_frame(frame_buffer);
-      ppu_state = Idle;
+      // emu.get_io()->update_frame(frame_buffer);
+      back_buffer = frame_buffer;
+      ppu_state   = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
     } else if (scanline > 241 && scanline < 261) {
@@ -287,7 +293,7 @@ uint8_t ppu::vram_read(uint16_t addr) const
   using namespace nes::types::ppu::memory;
 
   switch (get_mem_map(addr)) {
-    case CHR: return emulator.get_cartridge()->chr_read(addr);
+    case CHR: return emu.get_cartridge()->chr_read(addr);
     case Nametables: return ci_ram[nt_mirror_addr(addr)];
     case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
     default: return 0;
@@ -299,7 +305,7 @@ void ppu::vram_write(uint16_t addr, uint8_t value)
   using namespace nes::types::ppu::memory;
 
   switch (get_mem_map(addr)) {
-    case CHR: emulator.get_cartridge()->chr_write(addr, value); break;
+    case CHR: emu.get_cartridge()->chr_write(addr, value); break;
     case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
     case Palettes: cg_ram[palette_addr(addr)] = value; break;
   }
@@ -557,7 +563,7 @@ void ppu::scanline_cycle_pre()
 
     if (in_range(280, 304)) vertical_update();
     if (tick == 321) load_sprites();
-    if (tick == 260) emulator.get_cartridge()->scanline_counter();
+    if (tick == 260) emu.get_cartridge()->scanline_counter();
   }
 }
 
@@ -577,7 +583,7 @@ void ppu::scanline_cycle_visible()
       default: break;
     }
 
-    if (tick == 260) emulator.get_cartridge()->scanline_counter();
+    if (tick == 260) emu.get_cartridge()->scanline_counter();
   }
 }
 
@@ -587,7 +593,7 @@ void ppu::scanline_cycle_nmi()
     status.vblank = true;
 
     if (ctrl.nmi) {
-      emulator.get_cpu()->set_nmi();
+      emu.get_cpu()->set_nmi();
     }
   }
 }

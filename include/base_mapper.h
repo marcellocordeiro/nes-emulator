@@ -9,10 +9,10 @@
 #include "utility/snapshotable.h"
 
 namespace nes {
-class mapper : public util::snapshotable {
+class base_mapper : public util::snapshotable {
 public:
-  mapper(nes::cartridge&);
-  virtual ~mapper() = default;
+  base_mapper(cartridge&);
+  virtual ~base_mapper() = default;
 
   virtual void reset() = 0;
 
@@ -37,7 +37,7 @@ public:
   virtual void load(std::ifstream&) override;
 
 protected:
-  nes::cartridge& cartridge;
+  cartridge& cart;
 
   std::vector<uint8_t> prg;
   std::vector<uint8_t> prg_ram;
