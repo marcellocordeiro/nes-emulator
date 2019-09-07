@@ -2,10 +2,11 @@
 
 #include <fstream>
 
-#include "types/forward_decl.h"
 #include "utility/file_manager.h"
 
 namespace nes {
+class emulator;
+
 class debugger {
 public:
   debugger(emulator&);
@@ -13,27 +14,8 @@ public:
   void cpu_log();
 
 private:
-  std::ofstream  nestest_log{util::fmngr.get_app_path() / "nestest_out.log"};
   emulator& emu;
 
-  enum addr_mode2 {
-    impl,
-    acc,
-    imm,
-    zp,
-    zpx,
-    zpy,
-    rel,
-    ab,
-    abx,
-    abx_,
-    aby,
-    aby_,
-    ind,
-    indx,
-    indy,
-    indy_,
-    inv
-  };
+  std::ofstream nestest_log{util::fmngr.get_app_path() / "nestest_out.log"};
 };
 }  // namespace nes

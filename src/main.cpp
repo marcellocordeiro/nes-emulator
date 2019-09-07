@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "emulator.h"
+#include "io.h"
 #include "system_utils.h"
 #include "utility/file_manager.h"
 
@@ -20,12 +20,10 @@ int main(int argc, [[maybe_unused]] char* argv[])
     // std::ofstream log_file{app_path / "nes-emulator.log"};
     // lib::log::get().set_stream(log_file);
 
-    nes::emulator emulator;
+    nes::io io;
 
-    emulator.load_rom();
-    emulator.power_on();
-
-    emulator.run();
+    io.init();
+    io.run();  
   } catch (const std::exception& e) {
     lib::message_box(e.what());
   }

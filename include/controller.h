@@ -29,8 +29,9 @@ public:
   void load(std::ifstream&) override;
 
 private:
-  bool                   strobe = false;      // Controller strobe latch
-  std::array<uint8_t, 2> controller_bits = {0, 0};   // Controller shift registers
+  bool                   strobe           = false;  // Controller strobe latch
+  std::array<uint8_t, 2> controller_bits  = {0,
+                                            0};  // Controller shift registers
   std::array<uint8_t, 2> controller_state = {0, 0};  // Controller states
 };
 }  // namespace nes

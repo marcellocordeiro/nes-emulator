@@ -5,10 +5,11 @@
 
 #include "common.h"
 #include "types/cartridge.h"
-#include "types/forward_decl.h"
 #include "utility/snapshotable.h"
 
 namespace nes {
+class cartridge;
+
 class base_mapper : public util::snapshotable {
 public:
   base_mapper(cartridge&);

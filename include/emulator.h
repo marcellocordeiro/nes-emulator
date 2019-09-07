@@ -3,9 +3,18 @@
 #include <memory>
 #include <vector>
 
-#include "types/forward_decl.h"
+#include "utility/snapshotable.h"
 
 namespace nes {
+class cpu;
+class apu;
+class ppu;
+class cartridge;
+class base_mapper;
+class controller;
+
+class debugger;
+
 class emulator {
 public:
   emulator();
@@ -24,7 +33,6 @@ public:
   apu*        get_apu();
   cartridge*  get_cartridge();
   controller* get_controller();
-  io*         get_io();
   debugger*   get_debugger();
 
   //
@@ -40,7 +48,6 @@ private:
   std::unique_ptr<apu>        apu_ptr;
   std::unique_ptr<cartridge>  cartridge_ptr;
   std::unique_ptr<controller> controller_ptr;
-  std::unique_ptr<io>         io_ptr;
   std::unique_ptr<debugger>   debugger_ptr;
 
   std::vector<util::snapshotable*> snapshotable;

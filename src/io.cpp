@@ -10,12 +10,14 @@
 #include "cartridge.h"
 #include "controller.h"
 #include "cpu.h"
-#include "emulator.h"
 #include "ppu.h"
 #include "timer.h"
 
-// todo: reimplement this
-#include "Sound_Queue.h"
+using namespace std::chrono;
+using namespace std::chrono_literals;
+
+constexpr auto frame_time =
+    round<steady_clock::duration>(duration<long long, std::ratio<1, 60>>{1});
 
 SDL_Scancode PAUSE          = SDL_SCANCODE_ESCAPE;
 SDL_Scancode RESET          = SDL_SCANCODE_R;
@@ -69,8 +71,6 @@ void Deleter::operator()(SDL_Texture* ptr)
 }  // namespace SDL2
 
 namespace nes {
-io::io(emulator& emu_ref) : emu(emu_ref) {}
-// io::~io() = default;
 io::~io()
 {
   if (sound_open) {
@@ -89,7 +89,7 @@ void io::init()
   // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
   window.reset(SDL_CreateWindow(
-      "nes-emu",
+      "nes-emulator",
       SDL_WINDOWPOS_CENTERED,
       SDL_WINDOWPOS_CENTERED,
       width * 2,
@@ -163,19 +163,12 @@ void io::update_controllers()
 
 void io::update_frame(const std::array<uint32_t, 256 * 240>& back_buffer)
 {
-  //std::lock_guard<std::mutex> render_guard(render_lock);
-  // front_buffer.swap(back_buffer);
-  //front_buffer = back_buffer;
   SDL_UpdateTexture(
-        texture.get(), nullptr, back_buffer.data(), width * sizeof(uint32_t));
+      texture.get(), nullptr, back_buffer.data(), width * sizeof(uint32_t));
 }
 
 void io::render()
 {
-  {
-    //std::lock_guard<std::mutex> render_guard(render_lock);
-    //SDL_UpdateTexture(texture.get(), nullptr, front_buffer.data(), width * sizeof(uint32_t));
-  }
   SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
   SDL_RenderPresent(renderer.get());
 }
@@ -208,12 +201,7 @@ void io::process_keypress(SDL_KeyboardEvent& key_event)
 
 void io::run_cpu()
 {
-  using namespace std::chrono;
-  using namespace std::chrono_literals;
-
   // todo: find a better way to limit the frame rate
-  constexpr auto frame_time =
-      round<steady_clock::duration>(duration<long long, std::ratio<1, 60>>{1});
   auto frame_begin = steady_clock::now();
   auto frame_end   = frame_begin + frame_time;
 
@@ -243,6 +231,13 @@ void io::run_cpu()
     if (running) {
       emu.get_controller()->update_state(0, controller_state[0]);
       emu.get_cpu()->run_frame();
+
+      if (emu.get_apu()->samples_available(audio_buffer.size())) {
+        auto sample_count = emu.get_apu()->get_samples(
+            audio_buffer.data(), audio_buffer.size());
+        sound_queue->write(audio_buffer.data(), sample_count);
+      }
+
       update_frame(emu.get_ppu()->get_back_buffer());
       ++elapsed_frames;
     }
@@ -257,17 +252,14 @@ void io::run_cpu()
 
 void io::run()
 {
-  running     = true;
-  emu.get_apu()->volume(volume);
+  emu.power_on();
 
-  using namespace std::chrono;
-  using namespace std::chrono_literals;
+  running = true;
+  emu.get_apu()->volume(volume);
 
   cpu_thread = std::thread(&io::run_cpu, this);
 
   // todo: find a better way to limit the frame rate
-  constexpr auto frame_time =
-      round<steady_clock::duration>(duration<long long, std::ratio<1, 60>>{1});
   auto frame_begin = steady_clock::now();
   auto frame_end   = frame_begin + frame_time;
 
@@ -289,10 +281,10 @@ void io::run()
       if (running) {
         auto fps =
             elapsed_frames / duration<double>(fps_timer.elapsed_time()).count();
-        auto title = fmt::format("[{:5.2f}fps] - nes-emu", fps);
+        auto title = fmt::format("nes-emulator - {:5.2f}fps", fps);
         SDL_SetWindowTitle(window.get(), title.c_str());
       } else {
-        SDL_SetWindowTitle(window.get(), "[paused] - nes-emu");
+        SDL_SetWindowTitle(window.get(), "nes-emulator - Paused");
       }
 
       elapsed_frames = 0;

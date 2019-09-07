@@ -4,11 +4,12 @@
 #include <vector>
 
 #include "common.h"
-#include "types/forward_decl.h"
 #include "types/ppu.h"
 #include "utility/snapshotable.h"
 
 namespace nes {
+class emulator;
+
 class ppu : public util::snapshotable {
 public:
   ppu(emulator&);

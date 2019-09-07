@@ -1,13 +1,12 @@
 #include "emulator.h"
 
 #include "apu.h"
+#include "base_mapper.h"
 #include "cartridge.h"
 #include "controller.h"
 #include "cpu.h"
 #include "debugger.h"
-#include "io.h"
 #include "log.h"
-#include "base_mapper.h"
 #include "ppu.h"
 #include "utility/file_manager.h"
 #include "utility/snapshotable.h"
@@ -19,33 +18,23 @@ emulator::emulator()
     apu_ptr(std::make_unique<apu>(*this)),
     cartridge_ptr(std::make_unique<cartridge>(*this)),
     controller_ptr(std::make_unique<controller>()),
-    io_ptr(std::make_unique<io>(*this)),
     debugger_ptr(std::make_unique<debugger>(*this))
 {}
 
 emulator::~emulator() = default;
 
-void emulator::load_rom()
-{
-  cartridge_ptr->load();
-}
-
 void emulator::power_on()
 {
+  cartridge_ptr->load();
+
   cpu_ptr->power_on();
   ppu_ptr->power_on();
   apu_ptr->power_on();
-}
 
-void emulator::run()
-{
   snapshotable.push_back(cpu_ptr.get());
   snapshotable.push_back(ppu_ptr.get());
   snapshotable.push_back(cartridge_ptr->get_mapper());
   snapshotable.push_back(controller_ptr.get());
-
-  io_ptr->init();
-  io_ptr->run();
 }
 
 cpu* emulator::get_cpu()
@@ -71,11 +60,6 @@ cartridge* emulator::get_cartridge()
 controller* emulator::get_controller()
 {
   return controller_ptr.get();
-}
-
-io* emulator::get_io()
-{
-  return io_ptr.get();
 }
 
 debugger* emulator::get_debugger()

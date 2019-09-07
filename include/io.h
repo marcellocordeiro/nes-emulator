@@ -2,12 +2,19 @@
 
 #include <array>
 #include <atomic>
+#include <cstdint>
 #include <memory>
-#include <mutex>
 #include <thread>
 
-#include "common.h"
-#include "types/forward_decl.h"
+#include "emulator.h"
+
+// todo: reimplement this
+#include "Sound_Queue.h"
+
+struct SDL_Window;
+struct SDL_Renderer;
+struct SDL_Texture;
+struct SDL_KeyboardEvent;
 
 namespace SDL2 {
 struct Instance {
@@ -29,7 +36,7 @@ using Texture  = std::unique_ptr<SDL_Texture, Deleter>;
 namespace nes {
 class io {
 public:
-  io(emulator&);
+  io() = default;
   ~io();
 
   void init();
@@ -37,7 +44,7 @@ public:
   void close();
 
   uint8_t get_controller(size_t) const;
-  void    update_frame(const std::array<uint32_t, 256 * 240>&);
+  void    update_frame(const std::array<std::uint32_t, 256 * 240>&);
   void    write_samples(int16_t*, long);  // todo: reimplement this
   void    render();
 
@@ -49,28 +56,28 @@ private:
   void update_controllers();
   void process_keypress(SDL_KeyboardEvent&);
 
-  emulator& emu;
+  emulator emu;
 
   static constexpr int width  = 256;
   static constexpr int height = 240;
 
-  std::array<uint32_t, 256 * 240> front_buffer{};
+  std::array<std::uint32_t, 256 * 240> front_buffer{};
 
   double volume = 0.1;
 
-  std::thread                         cpu_thread;
-  std::mutex                          event_lock;
-  std::mutex                          render_lock;
-  std::atomic<bool>                   frame_ready    = false;
-  std::atomic<bool>                   running        = false;
-  std::atomic<bool>                   fps_limiter    = true;
-  std::atomic<int>                    elapsed_frames = 0;
-  std::array<std::atomic<uint8_t>, 2> controller_state{};
+  std::thread cpu_thread;
+
+  std::atomic<bool> frame_ready    = false;
+  std::atomic<bool> running        = false;
+  std::atomic<bool> fps_limiter    = true;
+  std::atomic<int>  elapsed_frames = 0;
+
+  std::array<std::atomic<std::uint8_t>, 2> controller_state{};
 
   //
   // Pending events
   //
-  
+
   std::atomic<bool> pending_exit          = false;
   std::atomic<bool> pending_reset         = false;
   std::atomic<bool> pending_save_snapshot = false;
@@ -78,14 +85,15 @@ private:
   std::atomic<bool> pending_volume_up     = false;
   std::atomic<bool> pending_volume_down   = false;
 
-  SDL2::Instance SDL2_guard;
-  SDL2::Window   window;
-  SDL2::Renderer renderer;
-  SDL2::Texture  texture;
-  const uint8_t* keys;
+  SDL2::Instance      SDL2_guard;
+  SDL2::Window        window;
+  SDL2::Renderer      renderer;
+  SDL2::Texture       texture;
+  const std::uint8_t* keys;
 
   // todo: reimplement this
-  std::unique_ptr<Sound_Queue> sound_queue;
-  bool                         sound_open = false;
+  std::array<std::int16_t, 4096> audio_buffer{};
+  std::unique_ptr<Sound_Queue>   sound_queue;
+  bool                           sound_open = false;
 };
 }  // namespace nes

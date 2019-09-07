@@ -24,7 +24,6 @@ target_link_libraries(nes-emulator PRIVATE nes-emulator-lib)
 
 find_package(SDL2 2.0 REQUIRED)
 target_link_libraries(nes-emulator PRIVATE SDL2::SDL2)
-target_compile_definitions(nes-emulator PRIVATE $<$<CXX_COMPILER_ID:MSVC>:SDL_MAIN_HANDLED>)
 
 find_package(fmt REQUIRED)
 target_link_libraries(nes-emulator PRIVATE fmt::fmt)

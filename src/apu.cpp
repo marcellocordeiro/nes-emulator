@@ -4,7 +4,6 @@
 
 #include "cpu.h"
 #include "emulator.h"
-#include "io.h"
 
 namespace nes {
 apu::apu(emulator& emu_ref)
@@ -43,15 +42,20 @@ void apu::write(int elapsed, uint16_t addr, uint8_t value)
   nes_apu->write_register(elapsed, addr, value);
 }
 
-void apu::run_frame(int elapsed)
+void apu::end_frame(int elapsed)
 {
   nes_apu->end_frame(elapsed);
   buffer->end_frame(elapsed);
-
-  if (buffer->samples_avail() >= buffer_size) {
-    emu.get_io()->write_samples(
-        out_buffer.data(),
-        buffer->read_samples(out_buffer.data(), buffer_size));
-  }
 }
+
+bool apu::samples_available(size_t buffer_size) const
+{
+  return buffer->samples_avail() >= static_cast<long>(buffer_size);
+}
+
+long apu::get_samples(int16_t* audio_buffer, size_t size)
+{
+  return buffer->read_samples(audio_buffer, static_cast<long>(size));
+}
+
 }  // namespace nes

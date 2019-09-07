@@ -73,7 +73,7 @@ void cpu::run_frame()
     execute();
   }
 
-  emu.get_apu()->run_frame(state.cycle_count);
+  emu.get_apu()->end_frame(state.cycle_count);
 }
 
 void cpu::tick()

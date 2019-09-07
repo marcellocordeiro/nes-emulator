@@ -4,10 +4,11 @@
 
 #include "common.h"
 #include "types/cpu.h"
-#include "types/forward_decl.h"
 #include "utility/snapshotable.h"
 
 namespace nes {
+class emulator;
+
 class cpu : public util::snapshotable {
 public:
   cpu(emulator&);

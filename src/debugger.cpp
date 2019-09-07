@@ -12,7 +12,6 @@
 #include "ppu.h"
 #include "types/cpu.h"
 
-
 namespace nes {
 using namespace types::cpu::addressing_mode;
 
@@ -40,6 +39,8 @@ void debugger::cpu_log()
       "CPX",  "SBC", "inv", "*ISB", "CPX",  "SBC", "INC", "*ISB", "INX", "SBC", "NOP",  "*SBC", "CPX",  "SBC", "INC", "*ISB",  // E
       "BEQ",  "SBC", "inv", "*ISB", "*NOP", "SBC", "INC", "*ISB", "SED", "SBC", "*NOP", "*ISB", "*NOP", "SBC", "INC", "*ISB",  // F
   };
+
+  enum addr_mode2 { impl, acc, imm, zp, zpx, zpy, rel, ab, abx, abx_, aby, aby_, ind, indx, indy, indy_, inv };
 
   constexpr std::array<int, 0x100> addr_mode = {
       // 0  1     2    3     4    5    6    7    8     9    A     B    C    D    E    F

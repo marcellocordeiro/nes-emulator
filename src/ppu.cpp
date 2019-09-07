@@ -7,7 +7,6 @@
 #include "cartridge.h"
 #include "cpu.h"
 #include "emulator.h"
-#include "io.h"
 #include "log.h"
 #include "utility/file_manager.h"
 

@@ -4,9 +4,11 @@
 
 #include "common.h"
 #include "types/cartridge.h"
-#include "types/forward_decl.h"
 
 namespace nes {
+class emulator;
+class base_mapper;
+
 class cartridge {
 public:
   cartridge(emulator&);
