@@ -78,7 +78,7 @@ void cartridge::load()
   std::vector prg_ram(info.prg_ram_size, uint8_t{});
 
   if (info.chr_ram) {
-    chr.resize(0x2000, 0);
+    chr.resize(0x2000);
   }
 
   if (util::fmngr.has_prg_ram()) {

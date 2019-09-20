@@ -37,76 +37,47 @@ SDL_Scancode KEY_DOWN[2]   = {SDL_SCANCODE_DOWN, SDL_SCANCODE_ESCAPE};
 SDL_Scancode KEY_LEFT[2]   = {SDL_SCANCODE_LEFT, SDL_SCANCODE_ESCAPE};
 SDL_Scancode KEY_RIGHT[2]  = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_ESCAPE};
 
-namespace SDL2 {
-Instance::Instance()
-{
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-}
-
-Instance::~Instance()
-{
-  SDL_Quit();
-}
-
-void Deleter::operator()(SDL_Window* ptr)
-{
-  if (ptr) {
-    SDL_DestroyWindow(ptr);
-  }
-}
-
-void Deleter::operator()(SDL_Renderer* ptr)
-{
-  if (ptr) {
-    SDL_DestroyRenderer(ptr);
-  }
-}
-
-void Deleter::operator()(SDL_Texture* ptr)
-{
-  if (ptr) {
-    SDL_DestroyTexture(ptr);
-  }
-}
-}  // namespace SDL2
-
 namespace nes {
 io::~io()
 {
-  if (sound_open) {
-    SDL_PauseAudio(true);
-    SDL_CloseAudio();
-  }
-
   pending_exit = true;
-  cpu_thread.join();
+  emulation_thread.join();
   emu.get_cartridge()->dump_prg_ram();
+
+  SDL_PauseAudio(true);
+  SDL_CloseAudio();
+
+  SDL_DestroyTexture(texture);
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+
+  SDL_Quit();
 }
 
 void io::init()
 {
+  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
   // Bilinear filter
   // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-  window.reset(SDL_CreateWindow(
+  window = SDL_CreateWindow(
       "nes-emulator",
       SDL_WINDOWPOS_CENTERED,
       SDL_WINDOWPOS_CENTERED,
       width * 2,
       height * 2,
-      0));
+      0);
 
-  renderer.reset(
-      SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED));
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-  SDL_RenderSetLogicalSize(renderer.get(), width, height);
+  SDL_RenderSetLogicalSize(renderer, width, height);
 
-  texture.reset(SDL_CreateTexture(
-      renderer.get(),
+  texture = SDL_CreateTexture(
+      renderer,
       SDL_PIXELFORMAT_ARGB8888,
       SDL_TEXTUREACCESS_STREAMING,
       width,
-      height));
+      height);
 
   keys = SDL_GetKeyboardState(nullptr);
 
@@ -126,27 +97,9 @@ void io::init()
 
   SDL_OpenAudio(&want, nullptr);
   SDL_PauseAudio(false);
-  sound_open = true;
 }
 
-void io::close()
-{
-  // leak?
-  // valgrind --log-file='valgrind%p.log' --track-origins=yes --leak-check=full
-  // ./nes-emu
-
-  // texture  = nullptr;
-  // renderer = nullptr;
-  // window   = nullptr;
-  // SDL_Quit();
-}
-
-uint8_t io::get_controller(size_t n) const
-{
-  return controller_state[n];
-}
-
-void io::update_controllers()
+void io::get_controllers()
 {
   for (size_t i = 0; i < 2; ++i) {
     controller_state[i] = 0;
@@ -161,46 +114,42 @@ void io::update_controllers()
   }
 }
 
-void io::update_frame(const std::array<uint32_t, 256 * 240>& back_buffer)
+void io::update_controllers()
+{
+  emu.get_controller()->update_state(0, controller_state[0]);
+}
+
+void io::update_frame()
 {
   SDL_UpdateTexture(
-      texture.get(), nullptr, back_buffer.data(), width * sizeof(uint32_t));
+      texture,
+      nullptr,
+      emu.get_ppu()->get_back_buffer().data(),
+      width * sizeof(std::uint32_t));
 }
 
 void io::render()
 {
-  SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
-  SDL_RenderPresent(renderer.get());
+  SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+  SDL_RenderPresent(renderer);
 }
 
-void io::write_samples(int16_t* buffer, long samples)
+void io::get_samples()
 {
-  sound_queue->write(buffer, samples);
-}
-
-void io::process_keypress(SDL_KeyboardEvent& key_event)
-{
-  auto key = key_event.keysym.scancode;
-
-  if (key == PAUSE) {
-    running = !running;
-  } else if (key == RESET) {
-    pending_reset = true;
-  } else if (key == TOGGLE_LIMITER) {
-    fps_limiter = !fps_limiter;
-  } else if (key == SAVE_SNAPSHOT) {
-    pending_save_snapshot = true;
-  } else if (key == LOAD_SNAPSHOT) {
-    pending_load_snapshot = true;
-  } else if (key == VOLUME_UP) {
-    pending_volume_up = true;
-  } else if (key == VOLUME_DOWN) {
-    pending_volume_down = true;
+  if (emu.get_apu()->samples_available(audio_buffer.size())) {
+    auto sample_count =
+        emu.get_apu()->get_samples(audio_buffer.data(), audio_buffer.size());
+    sound_queue->write(audio_buffer.data(), sample_count);
   }
 }
 
-void io::run_cpu()
+void io::run_emulation()
 {
+  emu.power_on();
+
+  running = true;
+  emu.get_apu()->volume(volume);
+
   // todo: find a better way to limit the frame rate
   auto frame_begin = steady_clock::now();
   auto frame_end   = frame_begin + frame_time;
@@ -229,16 +178,12 @@ void io::run_cpu()
     }
 
     if (running) {
-      emu.get_controller()->update_state(0, controller_state[0]);
+      update_controllers();
       emu.get_cpu()->run_frame();
 
-      if (emu.get_apu()->samples_available(audio_buffer.size())) {
-        auto sample_count = emu.get_apu()->get_samples(
-            audio_buffer.data(), audio_buffer.size());
-        sound_queue->write(audio_buffer.data(), sample_count);
-      }
+      get_samples();
+      update_frame();
 
-      update_frame(emu.get_ppu()->get_back_buffer());
       ++elapsed_frames;
     }
 
@@ -250,14 +195,30 @@ void io::run_cpu()
   }
 }
 
+void io::process_keypress(SDL_KeyboardEvent& key_event)
+{
+  auto key = key_event.keysym.scancode;
+
+  if (key == PAUSE) {
+    running = !running;
+  } else if (key == RESET) {
+    pending_reset = true;
+  } else if (key == TOGGLE_LIMITER) {
+    fps_limiter = !fps_limiter;
+  } else if (key == SAVE_SNAPSHOT) {
+    pending_save_snapshot = true;
+  } else if (key == LOAD_SNAPSHOT) {
+    pending_load_snapshot = true;
+  } else if (key == VOLUME_UP) {
+    pending_volume_up = true;
+  } else if (key == VOLUME_DOWN) {
+    pending_volume_down = true;
+  }
+}
+
 void io::run()
 {
-  emu.power_on();
-
-  running = true;
-  emu.get_apu()->volume(volume);
-
-  cpu_thread = std::thread(&io::run_cpu, this);
+  emulation_thread = std::thread(&io::run_emulation, this);
 
   // todo: find a better way to limit the frame rate
   auto frame_begin = steady_clock::now();
@@ -275,16 +236,16 @@ void io::run()
       }
     }
 
-    update_controllers();
+    get_controllers();
 
     if (fps_timer.elapsed_time() > 1s) {
       if (running) {
         auto fps =
             elapsed_frames / duration<double>(fps_timer.elapsed_time()).count();
         auto title = fmt::format("nes-emulator - {:5.2f}fps", fps);
-        SDL_SetWindowTitle(window.get(), title.c_str());
+        SDL_SetWindowTitle(window, title.c_str());
       } else {
-        SDL_SetWindowTitle(window.get(), "nes-emulator - Paused");
+        SDL_SetWindowTitle(window, "nes-emulator - Paused");
       }
 
       elapsed_frames = 0;

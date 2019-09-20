@@ -12,7 +12,7 @@ namespace lib {
 void message_box(const char* message)
 {
 #ifdef _WIN32
-  MessageBox(NULL, message, "Error!", MB_OK);
+  MessageBoxA(NULL, message, "Error!", MB_OK);
 #elif defined(__linux__)
   std::string command = "gdialog --title \"Error!\" --msgbox \"";
   command += std::string(message);
@@ -41,15 +41,11 @@ std::filesystem::path get_app_path()
   path.resize(300);
 
 #ifdef WIN32
-  GetModuleFileName(nullptr, path.data(), path.size());
-  constexpr auto path_separator = "\\";
+  GetModuleFileNameA(nullptr, path.data(), static_cast<DWORD>(path.size()));
 #elif defined(__linux__)
   readlink("/proc/self/exe", path.data(), path.size());
-  constexpr auto path_separator = "/";
 #endif
 
-  path = path.substr(0, path.find_last_of(path_separator));
-
-  return std::filesystem::canonical(path);
+  return std::filesystem::canonical(path).parent_path();
 }
 }  // namespace lib

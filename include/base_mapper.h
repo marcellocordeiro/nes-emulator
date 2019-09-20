@@ -29,8 +29,8 @@ public:
   virtual void prg_write(uint16_t, uint8_t);
   virtual void chr_write(uint16_t, uint8_t);
 
-  template <size_t> void set_prg_map(int, int);
-  template <size_t> void set_chr_map(int, int);
+  template <size_t> void set_prg_map(size_t, int);
+  template <size_t> void set_chr_map(size_t, int);
 
   virtual void scanline_counter();
 

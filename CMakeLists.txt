@@ -26,13 +26,13 @@ find_package(SDL2 2.0 REQUIRED)
 target_link_libraries(nes-emulator PRIVATE SDL2::SDL2)
 
 find_package(fmt REQUIRED)
-target_link_libraries(nes-emulator PRIVATE fmt::fmt)
+target_link_libraries(nes-emulator PRIVATE fmt::fmt-header-only)
 
 # Compiler settings
 
 set_target_properties(nes-emulator
   PROPERTIES
-    CXX_STANDARD 17
+    CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
 )

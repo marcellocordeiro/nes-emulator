@@ -63,7 +63,7 @@ void ppu::set_palette()
     throw std::runtime_error("Couldn't open the palette file");
   }
 
-  std::array<uint8_t, 64 * 3> pal_buffer;
+  std::array<uint8_t, 64 * 3> pal_buffer{};
   palette.read(reinterpret_cast<char*>(pal_buffer.data()), 64 * 3);
 
   for (size_t i = 0; i < 64; ++i) {
@@ -104,9 +104,9 @@ void ppu::set_palette()
         blue *= 1 + factor;
       }
 
-      uint8_t r = static_cast<uint8_t>(red > 255 ? 255 : red);
-      uint8_t g = static_cast<uint8_t>(green > 255 ? 255 : green);
-      uint8_t b = static_cast<uint8_t>(blue > 255 ? 255 : blue);
+      auto r = static_cast<uint8_t>(red > 255 ? 255 : red);
+      auto g = static_cast<uint8_t>(green > 255 ? 255 : green);
+      auto b = static_cast<uint8_t>(blue > 255 ? 255 : blue);
 
       uint32_t color = (r << 16) | (g << 8) | (b << 0);
 
@@ -186,7 +186,7 @@ uint8_t ppu::read(uint16_t addr)
     case PPUSTATUS: {
       bus_latch     = (bus_latch & 0x1F) | status.raw;
       status.vblank = 0;
-      addr_latch    = 0;
+      addr_latch    = false;
       break;
     }
 
@@ -431,7 +431,7 @@ void ppu::background_shift()
 
 auto ppu::get_sprite_pixel() const
 {
-  uint8_t pixel = static_cast<uint8_t>(tick - 2);
+  auto pixel = static_cast<uint8_t>(tick - 2);
 
   if (mask.show_spr && !(!mask.spr_left && pixel < 8)) {
     for (const auto& sprite : oam) {
@@ -457,7 +457,7 @@ auto ppu::get_sprite_pixel() const
 
 auto ppu::get_background_pixel() const
 {
-  uint8_t pixel = static_cast<uint8_t>(tick - 2);
+  auto pixel = static_cast<uint8_t>(tick - 2);
 
   if (mask.show_bg && !(!mask.bg_left && pixel < 8)) {
     auto bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
@@ -475,17 +475,18 @@ auto ppu::get_background_pixel() const
 
 void ppu::render_pixel()
 {
-  uint8_t pixel = static_cast<uint8_t>(tick - 2);
+  auto row_pixel = static_cast<size_t>(tick) - 2;
+  auto pixel_pos = static_cast<size_t>(scanline) * 256 + row_pixel;
 
   if (!is_rendering) {
-    frame_buffer[scanline * 256 + pixel] = nes_to_rgb[vram_read(0x3F00)];
+    frame_buffer[pixel_pos] = nes_to_rgb[vram_read(0x3F00)];
     return;
   }
 
   auto bg_palette                              = get_background_pixel();
   auto [is_sprite0, spr_palette, spr_priority] = get_sprite_pixel();
 
-  if (is_sprite0 && spr_palette && bg_palette && pixel != 255) {
+  if (is_sprite0 && spr_palette && bg_palette && row_pixel != 255) {
     status.spr0_hit = true;
   }
 
@@ -498,7 +499,7 @@ void ppu::render_pixel()
     palette = vram_read(0x3F00 + bg_palette);
   }
 
-  frame_buffer[scanline * 256 + pixel] = nes_to_rgb[palette];
+  frame_buffer[pixel_pos] = nes_to_rgb[palette];
 }
 
 void ppu::background_fetch()

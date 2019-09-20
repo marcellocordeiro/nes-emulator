@@ -57,7 +57,7 @@ void base_mapper::chr_write(uint16_t addr, uint8_t value)
 }
 
 // Size must be in KBs
-template <size_t size> void base_mapper::set_prg_map(int slot, int page)
+template <size_t size> void base_mapper::set_prg_map(size_t slot, int page)
 {
   constexpr size_t pages   = size / 8;
   constexpr size_t pages_b = size * 0x400;  // In bytes
@@ -71,7 +71,7 @@ template <size_t size> void base_mapper::set_prg_map(int slot, int page)
   }
 }
 
-template <size_t size> void base_mapper::set_chr_map(int slot, int page)
+template <size_t size> void base_mapper::set_chr_map(size_t slot, int page)
 {
   constexpr size_t pages   = size;
   constexpr size_t pages_b = size * 0x400;  // In bytes
@@ -81,14 +81,14 @@ template <size_t size> void base_mapper::set_chr_map(int slot, int page)
   }
 }
 
-template void base_mapper::set_prg_map<32>(int, int);
-template void base_mapper::set_prg_map<16>(int, int);
-template void base_mapper::set_prg_map<8>(int, int);
+template void base_mapper::set_prg_map<32>(size_t, int);
+template void base_mapper::set_prg_map<16>(size_t, int);
+template void base_mapper::set_prg_map<8>(size_t, int);
 
-template void base_mapper::set_chr_map<8>(int, int);
-template void base_mapper::set_chr_map<4>(int, int);
-template void base_mapper::set_chr_map<2>(int, int);
-template void base_mapper::set_chr_map<1>(int, int);
+template void base_mapper::set_chr_map<8>(size_t, int);
+template void base_mapper::set_chr_map<4>(size_t, int);
+template void base_mapper::set_chr_map<2>(size_t, int);
+template void base_mapper::set_chr_map<1>(size_t, int);
 
 void base_mapper::scanline_counter() {}
 

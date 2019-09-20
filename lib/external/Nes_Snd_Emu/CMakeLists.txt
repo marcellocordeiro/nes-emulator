@@ -19,7 +19,6 @@ target_include_directories(Nes_Snd_Emu SYSTEM PUBLIC "include")
 
 find_package(SDL2 2.0 REQUIRED)
 target_link_libraries(Nes_Snd_Emu PRIVATE SDL2::SDL2)
-target_compile_definitions(Nes_Snd_Emu PRIVATE $<$<CXX_COMPILER_ID:MSVC>:SDL_MAIN_HANDLED>)
 
 # Compiler settings
 

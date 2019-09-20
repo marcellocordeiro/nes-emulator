@@ -38,10 +38,10 @@ void mapper4::apply()
     set_chr_map<2>(0, regs[0] >> 1);
     set_chr_map<2>(1, regs[1] >> 1);
 
-    for (int i = 0; i < 4; ++i) set_chr_map<1>(4 + i, regs[2 + i]);
+    for (size_t i = 0; i < 4; ++i) set_chr_map<1>(4 + i, regs[2 + i]);
   } else {
     // CHR Mode 1
-    for (int i = 0; i < 4; ++i) set_chr_map<1>(i, regs[2 + i]);
+    for (size_t i = 0; i < 4; ++i) set_chr_map<1>(i, regs[2 + i]);
 
     set_chr_map<2>(2, regs[0] >> 1);
     set_chr_map<2>(3, regs[1] >> 1);

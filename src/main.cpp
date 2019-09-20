@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdexcept>
+#include <memory>
 
 #include "io.h"
 #include "system_utils.h"
@@ -20,10 +21,10 @@ int main(int argc, [[maybe_unused]] char* argv[])
     // std::ofstream log_file{app_path / "nes-emulator.log"};
     // lib::log::get().set_stream(log_file);
 
-    nes::io io;
+    auto io = std::make_unique<nes::io>();
 
-    io.init();
-    io.run();  
+    io->init();
+    io->run();  
   } catch (const std::exception& e) {
     lib::message_box(e.what());
   }

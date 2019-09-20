@@ -19,7 +19,7 @@ void ips_patch::build()
   while (read_record()) {
     min_size = std::max(
         min_size,
-        static_cast<size_t>(records.back().addr + records.back().length));
+        records.back().addr + static_cast<size_t>(records.back().length));
   }
 }
 
@@ -38,8 +38,8 @@ std::vector<uint8_t> ips_patch::patch(const std::vector<uint8_t>& rom)
   // Truncate (extension)
   //
 
-  uint8_t buffer[3];
-  ips_file.read(reinterpret_cast<char*>(buffer), 3);
+  uint8_t buffer[] = {0, 0, 0};
+  ips_file.read(reinterpret_cast<char*>(buffer), 3 * sizeof(uint8_t));
 
   // If the stream is still good, there is a 3-byte truncate offset after EOF
   if (ips_file) {
@@ -68,8 +68,8 @@ bool ips_patch::read_record()
 
   record_entry record;
 
-  uint8_t buffer[3];
-  ips_file.read(reinterpret_cast<char*>(buffer), 3);
+  uint8_t buffer[] = {0, 0, 0};
+  ips_file.read(reinterpret_cast<char*>(buffer), 3 * sizeof(uint8_t));
   record.addr = (buffer[0] << 16) | (buffer[1] << 8) | (buffer[2]);
 
   if (record.addr == magic_eof) {

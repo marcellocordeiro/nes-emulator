@@ -124,7 +124,7 @@ private:
   uint8_t ppudata_buffer = 0;  // PPUDATA read buffer
   bool    addr_latch = false;  // Address latch used by PPUSCROLL and PPUADDR
 
-  int mirroring_mode;
+  int mirroring_mode = 0;
 
   using sprite_info = types::ppu::sprite_info;
   using loopy_addr  = types::ppu::loopy_addr;
@@ -142,7 +142,7 @@ private:
   std::array<uint32_t, 256 * 240> frame_buffer{};  // Frame buffer
   std::array<uint32_t, 256 * 240> back_buffer{};   // Back buffer
 
-  std::array<std::array<uint32_t, 64>, 8> full_nes_palette;
+  std::array<std::array<uint32_t, 64>, 8> full_nes_palette{};
   const uint32_t* nes_to_rgb = full_nes_palette[0].data();
 
   loopy_addr vram_addr{0};
