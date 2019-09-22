@@ -15,6 +15,7 @@
 #include "mappers/mapper1.h"
 #include "mappers/mapper2.h"
 #include "mappers/mapper4.h"
+#include "mappers/mapper7.h"
 #include "ppu.h"
 #include "utility/file_manager.h"
 #include "utility/ips_patch.h"
@@ -57,6 +58,7 @@ void cartridge::load()
     case 1: mapper = std::make_unique<mapper1>(*this); break;
     case 2: mapper = std::make_unique<mapper2>(*this); break;
     case 4: mapper = std::make_unique<mapper4>(*this); break;
+    case 7: mapper = std::make_unique<mapper7>(*this); break;
     default:
       throw std::runtime_error(
           fmt::format("Mapper #{} not implemented", info.mapper_num));
