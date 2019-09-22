@@ -12,6 +12,12 @@ class emulator;
 class cpu : public util::snapshotable {
 public:
   cpu(emulator&);
+  ~cpu() = default;
+
+  cpu(const cpu&) = delete;
+  cpu(cpu&&)      = delete;
+  cpu& operator=(const cpu&) = delete;
+  cpu& operator=(cpu&&) = delete;
 
   void power_on();
   void reset();

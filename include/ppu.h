@@ -13,6 +13,12 @@ class emulator;
 class ppu : public util::snapshotable {
 public:
   ppu(emulator&);
+  ~ppu() = default;
+
+  ppu(const ppu&) = delete;
+  ppu(ppu&&)      = delete;
+  ppu& operator=(const ppu&) = delete;
+  ppu& operator=(ppu&&) = delete;
 
   void power_on();
   void reset();

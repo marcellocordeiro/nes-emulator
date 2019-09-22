@@ -15,6 +15,11 @@ public:
   base_mapper(cartridge&);
   virtual ~base_mapper() = default;
 
+  base_mapper(const base_mapper&) = delete;
+  base_mapper(base_mapper&&)      = delete;
+  base_mapper& operator=(const base_mapper&) = delete;
+  base_mapper& operator=(base_mapper&&) = delete;
+
   virtual void reset() = 0;
 
   void set_prg_rom(std::vector<uint8_t>&&);

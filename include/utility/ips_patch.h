@@ -10,6 +10,7 @@ namespace nes::util {
 class ips_patch {
 public:
   ips_patch(const std::filesystem::path&);
+  ~ips_patch() = default;
 
   std::vector<uint8_t> patch(const std::vector<uint8_t>&);
 

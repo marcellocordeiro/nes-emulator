@@ -20,6 +20,11 @@ public:
   emulator();
   ~emulator();
 
+  emulator(const emulator&) = delete;
+  emulator(emulator&&)      = delete;
+  emulator& operator=(const emulator&) = delete;
+  emulator& operator=(emulator&&) = delete;
+
   void load_rom();
   void power_on();
   void run();

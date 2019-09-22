@@ -8,7 +8,13 @@
 namespace nes {
 class controller : public util::snapshotable {
 public:
-  controller() = default;
+  controller()  = default;
+  ~controller() = default;
+
+  controller(const controller&) = delete;
+  controller(controller&&)      = delete;
+  controller& operator=(const controller&) = delete;
+  controller& operator=(controller&&) = delete;
 
   void update_state(size_t, uint8_t);
 

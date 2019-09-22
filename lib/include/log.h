@@ -9,6 +9,11 @@ enum log_level { None, Error, Info, Verbose };
 namespace lib {
 class log {
 public:
+  log(const log&) = delete;
+  log(log&&)      = delete;
+  log& operator=(const log&) = delete;
+  log& operator=(log&&) = delete;
+
   void set_stream(std::ostream&);
   void set_level(int);
 
@@ -18,7 +23,8 @@ public:
   static log& get();
 
 private:
-  log() = default;
+  log()  = default;
+  ~log() = default;
 
   int           level  = Info;
   std::ostream* stream = &std::cout;

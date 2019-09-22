@@ -10,6 +10,12 @@ class emulator;
 class debugger {
 public:
   debugger(emulator&);
+  ~debugger() = default;
+
+  debugger(const debugger&) = delete;
+  debugger(debugger&&)      = delete;
+  debugger& operator=(const debugger&) = delete;
+  debugger& operator=(debugger&&) = delete;
 
   void cpu_log();
 

@@ -14,6 +14,11 @@ public:
   cartridge(emulator&);
   ~cartridge();  // Has to be defined in the cpp
 
+  cartridge(const cartridge&) = delete;
+  cartridge(cartridge&&)      = delete;
+  cartridge& operator=(const cartridge&) = delete;
+  cartridge& operator=(cartridge&&) = delete;
+
   base_mapper* get_mapper();
 
   void load();

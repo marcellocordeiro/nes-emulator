@@ -16,6 +16,11 @@ public:
   apu(emulator&);
   ~apu();  // Has to be defined in the cpp
 
+  apu(const apu&) = delete;
+  apu(apu&&)      = delete;
+  apu& operator=(const apu&) = delete;
+  apu& operator=(apu&&) = delete;
+
   void power_on();
   void volume(double);
 

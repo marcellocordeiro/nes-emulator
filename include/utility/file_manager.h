@@ -6,7 +6,13 @@
 namespace nes::util {
 class file_manager {
 public:
-  file_manager() = default;
+  file_manager()  = default;
+  ~file_manager() = default;
+
+  file_manager(const file_manager&) = delete;
+  file_manager(file_manager&&)      = delete;
+  file_manager& operator=(const file_manager&) = delete;
+  file_manager& operator=(file_manager&&) = delete;
 
   void setup();
 

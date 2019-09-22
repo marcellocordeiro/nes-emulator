@@ -22,9 +22,13 @@ public:
   sdl2_frontend() = default;
   ~sdl2_frontend();
 
+  sdl2_frontend(const sdl2_frontend&) = delete;
+  sdl2_frontend(sdl2_frontend&&)      = delete;
+  sdl2_frontend& operator=(const sdl2_frontend&) = delete;
+  sdl2_frontend& operator=(sdl2_frontend&&) = delete;
+
   void init();
   void run();
-
 
 private:
   void run_emulation();
