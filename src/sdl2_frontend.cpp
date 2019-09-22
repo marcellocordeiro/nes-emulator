@@ -1,4 +1,4 @@
-#include "io.h"
+#include "sdl2_frontend.h"
 
 #include <algorithm>
 #include <string>
@@ -38,7 +38,7 @@ SDL_Scancode KEY_LEFT[2]   = {SDL_SCANCODE_LEFT, SDL_SCANCODE_ESCAPE};
 SDL_Scancode KEY_RIGHT[2]  = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_ESCAPE};
 
 namespace nes {
-io::~io()
+sdl2_frontend::~sdl2_frontend()
 {
   pending_exit = true;
   emulation_thread.join();
@@ -54,7 +54,7 @@ io::~io()
   SDL_Quit();
 }
 
-void io::init()
+void sdl2_frontend::init()
 {
   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
   // Bilinear filter
@@ -99,7 +99,7 @@ void io::init()
   SDL_PauseAudio(false);
 }
 
-void io::get_controllers()
+void sdl2_frontend::get_controllers()
 {
   for (size_t i = 0; i < 2; ++i) {
     controller_state[i] = 0;
@@ -114,12 +114,12 @@ void io::get_controllers()
   }
 }
 
-void io::update_controllers()
+void sdl2_frontend::update_controllers()
 {
   emu.get_controller()->update_state(0, controller_state[0]);
 }
 
-void io::update_frame()
+void sdl2_frontend::update_frame()
 {
   SDL_UpdateTexture(
       texture,
@@ -128,13 +128,13 @@ void io::update_frame()
       width * sizeof(std::uint32_t));
 }
 
-void io::render()
+void sdl2_frontend::render()
 {
   SDL_RenderCopy(renderer, texture, nullptr, nullptr);
   SDL_RenderPresent(renderer);
 }
 
-void io::get_samples()
+void sdl2_frontend::get_samples()
 {
   if (emu.get_apu()->samples_available(audio_buffer.size())) {
     auto sample_count =
@@ -143,7 +143,7 @@ void io::get_samples()
   }
 }
 
-void io::run_emulation()
+void sdl2_frontend::run_emulation()
 {
   emu.power_on();
 
@@ -195,7 +195,7 @@ void io::run_emulation()
   }
 }
 
-void io::process_keypress(SDL_KeyboardEvent& key_event)
+void sdl2_frontend::process_keypress(SDL_KeyboardEvent& key_event)
 {
   auto key = key_event.keysym.scancode;
 
@@ -216,9 +216,9 @@ void io::process_keypress(SDL_KeyboardEvent& key_event)
   }
 }
 
-void io::run()
+void sdl2_frontend::run()
 {
-  emulation_thread = std::thread(&io::run_emulation, this);
+  emulation_thread = std::thread(&sdl2_frontend::run_emulation, this);
 
   // todo: find a better way to limit the frame rate
   auto frame_begin = steady_clock::now();

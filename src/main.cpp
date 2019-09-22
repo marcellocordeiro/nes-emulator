@@ -1,8 +1,8 @@
 #include <iostream>
-#include <stdexcept>
 #include <memory>
+#include <stdexcept>
 
-#include "io.h"
+#include "sdl2_frontend.h"
 #include "system_utils.h"
 #include "utility/file_manager.h"
 
@@ -16,15 +16,16 @@ int main(int argc, [[maybe_unused]] char* argv[])
   try {
     nes::util::fmngr.setup();
     nes::util::fmngr.set_rom(argv[1]);
-    //nes::util::fmngr.set_rom(nes::util::fmngr.get_app_path() / "../roms/smb3.nes");
+    // nes::util::fmngr.set_rom(nes::util::fmngr.get_app_path() /
+    // "../roms/smb3.nes");
 
     // std::ofstream log_file{app_path / "nes-emulator.log"};
     // lib::log::get().set_stream(log_file);
 
-    auto io = std::make_unique<nes::io>();
+    auto frontend = std::make_unique<nes::sdl2_frontend>();
 
-    io->init();
-    io->run();  
+    frontend->init();
+    frontend->run();
   } catch (const std::exception& e) {
     lib::message_box(e.what());
   }

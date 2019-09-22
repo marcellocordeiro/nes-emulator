@@ -17,10 +17,10 @@ struct SDL_Texture;
 struct SDL_KeyboardEvent;
 
 namespace nes {
-class io {
+class sdl2_frontend {
 public:
-  io() = default;
-  ~io();
+  sdl2_frontend() = default;
+  ~sdl2_frontend();
 
   void init();
   void run();
