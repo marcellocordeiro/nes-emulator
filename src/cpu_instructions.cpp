@@ -1,10 +1,10 @@
-#include "cpu.h"
+#include "nes/cpu.h"
 
 #include <stdexcept>
 
 #include <fmt/format.h>
 
-#include "log.h"
+#include <log.h>
 
 namespace nes {
 using namespace types::cpu;

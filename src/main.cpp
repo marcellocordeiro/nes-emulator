@@ -2,9 +2,9 @@
 #include <memory>
 #include <stdexcept>
 
-#include "sdl2_frontend.h"
-#include "system_utils.h"
-#include "utility/file_manager.h"
+#include <nes/sdl2_frontend.h>
+#include <nes/utility/file_manager.h>
+#include <system_utils.h>
 
 int main(int argc, [[maybe_unused]] char* argv[])
 {

@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "common.h"
-#include "types/cartridge.h"
+#include <common.h>
+#include <nes/types/cartridge.h>
 
 namespace nes {
 class emulator;

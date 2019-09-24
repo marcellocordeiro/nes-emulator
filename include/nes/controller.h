@@ -2,8 +2,8 @@
 
 #include <array>
 
-#include "common.h"
-#include "utility/snapshotable.h"
+#include <common.h>
+#include <nes/utility/snapshotable.h>
 
 namespace nes {
 class controller : public util::snapshotable {

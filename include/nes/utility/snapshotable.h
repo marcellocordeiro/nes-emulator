@@ -5,7 +5,7 @@
 #include <type_traits>
 #include <vector>
 
-#include "common.h"
+#include <common.h>
 
 namespace nes::util {
 class snapshotable {

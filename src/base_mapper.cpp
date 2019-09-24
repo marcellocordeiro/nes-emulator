@@ -1,7 +1,7 @@
-#include "base_mapper.h"
+#include "nes/base_mapper.h"
 
-#include "cartridge.h"
-#include "log.h"
+#include <log.h>
+#include <nes/cartridge.h>
 
 namespace nes {
 base_mapper::base_mapper(cartridge& cart_ref) : cart(cart_ref) {}

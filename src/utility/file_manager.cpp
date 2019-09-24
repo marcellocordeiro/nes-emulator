@@ -1,9 +1,9 @@
-#include "utility/file_manager.h"
+#include "nes/utility/file_manager.h"
 
 #include <fstream>
 
-#include "log.h"
-#include "system_utils.h"
+#include <log.h>
+#include <system_utils.h>
 
 namespace nes::util {
 void file_manager::setup()

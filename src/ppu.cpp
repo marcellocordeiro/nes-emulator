@@ -1,14 +1,14 @@
-#include "ppu.h"
+#include "nes/ppu.h"
 
 #include <fstream>
 #include <tuple>
 
-#include "bit_utils.h"
-#include "cartridge.h"
-#include "cpu.h"
-#include "emulator.h"
-#include "log.h"
-#include "utility/file_manager.h"
+#include <bit_utils.h>
+#include <log.h>
+#include <nes/cartridge.h>
+#include <nes/cpu.h>
+#include <nes/emulator.h>
+#include <nes/utility/file_manager.h>
 
 namespace nes {
 ppu::ppu(emulator& emu_ref) : emu(emu_ref) {}

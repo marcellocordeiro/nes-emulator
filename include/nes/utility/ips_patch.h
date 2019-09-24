@@ -4,7 +4,7 @@
 #include <fstream>
 #include <vector>
 
-#include "common.h"
+#include <common.h>
 
 namespace nes::util {
 class ips_patch {

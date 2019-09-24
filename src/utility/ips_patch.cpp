@@ -1,4 +1,4 @@
-#include "utility/ips_patch.h"
+#include "nes/utility/ips_patch.h"
 
 #include <algorithm>
 #include <string>

@@ -3,7 +3,7 @@
 #include <array>
 #include <memory>
 
-#include "common.h"
+#include <common.h>
 
 class Nes_Apu;
 class Blip_Buffer;

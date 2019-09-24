@@ -19,7 +19,7 @@ target_include_directories(nes-emulator PRIVATE "include")
 
 # Dependencies
 
-add_subdirectory("lib")
+add_subdirectory("libs")
 target_link_libraries(nes-emulator PRIVATE nes-emulator-lib)
 
 find_package(SDL2 2.0 REQUIRED)
@@ -45,4 +45,4 @@ endif()
 
 # Copy resource files
 
-configure_file("res/nes_mesen.pal" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/palette.pal" COPYONLY)
+configure_file("data/nes_mesen.pal" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/palette.pal" COPYONLY)

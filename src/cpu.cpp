@@ -1,15 +1,15 @@
-#include "cpu.h"
+#include "nes/cpu.h"
 
 #include <iostream>
 #include <stdexcept>
 
-#include "apu.h"
-#include "cartridge.h"
-#include "controller.h"
-#include "debugger.h"
-#include "emulator.h"
-#include "log.h"
-#include "ppu.h"
+#include <log.h>
+#include <nes/apu.h>
+#include <nes/cartridge.h>
+#include <nes/controller.h>
+#include <nes/debugger.h>
+#include <nes/emulator.h>
+#include <nes/ppu.h>
 
 using namespace nes::types::cpu;
 

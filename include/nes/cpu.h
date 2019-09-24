@@ -2,9 +2,9 @@
 
 #include <array>
 
-#include "common.h"
-#include "types/cpu.h"
-#include "utility/snapshotable.h"
+#include <common.h>
+#include <nes/types/cpu.h>
+#include <nes/utility/snapshotable.h>
 
 namespace nes {
 class emulator;

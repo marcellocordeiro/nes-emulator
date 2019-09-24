@@ -6,10 +6,10 @@
 #include <memory>
 #include <thread>
 
-#include "emulator.h"
+#include <nes/emulator.h>
 
 // todo: reimplement this
-#include "Sound_Queue.h"
+#include <Sound_Queue.h>
 
 struct SDL_Window;
 struct SDL_Renderer;

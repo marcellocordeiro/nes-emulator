@@ -1,9 +1,9 @@
-#include "apu.h"
+#include "nes/apu.h"
 
-#include "Nes_Apu.h"
+#include <Nes_Apu.h>
 
-#include "cpu.h"
-#include "emulator.h"
+#include <nes/cpu.h>
+#include <nes/emulator.h>
 
 namespace nes {
 apu::apu(emulator& emu_ref)

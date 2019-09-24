@@ -3,9 +3,9 @@
 #include <array>
 #include <vector>
 
-#include "common.h"
-#include "types/ppu.h"
-#include "utility/snapshotable.h"
+#include <common.h>
+#include <nes/types/ppu.h>
+#include <nes/utility/snapshotable.h>
 
 namespace nes {
 class emulator;

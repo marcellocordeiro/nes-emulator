@@ -1,7 +1,7 @@
 #pragma once
 
-#include "bit_field.hpp"
-#include "common.h"
+#include <common.h>
+#include <bit_field.hpp>
 
 namespace nes::types::ppu {
 template <size_t position, size_t bits>

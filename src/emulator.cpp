@@ -1,15 +1,15 @@
-#include "emulator.h"
+#include "nes/emulator.h"
 
-#include "apu.h"
-#include "base_mapper.h"
-#include "cartridge.h"
-#include "controller.h"
-#include "cpu.h"
-#include "debugger.h"
-#include "log.h"
-#include "ppu.h"
-#include "utility/file_manager.h"
-#include "utility/snapshotable.h"
+#include <log.h>
+#include <nes/apu.h>
+#include <nes/base_mapper.h>
+#include <nes/cartridge.h>
+#include <nes/controller.h>
+#include <nes/cpu.h>
+#include <nes/debugger.h>
+#include <nes/ppu.h>
+#include <nes/utility/file_manager.h>
+#include <nes/utility/snapshotable.h>
 
 namespace nes {
 emulator::emulator()

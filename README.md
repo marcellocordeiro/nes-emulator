@@ -5,7 +5,7 @@ NES emulator written in C++ using SDL2
 ## Features
 
 - [x] CPU
-- [x] PPU
+- [x] PPU (NTSC only)
 - [x] APU (blargg's Nes_Snd_Emu)
 - [x] Input
 - [x] Cartridge
@@ -14,6 +14,8 @@ NES emulator written in C++ using SDL2
 - [x] Mapper 1 (MMC1)
 - [x] Mapper 2 (UxROM)
 - [x] Mapper 4 (MMC3)
+- [x] Mapper 7 (AxROM)
+- [x] Snapshots
 - [x] Colour emphasis
 - [x] Custom palettes (.pal)
   - [x] 64 colours
@@ -22,19 +24,19 @@ NES emulator written in C++ using SDL2
 
 ## Building
 
-Generate the solution files using CMake and build it. It has been tested on Windows and Arch Linux with the following tools and libraries:
+Generate the solution files using CMake and build it. It has been tested on Windows and Arch Linux with the following compilers, tools and libraries:
 
 - Compilers:
   - GCC 9.1
-  - Clang 8.0.0
-  - MSVC 19.21.27702.2 (VS 2019)
-
-- Libraries:
-  - SDL2 2.0.9
-  - {fmt} 5.3.1
+  - Clang 9.0.0
+  - MSVC 19.23.28105.4 (VS 2019)
 
 - Tools:
   - CMake 3.15
+
+- Libraries:
+  - SDL2 2.0.9
+  - {fmt} 6.0.0
 
 ## Running
 

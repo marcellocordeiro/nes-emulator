@@ -1,4 +1,4 @@
-#include "types/ppu.h"
+#include "nes/types/ppu.h"
 
 namespace nes::types::ppu {
 namespace memory {

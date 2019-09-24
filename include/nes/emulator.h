@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "utility/snapshotable.h"
+#include <nes/utility/snapshotable.h>
 
 namespace nes {
 class cpu;

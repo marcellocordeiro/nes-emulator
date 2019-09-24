@@ -1,4 +1,4 @@
-#include "cartridge.h"
+#include "nes/cartridge.h"
 
 #include <algorithm>
 #include <array>
@@ -8,17 +8,17 @@
 #include <string>
 #include <vector>
 
-#include "cpu.h"
-#include "emulator.h"
-#include "log.h"
-#include "mappers/mapper0.h"
-#include "mappers/mapper1.h"
-#include "mappers/mapper2.h"
-#include "mappers/mapper4.h"
-#include "mappers/mapper7.h"
-#include "ppu.h"
-#include "utility/file_manager.h"
-#include "utility/ips_patch.h"
+#include <log.h>
+#include <nes/cpu.h>
+#include <nes/emulator.h>
+#include <nes/mappers/mapper0.h>
+#include <nes/mappers/mapper1.h>
+#include <nes/mappers/mapper2.h>
+#include <nes/mappers/mapper4.h>
+#include <nes/mappers/mapper7.h>
+#include <nes/ppu.h>
+#include <nes/utility/file_manager.h>
+#include <nes/utility/ips_patch.h>
 
 namespace nes {
 cartridge::cartridge(emulator& emu_ref) : emu(emu_ref) {}

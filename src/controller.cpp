@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "nes/controller.h"
 
 namespace nes {
 void controller::update_state(size_t port, uint8_t state)

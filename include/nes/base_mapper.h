@@ -3,9 +3,9 @@
 #include <array>
 #include <vector>
 
-#include "common.h"
-#include "types/cartridge.h"
-#include "utility/snapshotable.h"
+#include <common.h>
+#include <nes/types/cartridge.h>
+#include <nes/utility/snapshotable.h>
 
 namespace nes {
 class cartridge;

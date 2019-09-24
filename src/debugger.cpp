@@ -1,4 +1,4 @@
-#include "debugger.h"
+#include "nes/debugger.h"
 
 #include <array>
 #include <sstream>
@@ -6,11 +6,11 @@
 
 #include <fmt/format.h>
 
-#include "common.h"
-#include "cpu.h"
-#include "emulator.h"
-#include "ppu.h"
-#include "types/cpu.h"
+#include <common.h>
+#include <nes/cpu.h>
+#include <nes/emulator.h>
+#include <nes/ppu.h>
+#include <nes/types/cpu.h>
 
 namespace nes {
 using namespace types::cpu::addressing_mode;

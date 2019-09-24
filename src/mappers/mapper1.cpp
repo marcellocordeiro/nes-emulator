@@ -1,6 +1,6 @@
-#include "mappers/mapper1.h"
+#include "nes/mappers/mapper1.h"
 
-#include "cartridge.h"
+#include <nes/cartridge.h>
 
 namespace nes {
 mapper1::mapper1(cartridge& cart_ref) : base_mapper(cart_ref) {}

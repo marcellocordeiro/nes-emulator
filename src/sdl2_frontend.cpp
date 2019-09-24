@@ -1,4 +1,4 @@
-#include "sdl2_frontend.h"
+#include "nes/sdl2_frontend.h"
 
 #include <algorithm>
 #include <string>
@@ -6,12 +6,12 @@
 #include <SDL.h>
 #include <fmt/format.h>
 
-#include "apu.h"
-#include "cartridge.h"
-#include "controller.h"
-#include "cpu.h"
-#include "ppu.h"
-#include "timer.h"
+#include <nes/apu.h>
+#include <nes/cartridge.h>
+#include <nes/controller.h>
+#include <nes/cpu.h>
+#include <nes/ppu.h>
+#include <timer.h>
 
 using namespace std::chrono;
 using namespace std::chrono_literals;
@@ -242,10 +242,10 @@ void sdl2_frontend::run()
       if (running) {
         auto fps =
             elapsed_frames / duration<double>(fps_timer.elapsed_time()).count();
-        auto title = fmt::format("nes-emulator - {:5.2f}fps", fps);
+        auto title = fmt::format("nes-emulator | {:5.2f}fps", fps);
         SDL_SetWindowTitle(window, title.c_str());
       } else {
-        SDL_SetWindowTitle(window, "nes-emulator - Paused");
+        SDL_SetWindowTitle(window, "nes-emulator | Paused");
       }
 
       elapsed_frames = 0;
