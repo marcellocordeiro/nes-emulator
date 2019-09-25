@@ -1,4 +1,4 @@
-#include "nes/sdl2_frontend.h"
+#include "sdl2_frontend.h"
 
 #include <algorithm>
 #include <string>

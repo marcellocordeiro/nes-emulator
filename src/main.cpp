@@ -2,7 +2,8 @@
 #include <memory>
 #include <stdexcept>
 
-#include <nes/sdl2_frontend.h>
+#include "sdl2_frontend.h"
+
 #include <nes/utility/file_manager.h>
 #include <system_utils.h>
 

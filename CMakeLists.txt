@@ -7,20 +7,17 @@ project(nes-emulator)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 file(GLOB SOURCE_FILES
-  "src/mappers/*.cpp"
-  "src/types/*.cpp"
-  "src/utility/*.cpp"
   "src/*.cpp"
 )
 
 add_executable(nes-emulator ${SOURCE_FILES})
 
-target_include_directories(nes-emulator PRIVATE "include")
+# target_include_directories(nes-emulator PRIVATE "include")
 
 # Dependencies
 
-add_subdirectory("libs")
-target_link_libraries(nes-emulator PRIVATE nes-emulator-lib)
+add_subdirectory("nes")
+target_link_libraries(nes-emulator PRIVATE nes)
 
 find_package(SDL2 2.0 REQUIRED)
 target_link_libraries(nes-emulator PRIVATE SDL2::SDL2)
