@@ -4,7 +4,6 @@
 #include <tuple>
 
 #include <bit_utils.h>
-#include <log.h>
 #include <nes/cartridge.h>
 #include <nes/cpu.h>
 #include <nes/emulator.h>

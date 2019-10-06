@@ -90,11 +90,11 @@ public:
 	typedef unsigned long resampled_time_t;
 	
 	resampled_time_t resampled_time( blip_time_t t ) const {
-		return t * resampled_time_t (factor_) + offset_;
+		return t * factor_ + offset_;
 	}
 	
 	resampled_time_t resampled_duration( int t ) const {
-		return t * resampled_time_t (factor_);
+		return t * factor_;
 	}
 	
 private:

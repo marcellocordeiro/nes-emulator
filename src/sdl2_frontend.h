@@ -19,7 +19,7 @@ struct SDL_KeyboardEvent;
 namespace nes {
 class sdl2_frontend {
 public:
-  sdl2_frontend() = default;
+  sdl2_frontend(int, char*[]);
   ~sdl2_frontend();
 
   sdl2_frontend(const sdl2_frontend&) = delete;
@@ -41,6 +41,8 @@ private:
   void process_keypress(SDL_KeyboardEvent&);
 
   emulator emu;
+
+  std::vector<std::string_view> args;
 
   static constexpr int width  = 256;
   static constexpr int height = 240;

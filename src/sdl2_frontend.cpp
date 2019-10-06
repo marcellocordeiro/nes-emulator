@@ -11,6 +11,8 @@
 #include <nes/controller.h>
 #include <nes/cpu.h>
 #include <nes/ppu.h>
+#include <nes/utility/file_manager.h>
+
 #include <timer.h>
 
 using namespace std::chrono;
@@ -38,6 +40,19 @@ SDL_Scancode KEY_LEFT[2]   = {SDL_SCANCODE_LEFT, SDL_SCANCODE_ESCAPE};
 SDL_Scancode KEY_RIGHT[2]  = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_ESCAPE};
 
 namespace nes {
+sdl2_frontend::sdl2_frontend(int argc, char* argv[])
+  : args(argv, argv + argc)
+{
+  nes::util::fmngr.setup();
+  nes::util::fmngr.set_rom(argv[1]);
+
+  // nes::util::fmngr.set_rom(nes::util::fmngr.get_app_path() /
+  // "../roms/smb3.nes");
+
+  // std::ofstream log_file{app_path / "nes-emulator.log"};
+  // lib::log::get().set_stream(log_file);
+}
+
 sdl2_frontend::~sdl2_frontend()
 {
   pending_exit = true;
