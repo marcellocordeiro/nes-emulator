@@ -69,10 +69,10 @@ private:
   std::atomic<bool> pending_volume_up     = false;
   std::atomic<bool> pending_volume_down   = false;
 
-  SDL_Window*         window;
-  SDL_Renderer*       renderer;
-  SDL_Texture*        texture;
-  const std::uint8_t* keys;
+  SDL_Window*         window   = nullptr;
+  SDL_Renderer*       renderer = nullptr;
+  SDL_Texture*        texture  = nullptr;
+  const std::uint8_t* keys     = nullptr;
 
   // todo: reimplement this
   std::array<std::int16_t, 4096> audio_buffer{};

@@ -7,8 +7,9 @@
 
 namespace nes {
 apu::apu(emulator& emu_ref)
-  : emu(emu_ref), nes_apu(std::make_unique<Nes_Apu>()),
-    buffer(std::make_unique<Blip_Buffer>())
+    : emu(emu_ref),
+      nes_apu(std::make_unique<Nes_Apu>()),
+      buffer(std::make_unique<Blip_Buffer>())
 {}
 
 apu::~apu() = default;
@@ -27,10 +28,7 @@ void apu::power_on()
       emu.get_cpu());
 }
 
-void apu::volume(double value)
-{
-  nes_apu->volume(value);
-}
+void apu::volume(double value) { nes_apu->volume(value); }
 
 uint8_t apu::read(int elapsed)
 {
@@ -57,5 +55,4 @@ long apu::get_samples(int16_t* audio_buffer, size_t size)
 {
   return buffer->read_samples(audio_buffer, static_cast<long>(size));
 }
-
 }  // namespace nes

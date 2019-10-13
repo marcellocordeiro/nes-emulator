@@ -64,15 +64,9 @@ void file_manager::set_palette(const std::filesystem::path& value)
   palette_path = std::filesystem::canonical(value);  // May throw
 }
 
-std::filesystem::path file_manager::get_app_path() const
-{
-  return app_path;
-}
+std::filesystem::path file_manager::get_app_path() const { return app_path; }
 
-std::filesystem::path file_manager::get_rom_path() const
-{
-  return rom_path;
-}
+std::filesystem::path file_manager::get_rom_path() const { return rom_path; }
 
 std::filesystem::path file_manager::get_patch_path() const
 {

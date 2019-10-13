@@ -22,6 +22,6 @@ public:
 private:
   emulator& emu;
 
-  std::ofstream nestest_log{util::fmngr.get_app_path() / "nestest_out.log"};
+  std::ofstream nestest_log;//{util::fmngr.get_app_path() / "nestest_out.log"};
 };
 }  // namespace nes

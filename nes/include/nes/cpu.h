@@ -19,6 +19,8 @@ public:
   cpu& operator=(const cpu&) = delete;
   cpu& operator=(cpu&&) = delete;
 
+  cpu& get();
+
   void power_on();
   void reset();
 
@@ -59,7 +61,7 @@ private:
   emulator& emu;
 
   types::cpu::state          state;
-  std::array<uint8_t, 0x800> ram{};
+  std::array<uint8_t, 0x800> ram = {};
 
   void tick();
 
@@ -82,8 +84,6 @@ private:
   // Auxiliary
   //
 
-  template <auto Mode> uint16_t get_operand();
-
   void    add(uint8_t);
   uint8_t shift_left(uint8_t);   // Arithmetic left shift
   uint8_t shift_right(uint8_t);  // Logical right shift
@@ -92,12 +92,14 @@ private:
 
   void compare(uint8_t, uint8_t);
 
-  void branch(bool);
-
   void    push(uint8_t);
   uint8_t pop();
 
+  void branch(bool);
+
   bool crossed_page(uint16_t, uint16_t) const;
+
+  template <auto Mode> uint16_t get_operand();
 
   //
   // Storage

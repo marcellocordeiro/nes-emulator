@@ -6,15 +6,9 @@ bool state::check_flags(uint8_t flags) const
   return (this->ps & flags) == flags;
 }
 
-void state::set_flags(uint8_t flags)
-{
-  this->ps |= flags;
-}
+void state::set_flags(uint8_t flags) { this->ps |= flags; }
 
-void state::clear_flags(uint8_t flags)
-{
-  this->ps &= ~flags;
-}
+void state::clear_flags(uint8_t flags) { this->ps &= ~flags; }
 
 void state::update_nz(uint8_t value)
 {
@@ -45,15 +39,9 @@ void state::set_y(uint8_t value)
   this->update_nz(this->y);
 }
 
-void state::set_pc(uint16_t addr)
-{
-  this->pc = addr;
-}
+void state::set_pc(uint16_t addr) { this->pc = addr; }
 
-void state::set_ps(uint8_t value)
-{
-  this->ps = value & 0xCF;
-}
+void state::set_ps(uint8_t value) { this->ps = value & 0xCF; }
 
 //
 // CPU (memory)

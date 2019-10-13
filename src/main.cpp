@@ -8,12 +8,8 @@
 
 int main(int argc, char* argv[])
 {
-  if (argc == 1) {
-    std::cout << "Too few arguments" << '\n';
-    //return 1;
-  }
-
   try {
+    std::cout << lib::get_app_path();
     auto frontend = std::make_unique<nes::sdl2_frontend>(argc, argv);
 
     frontend->init();

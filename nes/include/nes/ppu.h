@@ -37,15 +37,9 @@ public:
   // Read without side effects
   //
 
-  int cycle_count() const
-  {
-    return tick;
-  }
+  int cycle_count() const { return tick; }
 
-  int scanline_count() const
-  {
-    return scanline;
-  }
+  int scanline_count() const { return scanline; }
 
   uint8_t peek_reg(uint16_t) const;
   uint8_t peek_vram(uint16_t) const;

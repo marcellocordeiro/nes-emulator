@@ -10,7 +10,7 @@
 #include <nes/utility/file_manager.h>
 
 namespace nes {
-ppu::ppu(emulator& emu_ref) : emu(emu_ref) {}
+ppu::ppu(emulator& emu_ref) : emu{emu_ref} {}
 
 void ppu::power_on()
 {
@@ -114,10 +114,7 @@ void ppu::set_palette()
   }
 }
 
-void ppu::set_mirroring(int mode)
-{
-  mirroring_mode = mode;
-}
+void ppu::set_mirroring(int mode) { mirroring_mode = mode; }
 
 void ppu::step()
 {
@@ -281,10 +278,7 @@ void ppu::write(uint16_t addr, uint8_t value)
   }
 }
 
-uint8_t ppu::peek_vram(uint16_t addr) const
-{
-  return vram_read(addr);
-}
+uint8_t ppu::peek_vram(uint16_t addr) const { return vram_read(addr); }
 
 uint8_t ppu::vram_read(uint16_t addr) const
 {
@@ -309,10 +303,7 @@ void ppu::vram_write(uint16_t addr, uint8_t value)
   }
 }
 
-void ppu::clear_sec_oam()
-{
-  sec_oam.clear();
-}
+void ppu::clear_sec_oam() { sec_oam.clear(); }
 
 void ppu::sprite_evaluation()
 {
@@ -601,10 +592,7 @@ void ppu::scanline_cycle_nmi()
 // Auxiliary
 //
 
-uint16_t ppu::nt_addr() const
-{
-  return 0x2000 | (vram_addr.raw & 0x0FFF);
-}
+uint16_t ppu::nt_addr() const { return 0x2000 | (vram_addr.raw & 0x0FFF); }
 
 uint16_t ppu::at_addr() const
 {
@@ -661,18 +649,8 @@ void ppu::save(std::ofstream& out)
   dump_snapshot(out, bus_latch, ppudata_buffer, addr_latch);
   dump_snapshot(out, vram_addr.raw, temp_addr.raw, fine_x, oam_addr);
 
-  dump_snapshot(
-      out,
-      nt_latch,
-      at_latch,
-      bg_latch_l,
-      bg_latch_h,
-      at_shift_l,
-      at_shift_h,
-      bg_shift_l,
-      bg_shift_h,
-      at_latch_l,
-      at_latch_h);
+  dump_snapshot(out, nt_latch, at_latch, bg_latch_l, bg_latch_h, at_shift_l,
+                at_shift_h, bg_shift_l, bg_shift_h, at_latch_l, at_latch_h);
 }
 
 void ppu::load(std::ifstream& in)
@@ -688,18 +666,8 @@ void ppu::load(std::ifstream& in)
   get_snapshot(in, bus_latch, ppudata_buffer, addr_latch);
   get_snapshot(in, vram_addr.raw, temp_addr.raw, fine_x, oam_addr);
 
-  get_snapshot(
-      in,
-      nt_latch,
-      at_latch,
-      bg_latch_l,
-      bg_latch_h,
-      at_shift_l,
-      at_shift_h,
-      bg_shift_l,
-      bg_shift_h,
-      at_latch_l,
-      at_latch_h);
+  get_snapshot(in, nt_latch, at_latch, bg_latch_l, bg_latch_h, at_shift_l,
+               at_shift_h, bg_shift_l, bg_shift_h, at_latch_l, at_latch_h);
 
   // Restore auxiliary
   is_rendering   = mask.show_bg || mask.show_spr;

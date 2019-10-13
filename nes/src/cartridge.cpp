@@ -24,10 +24,7 @@ namespace nes {
 cartridge::cartridge(emulator& emu_ref) : emu(emu_ref) {}
 cartridge::~cartridge() = default;
 
-base_mapper* cartridge::get_mapper()
-{
-  return mapper.get();
-}
+base_mapper* cartridge::get_mapper() { return mapper.get(); }
 
 void cartridge::load()
 {
@@ -84,8 +81,8 @@ void cartridge::load()
   }
 
   if (util::fmngr.has_prg_ram()) {
-    std::ifstream prg_ram_file(
-        util::fmngr.get_prg_ram_path(), std::ios::binary);
+    std::ifstream prg_ram_file(util::fmngr.get_prg_ram_path(),
+                               std::ios::binary);
     prg_ram_file.read(reinterpret_cast<char*>(prg_ram.data()), prg_ram.size());
   }
 
@@ -122,27 +119,18 @@ void cartridge::chr_write(uint16_t addr, uint8_t value)
   }
 }
 
-void cartridge::scanline_counter()
-{
-  mapper->scanline_counter();
-}
+void cartridge::scanline_counter() { mapper->scanline_counter(); }
 
-void cartridge::set_mirroring(int mode)
-{
-  emu.get_ppu()->set_mirroring(mode);
-}
+void cartridge::set_mirroring(int mode) { emu.get_ppu()->set_mirroring(mode); }
 
-void cartridge::set_cpu_irq(bool value)
-{
-  emu.get_cpu()->set_irq(value);
-}
+void cartridge::set_cpu_irq(bool value) { emu.get_cpu()->set_irq(value); }
 
 void cartridge::dump_prg_ram() const
 {
   const auto& prg_ram = mapper->get_prg_ram();
 
   std::ofstream prg_ram_file(util::fmngr.get_prg_ram_path(), std::ios::binary);
-  prg_ram_file.write(
-      reinterpret_cast<const char*>(prg_ram.data()), prg_ram.size());
+  prg_ram_file.write(reinterpret_cast<const char*>(prg_ram.data()),
+                     prg_ram.size());
 }
 }  // namespace nes

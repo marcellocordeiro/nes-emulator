@@ -16,6 +16,12 @@ using namespace nes::types::cpu;
 namespace nes {
 cpu::cpu(emulator& emu_ref) : emu(emu_ref) {}
 
+/*cpu& cpu::get()
+{
+  static cpu instance;
+  return instance;
+}*/
+
 void cpu::power_on()
 {
   state.a  = 0;
@@ -33,20 +39,11 @@ void cpu::power_on()
   // state.cycle_count = 7;
 }
 
-void cpu::reset()
-{
-  INT_RST();
-}
+void cpu::reset() { INT_RST(); }
 
-void cpu::set_nmi(bool value)
-{
-  state.nmi_flag = value;
-}
+void cpu::set_nmi(bool value) { state.nmi_flag = value; }
 
-void cpu::set_irq(bool value)
-{
-  state.irq_flag = value;
-}
+void cpu::set_irq(bool value) { state.irq_flag = value; }
 
 void cpu::dma_oam(uint8_t addr)
 {
@@ -146,15 +143,9 @@ void cpu::memory_write(uint16_t addr, uint8_t value)
   write(addr, value);
 }
 
-types::cpu::state cpu::get_state() const
-{
-  return state;
-}
+types::cpu::state cpu::get_state() const { return state; }
 
-uint16_t cpu::peek_imm() const
-{
-  return state.pc + 1;
-}
+uint16_t cpu::peek_imm() const { return state.pc + 1; }
 
 uint16_t cpu::peek_rel() const
 {
@@ -164,20 +155,11 @@ uint16_t cpu::peek_rel() const
   return (state.pc + 2) + offset;
 }
 
-uint16_t cpu::peek_zp() const
-{
-  return peek(peek_imm());
-}
+uint16_t cpu::peek_zp() const { return peek(peek_imm()); }
 
-uint16_t cpu::peek_zpx() const
-{
-  return (peek_zp() + state.x) & 0xFF;
-}
+uint16_t cpu::peek_zpx() const { return (peek_zp() + state.x) & 0xFF; }
 
-uint16_t cpu::peek_zpy() const
-{
-  return (peek_zp() + state.y) & 0xFF;
-}
+uint16_t cpu::peek_zpy() const { return (peek_zp() + state.y) & 0xFF; }
 
 uint16_t cpu::peek_ab() const
 {
@@ -223,34 +205,14 @@ uint16_t cpu::peek_indy() const
 void cpu::save(std::ofstream& out)
 {
   dump_snapshot(out, ram);
-  dump_snapshot(
-      out,
-      state.a,
-      state.x,
-      state.y,
-      state.pc,
-      state.sp,
-      state.sr,
-      state.ps,
-      state.nmi_flag,
-      state.irq_flag,
-      state.cycle_count);
+  dump_snapshot(out, state.a, state.x, state.y, state.pc, state.sp, state.sr,
+                state.ps, state.nmi_flag, state.irq_flag, state.cycle_count);
 }
 
 void cpu::load(std::ifstream& in)
 {
   get_snapshot(in, ram);
-  get_snapshot(
-      in,
-      state.a,
-      state.x,
-      state.y,
-      state.pc,
-      state.sp,
-      state.sr,
-      state.ps,
-      state.nmi_flag,
-      state.irq_flag,
-      state.cycle_count);
+  get_snapshot(in, state.a, state.x, state.y, state.pc, state.sp, state.sr,
+               state.ps, state.nmi_flag, state.irq_flag, state.cycle_count);
 }
 }  // namespace nes

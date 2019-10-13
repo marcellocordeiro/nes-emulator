@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <string>
+#include <iostream>
 
 #include <SDL.h>
 #include <fmt/format.h>
@@ -40,11 +41,16 @@ SDL_Scancode KEY_LEFT[2]   = {SDL_SCANCODE_LEFT, SDL_SCANCODE_ESCAPE};
 SDL_Scancode KEY_RIGHT[2]  = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_ESCAPE};
 
 namespace nes {
-sdl2_frontend::sdl2_frontend(int argc, char* argv[])
-  : args(argv, argv + argc)
+sdl2_frontend::sdl2_frontend(int argc, char* argv[]) : args(argv, argv + argc)
 {
+  if (argc == 1) {
+    throw std::invalid_argument("Too few arguments");
+  }
+
   nes::util::fmngr.setup();
   nes::util::fmngr.set_rom(argv[1]);
+
+  std::cout << util::fmngr.get_app_path() << '\n';
 
   // nes::util::fmngr.set_rom(nes::util::fmngr.get_app_path() /
   // "../roms/smb3.nes");
@@ -75,24 +81,15 @@ void sdl2_frontend::init()
   // Bilinear filter
   // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-  window = SDL_CreateWindow(
-      "nes-emulator",
-      SDL_WINDOWPOS_CENTERED,
-      SDL_WINDOWPOS_CENTERED,
-      width * 2,
-      height * 2,
-      0);
+  window = SDL_CreateWindow("nes-emulator", SDL_WINDOWPOS_CENTERED,
+                            SDL_WINDOWPOS_CENTERED, width * 2, height * 2, 0);
 
   renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
   SDL_RenderSetLogicalSize(renderer, width, height);
 
-  texture = SDL_CreateTexture(
-      renderer,
-      SDL_PIXELFORMAT_ARGB8888,
-      SDL_TEXTUREACCESS_STREAMING,
-      width,
-      height);
+  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
+                              SDL_TEXTUREACCESS_STREAMING, width, height);
 
   keys = SDL_GetKeyboardState(nullptr);
 
@@ -136,11 +133,8 @@ void sdl2_frontend::update_controllers()
 
 void sdl2_frontend::update_frame()
 {
-  SDL_UpdateTexture(
-      texture,
-      nullptr,
-      emu.get_ppu()->get_back_buffer().data(),
-      width * sizeof(std::uint32_t));
+  SDL_UpdateTexture(texture, nullptr, emu.get_ppu()->get_back_buffer().data(),
+                    width * sizeof(std::uint32_t));
 }
 
 void sdl2_frontend::render()

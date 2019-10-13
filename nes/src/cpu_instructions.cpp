@@ -474,9 +474,8 @@ template <auto Mode> void cpu::STA()
 {
   auto addr = get_operand<Mode>();
 
-  if constexpr (
-      Mode == AbsoluteX_Exception || Mode == AbsoluteY_Exception ||
-      Mode == IndirectY_Exception) {
+  if constexpr (Mode == AbsoluteX_Exception || Mode == AbsoluteY_Exception ||
+                Mode == IndirectY_Exception) {
     tick();
   }
 
@@ -803,10 +802,7 @@ template <auto Mode> void cpu::BIT()
 // Jumps and branches
 //
 
-template <auto Mode> void cpu::JMP()
-{
-  state.set_pc(get_operand<Mode>());
-}
+template <auto Mode> void cpu::JMP() { state.set_pc(get_operand<Mode>()); }
 
 void cpu::JSR()
 {
@@ -817,45 +813,21 @@ void cpu::JSR()
   state.set_pc(get_operand<Absolute>());
 }
 
-void cpu::BCC()
-{
-  branch(!state.check_flags(Carry));
-}
+void cpu::BCC() { branch(!state.check_flags(Carry)); }
 
-void cpu::BCS()
-{
-  branch(state.check_flags(Carry));
-}
+void cpu::BCS() { branch(state.check_flags(Carry)); }
 
-void cpu::BEQ()
-{
-  branch(state.check_flags(Zero));
-}
+void cpu::BEQ() { branch(state.check_flags(Zero)); }
 
-void cpu::BMI()
-{
-  branch(state.check_flags(Negative));
-}
+void cpu::BMI() { branch(state.check_flags(Negative)); }
 
-void cpu::BNE()
-{
-  branch(!state.check_flags(Zero));
-}
+void cpu::BNE() { branch(!state.check_flags(Zero)); }
 
-void cpu::BPL()
-{
-  branch(!state.check_flags(Negative));
-}
+void cpu::BPL() { branch(!state.check_flags(Negative)); }
 
-void cpu::BVC()
-{
-  branch(!state.check_flags(Overflow));
-}
+void cpu::BVC() { branch(!state.check_flags(Overflow)); }
 
-void cpu::BVS()
-{
-  branch(state.check_flags(Overflow));
-}
+void cpu::BVS() { branch(state.check_flags(Overflow)); }
 
 void cpu::RTS()
 {
@@ -969,10 +941,7 @@ void cpu::INT_BRK()
   state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
 }
 
-void cpu::NOP()
-{
-  tick();
-}
+void cpu::NOP() { tick(); }
 
 //
 // Unofficial instructions
@@ -1173,8 +1142,8 @@ template <auto Mode> void cpu::SXA()
 
 template <auto Mode> uint16_t cpu::get_operand()
 {
-  static_assert(
-      Mode == Immediate || Mode == Relative, "Invalid addressing mode");
+  static_assert(Mode == Immediate || Mode == Relative,
+                "Invalid addressing mode");
 
   auto addr = state.pc;
   ++state.pc;

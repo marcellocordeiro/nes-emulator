@@ -25,9 +25,7 @@ public:
   emulator& operator=(const emulator&) = delete;
   emulator& operator=(emulator&&) = delete;
 
-  void load_rom();
   void power_on();
-  void run();
 
   //
   // Component access

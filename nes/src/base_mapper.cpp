@@ -21,10 +21,7 @@ void base_mapper::set_prg_ram(std::vector<uint8_t>&& vec)
   prg_ram = std::move(vec);
 }
 
-std::vector<uint8_t> base_mapper::get_prg_ram() const
-{
-  return prg_ram;
-}
+std::vector<uint8_t> base_mapper::get_prg_ram() const { return prg_ram; }
 
 uint8_t base_mapper::prg_read(uint16_t addr) const
 {
@@ -51,10 +48,7 @@ void base_mapper::prg_write(uint16_t addr, uint8_t value)
   prg_ram[addr] = value;
 }
 
-void base_mapper::chr_write(uint16_t addr, uint8_t value)
-{
-  chr[addr] = value;
-}
+void base_mapper::chr_write(uint16_t addr, uint8_t value) { chr[addr] = value; }
 
 // Size must be in KBs
 template <size_t size> void base_mapper::set_prg_map(size_t slot, int page)

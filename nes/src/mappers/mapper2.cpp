@@ -10,10 +10,7 @@ void mapper2::reset()
   set_chr_map<8>(0, 0);
 }
 
-void mapper2::apply()
-{
-  set_prg_map<16>(0, mode);
-}
+void mapper2::apply() { set_prg_map<16>(0, mode); }
 
 void mapper2::prg_write(uint16_t addr, uint8_t value)
 {
