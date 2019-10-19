@@ -1,6 +1,4 @@
-#include <iostream>
 #include <memory>
-#include <stdexcept>
 
 #include <system_utils.h>
 
@@ -9,7 +7,6 @@
 int main(int argc, char* argv[])
 {
   try {
-    std::cout << lib::get_app_path();
     auto frontend = std::make_unique<nes::sdl2_frontend>(argc, argv);
 
     frontend->init();

@@ -27,7 +27,7 @@ NES emulator written in C++ using SDL2
 Generate the solution files using CMake and build it. It has been tested on Windows and Arch Linux with the following compilers, tools and libraries:
 
 - Compilers:
-  - GCC 9.1
+  - GCC 9.2
   - Clang 9.0.0
   - MSVC 19.23.28105.4 (VS 2019)
 
@@ -37,6 +37,7 @@ Generate the solution files using CMake and build it. It has been tested on Wind
 - Libraries:
   - SDL2 2.0.9
   - {fmt} 6.0.0
+  - spdlog 1.4.2
 
 ## Running
 

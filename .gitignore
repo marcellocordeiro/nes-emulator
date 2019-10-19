@@ -1,3 +1,5 @@
+**/.clangd/
+**/.idea/
 **/.vs/
 **/.vscode/
 **/build/ 

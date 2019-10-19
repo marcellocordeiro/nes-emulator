@@ -14,7 +14,7 @@ void message_box(const char* message)
 #ifdef _WIN32
   MessageBoxA(NULL, message, "Error!", MB_OK);
 #elif defined(__linux__)
-  std::string command = "gdialog --title \"Error!\" --msgbox \"";
+  std::string command = R"(gdialog --title "Error!" --msgbox ")";
   command += std::string(message);
   command += "\"";
   system(command.c_str());

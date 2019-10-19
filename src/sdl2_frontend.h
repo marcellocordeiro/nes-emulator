@@ -1,20 +1,15 @@
 #pragma once
 
 #include <array>
-#include <atomic>
 #include <cstdint>
 #include <memory>
-#include <thread>
+#include <string_view>
+#include <vector>
 
-#include <nes/emulator.h>
+#include <SDL.h>
 
-// todo: reimplement this
-#include <Sound_Queue.h>
-
-struct SDL_Window;
-struct SDL_Renderer;
-struct SDL_Texture;
-struct SDL_KeyboardEvent;
+// TODO: reimplement this
+#include "Sound_Queue.h"
 
 namespace nes {
 class sdl2_frontend {
@@ -31,7 +26,6 @@ public:
   void run();
 
 private:
-  void run_emulation();
   void render();
   void get_controllers();
   void update_controllers();
@@ -40,42 +34,23 @@ private:
 
   void process_keypress(SDL_KeyboardEvent&);
 
-  emulator emu;
-
   std::vector<std::string_view> args;
-
-  static constexpr int width  = 256;
-  static constexpr int height = 240;
 
   double volume = 0.1;
 
-  std::thread emulation_thread;
+  bool running        = false;
+  bool fps_limiter    = true;
+  int  elapsed_frames = 0;
 
-  std::atomic<bool> frame_ready    = false;
-  std::atomic<bool> running        = false;
-  std::atomic<bool> fps_limiter    = true;
-  std::atomic<int>  elapsed_frames = 0;
-
-  std::array<std::atomic<std::uint8_t>, 2> controller_state{};
-
-  //
-  // Pending events
-  //
-
-  std::atomic<bool> pending_exit          = false;
-  std::atomic<bool> pending_reset         = false;
-  std::atomic<bool> pending_save_snapshot = false;
-  std::atomic<bool> pending_load_snapshot = false;
-  std::atomic<bool> pending_volume_up     = false;
-  std::atomic<bool> pending_volume_down   = false;
+  std::array<std::uint8_t, 2> controller_state = {};
 
   SDL_Window*         window   = nullptr;
   SDL_Renderer*       renderer = nullptr;
   SDL_Texture*        texture  = nullptr;
   const std::uint8_t* keys     = nullptr;
 
-  // todo: reimplement this
-  std::array<std::int16_t, 4096> audio_buffer{};
+  // TODO: reimplement this
+  std::array<std::int16_t, 4096> audio_buffer = {};
   std::unique_ptr<Sound_Queue>   sound_queue;
 };
 }  // namespace nes

@@ -6,7 +6,6 @@ project(nes-libs)
 
 add_library(nes-libs STATIC
   "src/bit_utils.cpp"
-  "src/log.cpp"
   "src/system_utils.cpp"
   "src/timer.cpp"
 )
@@ -14,9 +13,6 @@ add_library(nes-libs STATIC
 target_include_directories(nes-libs PUBLIC "include")
 
 # Dependencies
-
-find_package(fmt REQUIRED)
-target_link_libraries(nes-libs PRIVATE fmt::fmt-header-only)
 
 add_subdirectory("external/Nes_Snd_Emu")
 target_link_libraries(nes-libs PUBLIC Nes_Snd_Emu)

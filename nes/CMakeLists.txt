@@ -5,9 +5,9 @@ project(nes)
 # Setting up the target
 
 file(GLOB SOURCE_FILES
-  "src/mappers/*.cpp"
-  "src/types/*.cpp"
-  "src/utility/*.cpp"
+  "src/Mappers/*.cpp"
+  "src/Types/*.cpp"
+  "src/Utility/*.cpp"
   "src/*.cpp"
 )
 
@@ -20,11 +20,11 @@ target_include_directories(nes PUBLIC "include")
 add_subdirectory("libs")
 target_link_libraries(nes PUBLIC nes-libs)
 
-find_package(SDL2 2.0 REQUIRED)
-target_link_libraries(nes PRIVATE SDL2::SDL2)
-
 find_package(fmt REQUIRED)
-target_link_libraries(nes PRIVATE fmt::fmt-header-only)
+target_link_libraries(nes PRIVATE fmt::fmt)
+
+find_package(spdlog REQUIRED)
+target_link_libraries(nes PRIVATE spdlog::spdlog)
 
 # Compiler settings
 
