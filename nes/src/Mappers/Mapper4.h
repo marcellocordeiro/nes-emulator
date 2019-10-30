@@ -3,9 +3,9 @@
 #include "../BaseMapper.h"
 
 namespace nes {
-class mapper4 : public base_mapper {
+class Mapper4 final : public BaseMapper {
 public:
-  mapper4() = default;
+  Mapper4() = default;
 
   void reset() override;
 

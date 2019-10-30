@@ -5,7 +5,7 @@
 #include "../Types/Cartridge_Types.h"
 
 namespace nes {
-void mapper4::reset()
+void Mapper4::reset()
 {
   regs.fill(0);
   reg_8000 = 0;
@@ -19,7 +19,7 @@ void mapper4::reset()
   apply();
 }
 
-void mapper4::apply()
+void Mapper4::apply()
 {
   set_prg_map<8>(1, regs[7]);
 
@@ -49,10 +49,10 @@ void mapper4::apply()
 
   using namespace mirroring;
 
-  ppu::get().set_mirroring(horizontal_mirroring ? Horizontal : Vertical);
+  PPU::get().set_mirroring(horizontal_mirroring ? Horizontal : Vertical);
 }
 
-void mapper4::prg_write(uint16_t addr, uint8_t value)
+void Mapper4::prg_write(uint16_t addr, uint8_t value)
 {
   if (addr < 0x8000) {
     prg_ram[addr - 0x6000] = value;
@@ -64,7 +64,7 @@ void mapper4::prg_write(uint16_t addr, uint8_t value)
       case 0xC000: irq_period = value; break;
       case 0xC001: irq_counter = 0; break;
       case 0xE000:
-        cpu::get().set_irq(false);
+        CPU::get().set_irq(false);
         irq_enabled = false;
         break;
       case 0xE001: irq_enabled = true; break;
@@ -74,7 +74,7 @@ void mapper4::prg_write(uint16_t addr, uint8_t value)
   }
 }
 
-void mapper4::scanline_counter()
+void Mapper4::scanline_counter()
 {
   if (irq_counter == 0) {
     irq_counter = irq_period;
@@ -83,13 +83,13 @@ void mapper4::scanline_counter()
   }
 
   if (irq_enabled && irq_counter == 0) {
-    cpu::get().set_irq(true);
+    CPU::get().set_irq(true);
   }
 }
 
-void mapper4::save(std::ofstream& out)
+void Mapper4::save(std::ofstream& out)
 {
-  base_mapper::save(out);
+  BaseMapper::save(out);
 
   dump_snapshot(out, regs);
   dump_snapshot(out, reg_8000);
@@ -97,9 +97,9 @@ void mapper4::save(std::ofstream& out)
   dump_snapshot(out, irq_period, irq_counter, irq_enabled);
 }
 
-void mapper4::load(std::ifstream& in)
+void Mapper4::load(std::ifstream& in)
 {
-  base_mapper::load(in);
+  BaseMapper::load(in);
 
   get_snapshot(in, regs);
   get_snapshot(in, reg_8000);

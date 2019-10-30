@@ -11,14 +11,14 @@
 #include "PPU.h"
 #include "Types/CPU_Types.h"
 
-#include <iomanip> // TODO: remove this
+#include <iomanip>  // TODO: remove this
 
 namespace nes {
 using namespace types::cpu::addressing_mode;
 
 // debugger::debugger(emulator& emu_ref) : emu(emu_ref) {}
 
-void debugger::cpu_log()
+void Debugger::cpu_log()
 {
   // clang-format off
   constexpr std::array<std::string_view, 0x100> instruction = {
@@ -64,7 +64,7 @@ void debugger::cpu_log()
   };
   // clang-format on
 
-  auto* cpu_ptr = &cpu::get();
+  auto* cpu_ptr = &CPU::get();
 
   auto peek      = [&](uint16_t addr) { return cpu_ptr->peek(addr); };
   auto peek_imm  = [&]() { return cpu_ptr->peek_imm(); };
@@ -184,8 +184,8 @@ void debugger::cpu_log()
     default: ss << " "; break;
   }
 
-  auto ppu_cycle    = ppu::get().cycle_count();
-  auto ppu_scanline = ppu::get().scanline_count();
+  auto ppu_cycle    = PPU::get().cycle_count();
+  auto ppu_scanline = PPU::get().scanline_count();
 
   ss << fmt::format(
       "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} PPU:{:3d},{:3d} "

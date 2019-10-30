@@ -5,14 +5,14 @@
 // #include <nes/utility/file_manager.h>
 
 namespace nes {
-class debugger {
+class Debugger final {
 public:
-  debugger() = default;
+  Debugger() = default;
 
-  debugger(const debugger&) = delete;
-  debugger(debugger&&)      = delete;
-  debugger& operator=(const debugger&) = delete;
-  debugger& operator=(debugger&&) = delete;
+  Debugger(const Debugger&) = delete;
+  Debugger(Debugger&&)      = delete;
+  Debugger& operator=(const Debugger&) = delete;
+  Debugger& operator=(Debugger&&) = delete;
 
   void cpu_log();
 

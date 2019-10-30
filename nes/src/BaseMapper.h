@@ -7,15 +7,15 @@
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
-class base_mapper : public util::snapshotable {
+class BaseMapper : public Utility::Snapshotable {
 public:
-  base_mapper()          = default;
-  virtual ~base_mapper() = default;
+  BaseMapper()          = default;
+  virtual ~BaseMapper() = default;
 
-  base_mapper(const base_mapper&) = delete;
-  base_mapper(base_mapper&&)      = delete;
-  base_mapper& operator=(const base_mapper&) = delete;
-  base_mapper& operator=(base_mapper&&) = delete;
+  BaseMapper(const BaseMapper&) = delete;
+  BaseMapper(BaseMapper&&)      = delete;
+  BaseMapper& operator=(const BaseMapper&) = delete;
+  BaseMapper& operator=(BaseMapper&&) = delete;
 
   virtual void reset() = 0;
 

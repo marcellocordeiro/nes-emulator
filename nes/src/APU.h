@@ -3,14 +3,14 @@
 #include <common.h>
 
 namespace nes {
-class apu {
+class APU final {
 public:
-  apu(const apu&) = delete;
-  apu(apu&&)      = delete;
-  apu& operator=(const apu&) = delete;
-  apu& operator=(apu&&) = delete;
+  APU(const APU&) = delete;
+  APU(APU&&)      = delete;
+  APU& operator=(const APU&) = delete;
+  APU& operator=(APU&&) = delete;
 
-  static apu& get();
+  static APU& get();
 
   void power_on();
   void volume(double);
@@ -23,6 +23,6 @@ public:
   long get_samples(int16_t*, size_t);
 
 private:
-  apu() = default;
+  APU() = default;
 };
 }  // namespace nes

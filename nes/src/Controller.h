@@ -6,14 +6,14 @@
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
-class controller : public util::snapshotable {
+class Controller final : public Utility::Snapshotable {
 public:
-  controller(const controller&) = delete;
-  controller(controller&&)      = delete;
-  controller& operator=(const controller&) = delete;
-  controller& operator=(controller&&) = delete;
+  Controller(const Controller&) = delete;
+  Controller(Controller&&)      = delete;
+  Controller& operator=(const Controller&) = delete;
+  Controller& operator=(Controller&&) = delete;
 
-  static controller& get();
+  static Controller& get();
 
   void update_state(size_t, uint8_t);
 
@@ -34,7 +34,7 @@ public:
   void load(std::ifstream&) override;
 
 private:
-  controller() = default;
+  Controller() = default;
 
   bool                   strobe           = false;  // Controller strobe latch
   std::array<uint8_t, 2> controller_bits  = {};  // Controller shift registers

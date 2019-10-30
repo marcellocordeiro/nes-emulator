@@ -208,7 +208,7 @@ void Blip_Impulse_::treble_eq(const blip_eq_t& new_eq)
   const double pow_a_nc = rescale * pow(rolloff, n_harm * cutoff);
 
   double       total    = 0.0;
-  const double to_angle = M_PI / 2 / n_harm / max_res;
+  const double to_angle = 3.14159265358979323846 / 2 / n_harm / max_res;
 
   float     buf[max_res * (Blip_Buffer::widest_impulse_ - 2) / 2];
   const int size = max_res * (width - 2) / 2;

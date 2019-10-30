@@ -1,21 +1,20 @@
 #include "PPU.h"
 
-#include <fstream>
-#include <tuple>
+#include <algorithm>
 
 #include <bit_utils.h>
-#include "Cartridge.h"
 #include "CPU.h"
+#include "Cartridge.h"
 #include "Utility/FileManager.h"
 
 namespace nes {
-ppu& ppu::get()
+PPU& PPU::get()
 {
-  static ppu instance;
+  static PPU instance;
   return instance;
 }
 
-void ppu::power_on()
+void PPU::power_on()
 {
   this->set_palette();
 
@@ -36,7 +35,7 @@ void ppu::power_on()
   is_odd_frame = false;
 }
 
-void ppu::reset()
+void PPU::reset()
 {
   ctrl.raw   = 0;
   mask.raw   = 0;
@@ -52,27 +51,23 @@ void ppu::reset()
   is_odd_frame = false;
 }
 
-std::array<uint32_t, 256 * 240> ppu::get_back_buffer() const
+std::array<uint32_t, 256 * 240> PPU::get_back_buffer() const
 {
   return back_buffer;
 }
 
-void ppu::set_palette()
+void PPU::set_palette()
 {
-  std::ifstream palette(util::file_manager::get().get_palette_path(),
-                        std::ios::binary);
+  auto palette = Utility::FileManager::get().get_palette();
 
-  if (!palette) {
-    throw std::runtime_error("Couldn't open the palette file");
+  if (palette.size() != 64 * 3) {
+    throw std::invalid_argument("Invalid palette file");
   }
 
-  std::array<uint8_t, 64 * 3> pal_buffer{};
-  palette.read(reinterpret_cast<char*>(pal_buffer.data()), 64 * 3);
-
   for (size_t i = 0; i < 64; ++i) {
-    uint8_t r = pal_buffer[(i * 3) + 0];
-    uint8_t g = pal_buffer[(i * 3) + 1];
-    uint8_t b = pal_buffer[(i * 3) + 2];
+    uint8_t r = palette[(i * 3) + 0];
+    uint8_t g = palette[(i * 3) + 1];
+    uint8_t b = palette[(i * 3) + 2];
 
     full_nes_palette[0][i] = (r << 16) | (g << 8) | b;
   }
@@ -118,9 +113,9 @@ void ppu::set_palette()
   }
 }
 
-void ppu::set_mirroring(int mode) { mirroring_mode = mode; }
+void PPU::set_mirroring(int mode) { mirroring_mode = mode; }
 
-void ppu::step()
+void PPU::step()
 {
   switch (ppu_state) {
     case Visible: scanline_cycle_visible(); break;
@@ -135,9 +130,11 @@ void ppu::step()
     ++scanline;
 
     if (scanline == 240) {
-      // emu.get_io()->update_frame(frame_buffer);
       back_buffer = frame_buffer;
-      ppu_state   = Idle;
+      std::transform(
+          back_buffer.begin(), back_buffer.end(), back_buffer.begin(),
+          [this](uint8_t p) { return full_nes_palette[mask.rgb][p]; });
+      ppu_state = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
     } else if (scanline > 241 && scanline < 261) {
@@ -158,7 +155,7 @@ void ppu::step()
   }
 }
 
-uint8_t ppu::peek_reg(uint16_t addr) const
+uint8_t PPU::peek_reg(uint16_t addr) const
 {
   using namespace nes::types::ppu::memory;
 
@@ -177,7 +174,7 @@ uint8_t ppu::peek_reg(uint16_t addr) const
   return bus_latch;
 }
 
-uint8_t ppu::read(uint16_t addr)
+uint8_t PPU::read(uint16_t addr)
 {
   using namespace nes::types::ppu::memory;
 
@@ -212,7 +209,7 @@ uint8_t ppu::read(uint16_t addr)
   return bus_latch;
 }
 
-void ppu::write(uint16_t addr, uint8_t value)
+void PPU::write(uint16_t addr, uint8_t value)
 {
   using namespace nes::types::ppu::memory;
 
@@ -231,9 +228,9 @@ void ppu::write(uint16_t addr, uint8_t value)
     case PPUMASK: {
       mask.raw = value;
 
-      is_rendering   = mask.show_bg || mask.show_spr;
-      grayscale_mask = mask.grayscale ? 0x30 : 0x3F;
-      nes_to_rgb     = full_nes_palette[mask.rgb].data();
+      is_rendering     = mask.show_bg || mask.show_spr;
+      grayscale_mask   = mask.grayscale ? 0x30 : 0x3F;
+      selected_palette = mask.rgb;
       break;
     }
 
@@ -281,34 +278,34 @@ void ppu::write(uint16_t addr, uint8_t value)
   }
 }
 
-uint8_t ppu::peek_vram(uint16_t addr) const { return vram_read(addr); }
+uint8_t PPU::peek_vram(uint16_t addr) const { return vram_read(addr); }
 
-uint8_t ppu::vram_read(uint16_t addr) const
+uint8_t PPU::vram_read(uint16_t addr) const
 {
   using namespace nes::types::ppu::memory;
 
   switch (get_mem_map(addr)) {
-    case CHR: return cartridge::get().chr_read(addr);
+    case CHR: return Cartridge::get().chr_read(addr);
     case Nametables: return ci_ram[nt_mirror_addr(addr)];
     case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
     default: return 0;
   }
 }
 
-void ppu::vram_write(uint16_t addr, uint8_t value)
+void PPU::vram_write(uint16_t addr, uint8_t value)
 {
   using namespace nes::types::ppu::memory;
 
   switch (get_mem_map(addr)) {
-    case CHR: cartridge::get().chr_write(addr, value); break;
+    case CHR: Cartridge::get().chr_write(addr, value); break;
     case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
     case Palettes: cg_ram[palette_addr(addr)] = value; break;
   }
 }
 
-void ppu::clear_sec_oam() { sec_oam.fill({}); }
+void PPU::clear_sec_oam() { sec_oam.fill({}); }
 
-void ppu::sprite_evaluation()
+void PPU::sprite_evaluation()
 {
   size_t size = 0;
 
@@ -332,7 +329,7 @@ void ppu::sprite_evaluation()
   }
 }
 
-void ppu::load_sprites()
+void PPU::load_sprites()
 {
   oam = sec_oam;
 
@@ -367,7 +364,7 @@ void ppu::load_sprites()
   }
 }
 
-void ppu::horizontal_scroll()
+void PPU::horizontal_scroll()
 {
   if (vram_addr.coarse_x == 31) {
     vram_addr.raw ^= 0x41F;
@@ -376,7 +373,7 @@ void ppu::horizontal_scroll()
   }
 }
 
-void ppu::vertical_scroll()
+void PPU::vertical_scroll()
 {
   if (vram_addr.fine_y < 7) {
     ++vram_addr.fine_y;
@@ -393,17 +390,17 @@ void ppu::vertical_scroll()
   }
 }
 
-void ppu::horizontal_update()
+void PPU::horizontal_update()
 {
   vram_addr.raw = (vram_addr.raw & ~0x041F) | (temp_addr.raw & 0x041F);
 }
 
-void ppu::vertical_update()
+void PPU::vertical_update()
 {
   vram_addr.raw = (vram_addr.raw & ~0x7BE0) | (temp_addr.raw & 0x7BE0);
 }
 
-void ppu::background_shift()
+void PPU::background_shift()
 {
   bg_shift_l <<= 1;
   bg_shift_h <<= 1;
@@ -423,35 +420,7 @@ void ppu::background_shift()
   }
 }
 
-auto ppu::get_sprite_pixel() const
-{
-  auto pixel = static_cast<uint8_t>(tick - 2);
-
-  if (mask.show_spr && !(!mask.spr_left && pixel < 8)) {
-    for (const auto& sprite : oam) {
-      if (sprite.id == 0xFF) break;
-
-      int offset = pixel - sprite.x;
-
-      if (offset < 0 || offset >= 8) continue;  // Not in range
-
-      auto spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
-
-      if (spr_palette != 0) {
-        spr_palette |= (sprite.attr & 3) << 2;
-
-        return std::tuple{
-            sprite.id == 0,                          // Is sprite 0?
-            static_cast<uint8_t>(spr_palette + 16),  // Sprite palette
-            !(sprite.attr & 0x20)};                  // Is the sprite on top?
-      }
-    }
-  }
-
-  return std::tuple{false, uint8_t{0}, false};
-}
-
-auto ppu::get_background_pixel() const
+auto PPU::get_background_pixel() const
 {
   auto pixel = static_cast<uint8_t>(tick - 2);
 
@@ -469,36 +438,59 @@ auto ppu::get_background_pixel() const
   return uint8_t{0};
 }
 
-void ppu::render_pixel()
+auto PPU::get_sprite_pixel()
+{
+  auto pixel = static_cast<uint8_t>(tick - 2);
+
+  auto bg_palette = get_background_pixel();
+
+  if (mask.show_spr && !(!mask.spr_left && pixel < 8)) {
+    for (const auto& sprite : oam) {
+      if (sprite.id == 0xFF) break;
+
+      int offset = pixel - sprite.x;
+
+      if (offset < 0 || offset >= 8) continue;  // Not in range
+
+      auto spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
+
+      if (spr_palette != 0) {
+        bool is_sprite0   = sprite.id == 0;
+        bool spr_priority = !(sprite.attr & 0x20);
+        spr_palette |= (sprite.attr & 3) << 2;
+        spr_palette += 16;
+
+        if (is_sprite0 && spr_palette && bg_palette && pixel != 255) {
+          status.spr0_hit = true;
+        }
+
+        // Evaluate priority
+        if (spr_palette && (spr_priority || bg_palette == 0)) {
+          return spr_palette;
+        } else {
+          return bg_palette;
+        }
+      }
+    }
+  }
+
+  return bg_palette;
+}
+
+void PPU::render_pixel()
 {
   auto row_pixel = static_cast<size_t>(tick) - 2;
   auto pixel_pos = static_cast<size_t>(scanline) * 256 + row_pixel;
 
   if (!is_rendering) {
-    frame_buffer[pixel_pos] = nes_to_rgb[vram_read(0x3F00)];
+    frame_buffer[pixel_pos] = vram_read(0x3F00);
     return;
   }
 
-  auto bg_palette                              = get_background_pixel();
-  auto [is_sprite0, spr_palette, spr_priority] = get_sprite_pixel();
-
-  if (is_sprite0 && spr_palette && bg_palette && row_pixel != 255) {
-    status.spr0_hit = true;
-  }
-
-  uint8_t palette = 0;
-
-  // Evaluate priority
-  if (spr_palette && (spr_priority || bg_palette == 0)) {
-    palette = vram_read(0x3F00 + spr_palette);
-  } else {
-    palette = vram_read(0x3F00 + bg_palette);
-  }
-
-  frame_buffer[pixel_pos] = nes_to_rgb[palette];
+  frame_buffer[pixel_pos] = vram_read(0x3F00 + get_sprite_pixel());
 }
 
-void ppu::background_fetch()
+void PPU::background_fetch()
 {
   auto in_range = [this](int lower, int upper) {
     return (tick >= lower) && (tick <= upper);
@@ -542,7 +534,7 @@ void ppu::background_fetch()
   }
 }
 
-void ppu::scanline_cycle_pre()
+void PPU::scanline_cycle_pre()
 {
   auto in_range = [this](int lower, int upper) {
     return (tick >= lower) && (tick <= upper);
@@ -559,11 +551,11 @@ void ppu::scanline_cycle_pre()
 
     if (in_range(280, 304)) vertical_update();
     if (tick == 321) load_sprites();
-    if (tick == 260) cartridge::get().scanline_counter();
+    if (tick == 260) Cartridge::get().scanline_counter();
   }
 }
 
-void ppu::scanline_cycle_visible()
+void PPU::scanline_cycle_visible()
 {
   if (tick >= 2 && tick <= 257) {
     render_pixel();
@@ -579,17 +571,17 @@ void ppu::scanline_cycle_visible()
       default: break;
     }
 
-    if (tick == 260) cartridge::get().scanline_counter();
+    if (tick == 260) Cartridge::get().scanline_counter();
   }
 }
 
-void ppu::scanline_cycle_nmi()
+void PPU::scanline_cycle_nmi()
 {
   if (tick == 1) {
     status.vblank = true;
 
     if (ctrl.nmi) {
-      cpu::get().set_nmi();
+      CPU::get().set_nmi();
     }
   }
 }
@@ -598,20 +590,20 @@ void ppu::scanline_cycle_nmi()
 // Auxiliary
 //
 
-uint16_t ppu::nt_addr() const { return 0x2000 | (vram_addr.raw & 0x0FFF); }
+uint16_t PPU::nt_addr() const { return 0x2000 | (vram_addr.raw & 0x0FFF); }
 
-uint16_t ppu::at_addr() const
+uint16_t PPU::at_addr() const
 {
   return 0x23C0 | (vram_addr.nt << 10) | ((vram_addr.coarse_y / 4) << 3) |
          (vram_addr.coarse_x / 4);
 }
 
-uint16_t ppu::bg_addr() const
+uint16_t PPU::bg_addr() const
 {
   return (ctrl.bg_table * 0x1000) + (nt_latch * 16) + vram_addr.fine_y;
 }
 
-uint16_t ppu::nt_mirror_addr(uint16_t addr) const
+uint16_t PPU::nt_mirror_addr(uint16_t addr) const
 {
   using namespace nes::mirroring;
   switch (mirroring_mode) {
@@ -624,12 +616,12 @@ uint16_t ppu::nt_mirror_addr(uint16_t addr) const
   }
 }
 
-uint16_t ppu::palette_addr(uint16_t addr) const
+uint16_t PPU::palette_addr(uint16_t addr) const
 {
   return (((addr & 0x13) == 0x10) ? (addr & ~0x10) : addr) & 0x1F;
 }
 
-template <typename T> uint8_t ppu::get_palette(T low, T high, int offset) const
+template <typename T> uint8_t PPU::get_palette(T low, T high, int offset) const
 {
   constexpr auto nth_bit = [](auto x, auto n) -> uint8_t {
     return ((x >> n) & 1);
@@ -642,7 +634,7 @@ template <typename T> uint8_t ppu::get_palette(T low, T high, int offset) const
 // Snapshot
 //
 
-void ppu::save(std::ofstream& out)
+void PPU::save(std::ofstream& out)
 {
   dump_snapshot(out, ci_ram);
   dump_snapshot(out, cg_ram);
@@ -659,7 +651,7 @@ void ppu::save(std::ofstream& out)
                 at_shift_h, bg_shift_l, bg_shift_h, at_latch_l, at_latch_h);
 }
 
-void ppu::load(std::ifstream& in)
+void PPU::load(std::ifstream& in)
 {
   get_snapshot(in, ci_ram);
   get_snapshot(in, cg_ram);
@@ -676,11 +668,11 @@ void ppu::load(std::ifstream& in)
                at_shift_h, bg_shift_l, bg_shift_h, at_latch_l, at_latch_h);
 
   // Restore auxiliary
-  is_rendering   = mask.show_bg || mask.show_spr;
-  grayscale_mask = mask.grayscale ? 0x30 : 0x3F;
-  nes_to_rgb     = full_nes_palette[mask.rgb].data();
-  sprite_height  = ctrl.spr_size ? 16 : 8;
-  addr_increment = ctrl.addr_inc ? 32 : 1;
+  is_rendering     = mask.show_bg || mask.show_spr;
+  grayscale_mask   = mask.grayscale ? 0x30 : 0x3F;
+  selected_palette = mask.rgb;
+  sprite_height    = ctrl.spr_size ? 16 : 8;
+  addr_increment   = ctrl.addr_inc ? 32 : 1;
 
   // Evaluate and load sprites
   // Might be enough to restore the state

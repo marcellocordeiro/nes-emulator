@@ -8,14 +8,14 @@
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
-class cpu : public util::snapshotable {
+class CPU final : public Utility::Snapshotable {
 public:
-  cpu(const cpu&) = delete;
-  cpu(cpu&&)      = delete;
-  cpu& operator=(const cpu&) = delete;
-  cpu& operator=(cpu&&) = delete;
+  CPU(const CPU&) = delete;
+  CPU(CPU&&)      = delete;
+  CPU& operator=(const CPU&) = delete;
+  CPU& operator=(CPU&&) = delete;
 
-  static cpu& get();
+  static CPU& get();
 
   void power_on();
   void reset();
@@ -54,7 +54,7 @@ public:
   void load(std::ifstream&) override;
 
 private:
-  cpu() = default;
+  CPU() = default;
 
   types::cpu::state          state;
   std::array<uint8_t, 0x800> ram = {};

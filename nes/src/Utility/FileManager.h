@@ -3,15 +3,15 @@
 #include <filesystem>
 #include <vector>
 
-namespace nes::util {
-class file_manager {
+namespace nes::Utility {
+class FileManager final {
 public:
-  file_manager(const file_manager&) = delete;
-  file_manager(file_manager&&)      = delete;
-  file_manager& operator=(const file_manager&) = delete;
-  file_manager& operator=(file_manager&&) = delete;
+  FileManager(const FileManager&) = delete;
+  FileManager(FileManager&&)      = delete;
+  FileManager& operator=(const FileManager&) = delete;
+  FileManager& operator=(FileManager&&) = delete;
 
-  static file_manager& get();
+  static FileManager& get();
 
   void setup();
 
@@ -20,7 +20,10 @@ public:
   void set_palette(const std::filesystem::path&);
 
   std::vector<std::uint8_t> get_rom();
-  std::vector<std::uint8_t> get_prg_ram(std::size_t);
+  std::vector<std::uint8_t> get_prg_ram();
+  std::vector<std::uint8_t> get_palette();
+
+  void save_prg_ram(const std::vector<std::uint8_t>&);
 
   std::filesystem::path get_app_path() const;
   std::filesystem::path get_rom_path() const;
@@ -34,7 +37,7 @@ public:
   bool has_snapshot() const;
 
 private:
-  file_manager() = default;
+  FileManager() = default;
 
   std::filesystem::path app_path;
   std::filesystem::path rom_path;
@@ -43,4 +46,4 @@ private:
   std::filesystem::path palette_path;
   std::filesystem::path snapshot_path;
 };
-}  // namespace nes::util
+}  // namespace nes::Utility

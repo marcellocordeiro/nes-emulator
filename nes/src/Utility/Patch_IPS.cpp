@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <string>
 
-namespace nes::util {
+namespace nes::Utility {
 ips_patch::ips_patch(const std::filesystem::path& path)
     : ips_file(path, std::ios::binary)
 {
@@ -95,4 +95,4 @@ bool ips_patch::read_record()
 
   return true;
 }
-}  // namespace nes::util
+}  // namespace nes::Utility

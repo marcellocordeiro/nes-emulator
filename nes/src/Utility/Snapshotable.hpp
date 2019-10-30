@@ -7,8 +7,8 @@
 
 #include <common.h>
 
-namespace nes::util {
-class snapshotable {
+namespace nes::Utility {
+class Snapshotable {
 public:
   virtual void save(std::ofstream&) = 0;
   virtual void load(std::ifstream&) = 0;
@@ -78,4 +78,4 @@ private:
     for (auto& ref : vec) get(in, ref);
   }
 };
-}  // namespace nes::util
+}  // namespace nes::Utility

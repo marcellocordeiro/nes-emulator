@@ -70,7 +70,7 @@ template <auto Operation> int get_map(uint16_t addr)
     } else if (in_range(0x4020, 0x5FFF)) {
       return Unknown;
     } else if (in_range(0x6000, 0xFFFF)) {
-      return Cartridge;
+      return Cartridge_Access;
     }
   } else if constexpr (Operation == Write) {
     if (addr <= 0x1FFF) {
@@ -82,13 +82,13 @@ template <auto Operation> int get_map(uint16_t addr)
     } else if (addr == 0x4014) {
       return OAMDMA;
     } else if (addr == 0x4016) {
-      return Controller;
+      return Controller_Access;
     } else if (addr == 0x4017) {
       return APU_Access;
     } else if (in_range(0x4018, 0x401F)) {
       return Unknown;
     } else if (in_range(0x4020, 0xFFFF)) {
-      return Cartridge;
+      return Cartridge_Access;
     }
   }
 

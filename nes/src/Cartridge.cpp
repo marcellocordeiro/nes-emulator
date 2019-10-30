@@ -1,8 +1,5 @@
 #include "Cartridge.h"
 
-#include <fstream>
-#include <stdexcept>
-#include <string>
 #include <vector>
 
 #include <spdlog/spdlog.h>
@@ -16,19 +13,19 @@
 #include "Utility/FileManager.h"
 
 namespace nes {
-cartridge& cartridge::get()
+Cartridge& Cartridge::get()
 {
-  static cartridge instance;
+  static Cartridge instance;
   return instance;
 }
 
-base_mapper* cartridge::get_mapper() { return mapper.get(); }
+BaseMapper* Cartridge::get_mapper() { return mapper.get(); }
 
-void cartridge::load()
+void Cartridge::load()
 {
   using namespace mirroring;
 
-  auto rom = util::file_manager::get().get_rom();
+  auto rom = Utility::FileManager::get().get_rom();
 
   std::vector header(rom.begin(), rom.begin() + 16);
 
@@ -40,11 +37,11 @@ void cartridge::load()
   int    mirroring    = (header[6] & 1) ? Vertical : Horizontal;
 
   switch (mapper_num) {
-    case 0: mapper = std::make_unique<mapper0>(); break;
-    case 1: mapper = std::make_unique<mapper1>(); break;
-    case 2: mapper = std::make_unique<mapper2>(); break;
-    case 4: mapper = std::make_unique<mapper4>(); break;
-    case 7: mapper = std::make_unique<mapper7>(); break;
+    case 0: mapper = std::make_unique<Mapper0>(); break;
+    case 1: mapper = std::make_unique<Mapper1>(); break;
+    case 2: mapper = std::make_unique<Mapper2>(); break;
+    case 4: mapper = std::make_unique<Mapper4>(); break;
+    case 7: mapper = std::make_unique<Mapper7>(); break;
     default:
       throw std::runtime_error(
           fmt::format("Mapper #{} not implemented", mapper_num));
@@ -64,7 +61,7 @@ void cartridge::load()
   std::vector prg(rom.begin() + prg_start, rom.begin() + prg_end);
   std::vector chr(rom.begin() + chr_start, rom.begin() + chr_end);
 
-  auto prg_ram = util::file_manager::get().get_prg_ram(prg_ram_size);
+  auto prg_ram = Utility::FileManager::get().get_prg_ram();
 
   if (chr_ram) {
     chr.resize(0x2000);
@@ -75,38 +72,33 @@ void cartridge::load()
   mapper->set_prg_ram(std::move(prg_ram));
   mapper->reset();
 
-  ppu::get().set_mirroring(mirroring);
+  PPU::get().set_mirroring(mirroring);
 }
 
-uint8_t cartridge::prg_read(uint16_t addr) const
+uint8_t Cartridge::prg_read(uint16_t addr) const
 {
   return mapper->prg_read(addr);
 }
 
-void cartridge::prg_write(uint16_t addr, uint8_t value)
+void Cartridge::prg_write(uint16_t addr, uint8_t value)
 {
   mapper->prg_write(addr, value);
 }
 
-uint8_t cartridge::chr_read(uint16_t addr) const
+uint8_t Cartridge::chr_read(uint16_t addr) const
 {
   return mapper->chr_read(addr);
 }
 
-void cartridge::chr_write(uint16_t addr, uint8_t value)
+void Cartridge::chr_write(uint16_t addr, uint8_t value)
 {
   mapper->chr_write(addr, value);
 }
 
-void cartridge::scanline_counter() { mapper->scanline_counter(); }
+void Cartridge::scanline_counter() { mapper->scanline_counter(); }
 
-void cartridge::dump_prg_ram() const
+void Cartridge::dump_prg_ram() const
 {
-  const auto& prg_ram = mapper->get_prg_ram();
-
-  std::ofstream prg_ram_file(util::file_manager::get().get_prg_ram_path(),
-                             std::ios::binary);
-  prg_ram_file.write(reinterpret_cast<const char*>(prg_ram.data()),
-                     prg_ram.size());
+  Utility::FileManager::get().save_prg_ram(mapper->get_prg_ram());
 }
 }  // namespace nes

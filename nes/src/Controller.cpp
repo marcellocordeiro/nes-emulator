@@ -1,18 +1,18 @@
 #include "Controller.h"
 
 namespace nes {
-controller& controller::get()
+Controller& Controller::get()
 {
-  static controller instance;
+  static Controller instance;
   return instance;
 }
 
-void controller::update_state(size_t port, uint8_t state)
+void Controller::update_state(size_t port, uint8_t state)
 {
   controller_state[port] = state;
 }
 
-uint8_t controller::read(size_t port)
+uint8_t Controller::read(size_t port)
 {
   if (strobe) {
     return 0x40 | (controller_state[port] & 1);  // 1 == A
@@ -24,7 +24,7 @@ uint8_t controller::read(size_t port)
   return status;
 }
 
-void controller::write(bool signal)
+void Controller::write(bool signal)
 {
   if (strobe && !signal) {
     controller_bits = controller_state;
@@ -33,7 +33,7 @@ void controller::write(bool signal)
   strobe = signal;
 }
 
-uint8_t controller::peek(size_t port) const
+uint8_t Controller::peek(size_t port) const
 {
   if (strobe) {
     return 0x40 | (controller_state[port] & 1);  // 1 == A
@@ -42,13 +42,13 @@ uint8_t controller::peek(size_t port) const
   }
 }
 
-void controller::save(std::ofstream& out)
+void Controller::save(std::ofstream& out)
 {
   dump_snapshot(out, controller_bits);
   dump_snapshot(out, strobe);
 }
 
-void controller::load(std::ifstream& in)
+void Controller::load(std::ifstream& in)
 {
   get_snapshot(in, controller_bits);
   get_snapshot(in, strobe);

@@ -2,30 +2,30 @@
 
 #include <fstream>
 
-#include "Patch.h"
 #include <system_utils.h>
+#include "Patch.h"
 
 #include <spdlog/spdlog.h>
 
-namespace nes::util {
-file_manager& file_manager::get()
+namespace nes::Utility {
+FileManager& FileManager::get()
 {
-  static file_manager instance;
+  static FileManager instance;
   return instance;
 }
 
-void file_manager::setup()
+void FileManager::setup()
 {
   set_app_path(lib::get_app_path());
   set_palette(app_path / "palette.pal");
 }
 
-void file_manager::set_app_path(const std::filesystem::path& value)
+void FileManager::set_app_path(const std::filesystem::path& value)
 {
   app_path = std::filesystem::canonical(value);  // May throw
 }
 
-void file_manager::set_rom(const std::filesystem::path& value)
+void FileManager::set_rom(const std::filesystem::path& value)
 {
   rom_path      = std::filesystem::canonical(value);  // May throw
   prg_ram_path  = rom_path;
@@ -49,17 +49,18 @@ void file_manager::set_rom(const std::filesystem::path& value)
   }
 }
 
-std::vector<std::uint8_t> file_manager::get_rom()
+void FileManager::set_palette(const std::filesystem::path& value)
+{
+  palette_path = std::filesystem::canonical(value);  // May throw
+}
+
+std::vector<std::uint8_t> FileManager::get_rom()
 {
   if (!std::filesystem::exists(rom_path)) {
-    throw std::runtime_error("The ROM path needs to be set first");
+    throw std::invalid_argument("The ROM path needs to be set first");
   }
 
   std::ifstream rom_stream(rom_path, std::ios::binary);
-
-  if (!rom_stream) {
-    throw std::runtime_error("Couldn't open the ROM");
-  }
 
   std::vector rom(std::filesystem::file_size(rom_path), uint8_t{});
   rom_stream.read(reinterpret_cast<char*>(rom.data()), rom.size());
@@ -71,9 +72,9 @@ std::vector<std::uint8_t> file_manager::get_rom()
   return rom;
 }
 
-std::vector<std::uint8_t> file_manager::get_prg_ram(std::size_t size)
+std::vector<std::uint8_t> FileManager::get_prg_ram()
 {
-  std::vector prg_ram(size, uint8_t{});
+  std::vector prg_ram(std::filesystem::file_size(prg_ram_path), uint8_t{});
 
   if (has_prg_ram()) {
     std::ifstream prg_ram_file(prg_ram_path, std::ios::binary);
@@ -83,47 +84,56 @@ std::vector<std::uint8_t> file_manager::get_prg_ram(std::size_t size)
   return prg_ram;
 }
 
-void file_manager::set_palette(const std::filesystem::path& value)
+std::vector<std::uint8_t> FileManager::get_palette()
 {
-  palette_path = std::filesystem::canonical(value);  // May throw
+  std::ifstream file(palette_path, std::ios::binary);
+
+  std::vector<uint8_t> palette(std::filesystem::file_size(palette_path),
+                               uint8_t{});
+  file.read(reinterpret_cast<char*>(palette.data()), palette.size());
+
+  return palette;
 }
 
-std::filesystem::path file_manager::get_app_path() const { return app_path; }
-
-std::filesystem::path file_manager::get_rom_path() const { return rom_path; }
-
-std::filesystem::path file_manager::get_patch_path() const
+void FileManager::save_prg_ram(const std::vector<std::uint8_t>& vec)
 {
-  return patch_path;
+  std::ofstream prg_ram_file(prg_ram_path, std::ios::binary);
+  prg_ram_file.write(reinterpret_cast<const char*>(vec.data()), vec.size());
 }
 
-std::filesystem::path file_manager::get_prg_ram_path() const
+std::filesystem::path FileManager::get_app_path() const { return app_path; }
+
+std::filesystem::path FileManager::get_rom_path() const { return rom_path; }
+
+std::filesystem::path FileManager::get_patch_path() const { return patch_path; }
+
+std::filesystem::path FileManager::get_prg_ram_path() const
 {
   return prg_ram_path;
 }
 
-std::filesystem::path file_manager::get_palette_path() const
+std::filesystem::path FileManager::get_palette_path() const
 {
   return palette_path;
 }
 
-std::filesystem::path file_manager::get_snapshot_path() const
+std::filesystem::path FileManager::get_snapshot_path() const
 {
   return snapshot_path;
 }
 
-bool file_manager::has_patch() const
+bool FileManager::has_patch() const
 {
   return std::filesystem::exists(patch_path);
 }
 
-bool file_manager::has_prg_ram() const
+bool FileManager::has_prg_ram() const
 {
   return std::filesystem::exists(prg_ram_path);
 }
 
-bool file_manager::has_snapshot() const
+bool FileManager::has_snapshot() const
 {
   return std::filesystem::exists(snapshot_path);
 }
-}  // namespace nes::util
+}  // namespace nes::Utility

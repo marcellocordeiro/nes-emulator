@@ -11,17 +11,25 @@ Emulator& Emulator::get()
 
 void Emulator::power_on()
 {
-  cartridge::get().load();
+  Cartridge::get().load();
 
-  cpu::get().power_on();
-  ppu::get().power_on();
-  apu::get().power_on();
+  CPU::get().power_on();
+  PPU::get().power_on();
+  APU::get().power_on();
 
-  snapshotable.push_back(&cpu::get());
-  snapshotable.push_back(&ppu::get());
-  snapshotable.push_back(cartridge::get().get_mapper());
-  snapshotable.push_back(&controller::get());
+  snapshotable.push_back(&CPU::get());
+  snapshotable.push_back(&PPU::get());
+  snapshotable.push_back(Cartridge::get().get_mapper());
+  snapshotable.push_back(&Controller::get());
 }
+
+void Emulator::reset()
+{
+  CPU::get().reset();
+  PPU::get().reset();
+}
+
+void Emulator::volume(double value) { APU::get().volume(value); }
 
 //
 // Snapshot
@@ -29,19 +37,19 @@ void Emulator::power_on()
 
 void Emulator::save_snapshot()
 {
-  std::ofstream out{util::file_manager::get().get_snapshot_path(),
+  std::ofstream out{Utility::FileManager::get().get_snapshot_path(),
                     std::ios::binary};
   for (auto& component : snapshotable) component->save(out);
 }
 
 void Emulator::load_snapshot()
 {
-  if (!util::file_manager::get().has_snapshot()) {
+  if (!Utility::FileManager::get().has_snapshot()) {
     spdlog::info("Attempting to load a non-existent snapshot file");
     return;
   }
 
-  std::ifstream in{util::file_manager::get().get_snapshot_path(),
+  std::ifstream in{Utility::FileManager::get().get_snapshot_path(),
                    std::ios::binary};
   for (auto& component : snapshotable) component->load(in);
 }

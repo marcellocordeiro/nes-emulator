@@ -1,7 +1,7 @@
 #include "Mapper0.h"
 
 namespace nes {
-void mapper0::reset()
+void Mapper0::reset()
 {
   set_prg_map<16>(0, 0);
   set_prg_map<16>(1, 1);

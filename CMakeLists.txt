@@ -4,6 +4,8 @@ project(nes-emulator)
 
 # Setting up the target
 
+# set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 file(GLOB SOURCE_FILES
@@ -11,8 +13,6 @@ file(GLOB SOURCE_FILES
 )
 
 add_executable(nes-emulator ${SOURCE_FILES})
-
-# target_include_directories(nes-emulator PRIVATE "include")
 
 # Dependencies
 

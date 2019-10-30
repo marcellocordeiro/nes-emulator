@@ -78,10 +78,10 @@ enum map {
   PPU_Access,
   APU_Access,
   OAMDMA,
-  Controller,
+  Controller_Access,
   Controller_1,
   Controller_2,
-  Cartridge
+  Cartridge_Access
 };
 
 template <auto Operation> int get_map(uint16_t);

@@ -7,14 +7,14 @@
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
-class ppu : public util::snapshotable {
+class PPU final : public Utility::Snapshotable {
 public:
-  ppu(const ppu&) = delete;
-  ppu(ppu&&)      = delete;
-  ppu& operator=(const ppu&) = delete;
-  ppu& operator=(ppu&&) = delete;
+  PPU(const PPU&) = delete;
+  PPU(PPU&&)      = delete;
+  PPU& operator=(const PPU&) = delete;
+  PPU& operator=(PPU&&) = delete;
 
-  static ppu& get();
+  static PPU& get();
 
   void power_on();
   void reset();
@@ -48,7 +48,7 @@ public:
   void load(std::ifstream&) override;
 
 private:
-  ppu() = default;
+  PPU() = default;
 
   //
   // VRAM access
@@ -80,7 +80,7 @@ private:
   //
 
   auto get_background_pixel() const;
-  auto get_sprite_pixel() const;
+  auto get_sprite_pixel();
 
   void render_pixel();
 
@@ -139,7 +139,8 @@ private:
   std::array<uint32_t, 256 * 240> back_buffer  = {};  // Back buffer
 
   std::array<std::array<uint32_t, 64>, 8> full_nes_palette = {};
-  const uint32_t* nes_to_rgb = full_nes_palette[0].data();
+  uint8_t                                 selected_palette = 0;
+  // const uint32_t* nes_to_rgb = full_nes_palette[0].data();
 
   loopy_addr vram_addr;
   loopy_addr temp_addr;

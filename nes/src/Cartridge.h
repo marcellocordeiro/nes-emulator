@@ -8,16 +8,16 @@
 #include "Types/Cartridge_Types.h"
 
 namespace nes {
-class cartridge {
+class Cartridge final {
 public:
-  cartridge(const cartridge&) = delete;
-  cartridge(cartridge&&)      = delete;
-  cartridge& operator=(const cartridge&) = delete;
-  cartridge& operator=(cartridge&&) = delete;
+  Cartridge(const Cartridge&) = delete;
+  Cartridge(Cartridge&&)      = delete;
+  Cartridge& operator=(const Cartridge&) = delete;
+  Cartridge& operator=(Cartridge&&) = delete;
 
-  static cartridge& get();
+  static Cartridge& get();
 
-  base_mapper* get_mapper();
+  BaseMapper* get_mapper();
 
   void load();
 
@@ -32,8 +32,8 @@ public:
   void dump_prg_ram() const;
 
 private:
-  cartridge() = default;
+  Cartridge() = default;
 
-  std::unique_ptr<base_mapper> mapper;
+  std::unique_ptr<BaseMapper> mapper;
 };
 }  // namespace nes

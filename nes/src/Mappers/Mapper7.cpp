@@ -4,7 +4,7 @@
 #include "../Types/Cartridge_Types.h"
 
 namespace nes {
-void mapper7::reset()
+void Mapper7::reset()
 {
   mode = 0;
 
@@ -12,15 +12,15 @@ void mapper7::reset()
   apply();
 }
 
-void mapper7::apply()
+void Mapper7::apply()
 {
   set_prg_map<32>(0, mode & 0x0F);
 
   using namespace mirroring;
-  ppu::get().set_mirroring((mode & 0x10) ? One_Screen_High : One_Screen_Low);
+  PPU::get().set_mirroring((mode & 0x10) ? One_Screen_High : One_Screen_Low);
 }
 
-void mapper7::prg_write(uint16_t addr, uint8_t value)
+void Mapper7::prg_write(uint16_t addr, uint8_t value)
 {
   if (addr < 0x8000) {
     throw std::runtime_error("Mapper 7 does not have PRG-RAM");
@@ -30,16 +30,16 @@ void mapper7::prg_write(uint16_t addr, uint8_t value)
   apply();
 }
 
-void mapper7::save(std::ofstream& out)
+void Mapper7::save(std::ofstream& out)
 {
-  base_mapper::save(out);
+  BaseMapper::save(out);
 
   dump_snapshot(out, mode);
 }
 
-void mapper7::load(std::ifstream& in)
+void Mapper7::load(std::ifstream& in)
 {
-  base_mapper::load(in);
+  BaseMapper::load(in);
 
   get_snapshot(in, mode);
 

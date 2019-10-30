@@ -4,7 +4,7 @@
 #include "../Types/Cartridge_Types.h"
 
 namespace nes {
-void mapper1::reset()
+void Mapper1::reset()
 {
   write_delay = 5;
   shift_reg   = 0;
@@ -17,7 +17,7 @@ void mapper1::reset()
   apply();
 }
 
-void mapper1::apply()
+void Mapper1::apply()
 {
   using namespace mirroring;
 
@@ -47,14 +47,14 @@ void mapper1::apply()
   }
 
   switch (control & 3) {
-    case 0: ppu::get().set_mirroring(One_Screen_Low); break;
-    case 1: ppu::get().set_mirroring(One_Screen_High); break;
-    case 2: ppu::get().set_mirroring(Vertical); break;
-    case 3: ppu::get().set_mirroring(Horizontal); break;
+    case 0: PPU::get().set_mirroring(One_Screen_Low); break;
+    case 1: PPU::get().set_mirroring(One_Screen_High); break;
+    case 2: PPU::get().set_mirroring(Vertical); break;
+    case 3: PPU::get().set_mirroring(Horizontal); break;
   }
 }
 
-void mapper1::prg_write(uint16_t addr, uint8_t value)
+void Mapper1::prg_write(uint16_t addr, uint8_t value)
 {
   if (addr < 0x8000) {
     prg_ram[addr - 0x6000] = value;
@@ -86,17 +86,17 @@ void mapper1::prg_write(uint16_t addr, uint8_t value)
   }
 }
 
-void mapper1::save(std::ofstream& out)
+void Mapper1::save(std::ofstream& out)
 {
-  base_mapper::save(out);
+  BaseMapper::save(out);
 
   dump_snapshot(out, write_delay, shift_reg);
   dump_snapshot(out, control, chr_bank_0, chr_bank_1, prg_bank);
 }
 
-void mapper1::load(std::ifstream& in)
+void Mapper1::load(std::ifstream& in)
 {
-  base_mapper::load(in);
+  BaseMapper::load(in);
 
   get_snapshot(in, write_delay, shift_reg);
   get_snapshot(in, control, chr_bank_0, chr_bank_1, prg_bank);

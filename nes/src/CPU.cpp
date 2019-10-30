@@ -10,13 +10,13 @@
 using namespace nes::types::cpu;
 
 namespace nes {
-cpu& cpu::get()
+CPU& CPU::get()
 {
-  static cpu instance;
+  static CPU instance;
   return instance;
 }
 
-void cpu::power_on()
+void CPU::power_on()
 {
   state.a  = 0;
   state.x  = 0;
@@ -33,13 +33,13 @@ void cpu::power_on()
   // state.cycle_count = 7;
 }
 
-void cpu::reset() { INT_RST(); }
+void CPU::reset() { INT_RST(); }
 
-void cpu::set_nmi(bool value) { state.nmi_flag = value; }
+void CPU::set_nmi(bool value) { state.nmi_flag = value; }
 
-void cpu::set_irq(bool value) { state.irq_flag = value; }
+void CPU::set_irq(bool value) { state.irq_flag = value; }
 
-void cpu::dma_oam(uint8_t addr)
+void CPU::dma_oam(uint8_t addr)
 {
   for (uint16_t i = 0; i < 256; ++i) {
     // 0x2004 == OAMDATA
@@ -47,7 +47,7 @@ void cpu::dma_oam(uint8_t addr)
   }
 }
 
-void cpu::run_frame()
+void CPU::run_frame()
 {
   constexpr auto cycles_per_frame = 29781;
 
@@ -63,82 +63,82 @@ void cpu::run_frame()
     execute();
   }
 
-  apu::get().end_frame(state.cycle_count);
+  APU::get().end_frame(state.cycle_count);
 }
 
-void cpu::tick()
+void CPU::tick()
 {
-  ppu::get().step();
-  ppu::get().step();
-  ppu::get().step();
+  PPU::get().step();
+  PPU::get().step();
+  PPU::get().step();
   ++state.cycle_count;
 }
 
-uint8_t cpu::peek(uint16_t addr) const
+uint8_t CPU::peek(uint16_t addr) const
 {
   using namespace nes::types::cpu::memory;
 
   switch (get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
-    case PPU_Access: return ppu::get().peek_reg(addr);
+    case PPU_Access: return PPU::get().peek_reg(addr);
     case APU_Access:
       return 0xFF;  // Avoids APU side effects and satisfies nestest
-    case Controller_1: return controller::get().peek(0);
-    case Controller_2: return controller::get().peek(1);
-    case Cartridge: return cartridge::get().prg_read(addr);
+    case Controller_1: return Controller::get().peek(0);
+    case Controller_2: return Controller::get().peek(1);
+    case Cartridge_Access: return Cartridge::get().prg_read(addr);
     case Unknown:
     default: SPDLOG_ERROR("Invalid read address: 0x{:04X}", addr); return 0;
   }
 }
 
-uint8_t cpu::read(uint16_t addr) const
+uint8_t CPU::read(uint16_t addr) const
 {
   using namespace nes::types::cpu::memory;
 
   switch (get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
-    case PPU_Access: return ppu::get().read(addr);
-    case APU_Access: return apu::get().read(state.cycle_count);
-    case Controller_1: return controller::get().read(0);
-    case Controller_2: return controller::get().read(1);
-    case Cartridge: return cartridge::get().prg_read(addr);
+    case PPU_Access: return PPU::get().read(addr);
+    case APU_Access: return APU::get().read(state.cycle_count);
+    case Controller_1: return Controller::get().read(0);
+    case Controller_2: return Controller::get().read(1);
+    case Cartridge_Access: return Cartridge::get().prg_read(addr);
     case Unknown:
     default: SPDLOG_ERROR("Invalid read address: 0x{:04X}", addr); return 0;
   }
 }
 
-void cpu::write(uint16_t addr, uint8_t value)
+void CPU::write(uint16_t addr, uint8_t value)
 {
   using namespace nes::types::cpu::memory;
 
   switch (get_map<Write>(addr)) {
     case CPU_RAM: ram[addr & 0x07FF] = value; break;
-    case PPU_Access: ppu::get().write(addr, value); break;
-    case APU_Access: apu::get().write(state.cycle_count, addr, value); break;
+    case PPU_Access: PPU::get().write(addr, value); break;
+    case APU_Access: APU::get().write(state.cycle_count, addr, value); break;
     case OAMDMA: dma_oam(value); break;
-    case Controller: controller::get().write(value & 1); break;
-    case Cartridge: cartridge::get().prg_write(addr, value); break;
+    case Controller_Access: Controller::get().write(value & 1); break;
+    case Cartridge_Access: Cartridge::get().prg_write(addr, value); break;
     default: throw std::runtime_error("Invalid write address");
   }
 }
 
-uint8_t cpu::memory_read(uint16_t addr)
+uint8_t CPU::memory_read(uint16_t addr)
 {
   tick();
   return read(addr);
 }
 
-void cpu::memory_write(uint16_t addr, uint8_t value)
+void CPU::memory_write(uint16_t addr, uint8_t value)
 {
   tick();
   write(addr, value);
 }
 
-types::cpu::state cpu::get_state() const { return state; }
+types::cpu::state CPU::get_state() const { return state; }
 
-uint16_t cpu::peek_imm() const { return state.pc + 1; }
+uint16_t CPU::peek_imm() const { return state.pc + 1; }
 
-uint16_t cpu::peek_rel() const
+uint16_t CPU::peek_rel() const
 {
   auto addr   = peek_imm();
   auto offset = static_cast<int8_t>(peek(addr));
@@ -146,44 +146,44 @@ uint16_t cpu::peek_rel() const
   return (state.pc + 2) + offset;
 }
 
-uint16_t cpu::peek_zp() const { return peek(peek_imm()); }
+uint16_t CPU::peek_zp() const { return peek(peek_imm()); }
 
-uint16_t cpu::peek_zpx() const { return (peek_zp() + state.x) & 0xFF; }
+uint16_t CPU::peek_zpx() const { return (peek_zp() + state.x) & 0xFF; }
 
-uint16_t cpu::peek_zpy() const { return (peek_zp() + state.y) & 0xFF; }
+uint16_t CPU::peek_zpy() const { return (peek_zp() + state.y) & 0xFF; }
 
-uint16_t cpu::peek_ab() const
+uint16_t CPU::peek_ab() const
 {
   const auto base_addr = peek_imm();
   return (peek(base_addr + 1) << 8) | peek(base_addr);
 }
 
-uint16_t cpu::peek_abx() const
+uint16_t CPU::peek_abx() const
 {
   const auto base_addr = peek_ab();
   return base_addr + state.x;
 }
 
-uint16_t cpu::peek_aby() const
+uint16_t CPU::peek_aby() const
 {
   const auto base_addr = peek_ab();
   return base_addr + state.y;
 }
 
-uint16_t cpu::peek_ind() const
+uint16_t CPU::peek_ind() const
 {
   const auto base_addr = peek_ab();
   return peek(base_addr) |
          (peek((base_addr & 0xFF00) | ((base_addr + 1) % 0x100)) << 8);
 }
 
-uint16_t cpu::peek_indx() const
+uint16_t CPU::peek_indx() const
 {
   const auto base_addr = peek_zpx();
   return (peek((base_addr + 1) & 0xFF) << 8) | peek(base_addr);
 }
 
-uint16_t cpu::peek_indy() const
+uint16_t CPU::peek_indy() const
 {
   const auto base_addr = peek_zp();
   return ((peek((base_addr + 1) & 0xFF) << 8) | peek(base_addr)) + state.y;
@@ -193,14 +193,14 @@ uint16_t cpu::peek_indy() const
 // Snapshot
 //
 
-void cpu::save(std::ofstream& out)
+void CPU::save(std::ofstream& out)
 {
   dump_snapshot(out, ram);
   dump_snapshot(out, state.a, state.x, state.y, state.pc, state.sp, state.sr,
                 state.ps, state.nmi_flag, state.irq_flag, state.cycle_count);
 }
 
-void cpu::load(std::ifstream& in)
+void CPU::load(std::ifstream& in)
 {
   get_snapshot(in, ram);
   get_snapshot(in, state.a, state.x, state.y, state.pc, state.sp, state.sr,

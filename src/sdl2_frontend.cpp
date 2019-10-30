@@ -8,39 +8,15 @@
 using namespace std::chrono;
 using namespace std::chrono_literals;
 
-SDL_Scancode PAUSE          = SDL_SCANCODE_ESCAPE;
-SDL_Scancode RESET          = SDL_SCANCODE_R;
-SDL_Scancode SAVE_SNAPSHOT  = SDL_SCANCODE_F1;
-SDL_Scancode LOAD_SNAPSHOT  = SDL_SCANCODE_F3;
-SDL_Scancode TOGGLE_LIMITER = SDL_SCANCODE_TAB;
-
-SDL_Scancode VOLUME_UP   = SDL_SCANCODE_KP_PLUS;
-SDL_Scancode VOLUME_DOWN = SDL_SCANCODE_KP_MINUS;
-
-SDL_Scancode KEY_A[2]      = {SDL_SCANCODE_A, SDL_SCANCODE_ESCAPE};
-SDL_Scancode KEY_B[2]      = {SDL_SCANCODE_S, SDL_SCANCODE_ESCAPE};
-SDL_Scancode KEY_SELECT[2] = {SDL_SCANCODE_BACKSPACE, SDL_SCANCODE_ESCAPE};
-SDL_Scancode KEY_START[2]  = {SDL_SCANCODE_RETURN, SDL_SCANCODE_ESCAPE};
-SDL_Scancode KEY_UP[2]     = {SDL_SCANCODE_UP, SDL_SCANCODE_ESCAPE};
-SDL_Scancode KEY_DOWN[2]   = {SDL_SCANCODE_DOWN, SDL_SCANCODE_ESCAPE};
-SDL_Scancode KEY_LEFT[2]   = {SDL_SCANCODE_LEFT, SDL_SCANCODE_ESCAPE};
-SDL_Scancode KEY_RIGHT[2]  = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_ESCAPE};
-
 namespace nes {
 sdl2_frontend::sdl2_frontend(int argc, char* argv[]) : args(argv, argv + argc)
 {
-  if (argc == 1) {
+  if (args.size() == 1) {
     throw std::invalid_argument("Too few arguments");
   }
 
-  util::file_manager::get().setup();
-  util::file_manager::get().set_rom(argv[1]);
-
-  // nes::util::fmngr.set_rom(nes::util::fmngr.get_app_path() /
-  // "../roms/smb3.nes");
-
-  // std::ofstream log_file{app_path / "nes-emulator.log"};
-  // lib::log::get().set_stream(log_file);
+  Utility::FileManager::get().setup();
+  Utility::FileManager::get().set_rom(args[1]);
 }
 
 sdl2_frontend::~sdl2_frontend()
@@ -111,12 +87,12 @@ void sdl2_frontend::get_controllers()
 
 void sdl2_frontend::update_controllers()
 {
-  controller::get().update_state(0, controller_state[0]);
+  Controller::get().update_state(0, controller_state[0]);
 }
 
 void sdl2_frontend::update_frame()
 {
-  SDL_UpdateTexture(texture, nullptr, ppu::get().get_back_buffer().data(),
+  SDL_UpdateTexture(texture, nullptr, PPU::get().get_back_buffer().data(),
                     Emulator::width * sizeof(std::uint32_t));
 }
 
@@ -128,9 +104,9 @@ void sdl2_frontend::render()
 
 void sdl2_frontend::get_samples()
 {
-  if (apu::get().samples_available(audio_buffer.size())) {
+  if (APU::get().samples_available(audio_buffer.size())) {
     auto sample_count =
-        apu::get().get_samples(audio_buffer.data(), audio_buffer.size());
+        APU::get().get_samples(audio_buffer.data(), audio_buffer.size());
     sound_queue->write(audio_buffer.data(), sample_count);
   }
 }
@@ -142,8 +118,7 @@ void sdl2_frontend::process_keypress(SDL_KeyboardEvent& key_event)
   if (key == PAUSE) {
     running = !running;
   } else if (key == RESET) {
-    cpu::get().reset();
-    ppu::get().reset();
+    Emulator::get().reset();
   } else if (key == TOGGLE_LIMITER) {
     fps_limiter = !fps_limiter;
   } else if (key == SAVE_SNAPSHOT) {
@@ -152,10 +127,10 @@ void sdl2_frontend::process_keypress(SDL_KeyboardEvent& key_event)
     Emulator::get().load_snapshot();
   } else if (key == VOLUME_UP) {
     volume = std::min(1.0, volume + 0.1);
-    apu::get().volume(volume);
+    Emulator::get().volume(volume);
   } else if (key == VOLUME_DOWN) {
     volume = std::max(0.0, volume - 0.1);
-    apu::get().volume(volume);
+    Emulator::get().volume(volume);
   }
 }
 
@@ -164,7 +139,7 @@ void sdl2_frontend::run()
   Emulator::get().power_on();
 
   running = true;
-  apu::get().volume(volume);
+  APU::get().volume(volume);
 
   lib::timer fps_timer;
 
@@ -173,7 +148,7 @@ void sdl2_frontend::run()
 
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
-        case SDL_QUIT: cartridge::get().dump_prg_ram(); return;
+        case SDL_QUIT: Cartridge::get().dump_prg_ram(); return;
         case SDL_KEYDOWN: process_keypress(e.key); break;
       }
     }
@@ -182,7 +157,7 @@ void sdl2_frontend::run()
       if (running) {
         auto fps =
             elapsed_frames / duration<double>(fps_timer.elapsed_time()).count();
-        auto title = fmt::format("nes-emulator | {:5.2f}fps", fps);
+        auto title = fmt::format("{} | {:5.2f}fps", Emulator::title, fps);
         SDL_SetWindowTitle(window, title.c_str());
       } else {
         SDL_SetWindowTitle(window, "nes-emulator | Paused");
@@ -195,7 +170,7 @@ void sdl2_frontend::run()
     if (running) {
       get_controllers();
       update_controllers();
-      cpu::get().run_frame();
+      CPU::get().run_frame();
 
       get_samples();
       update_frame();
