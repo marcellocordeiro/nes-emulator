@@ -1,9 +1,12 @@
-#include "sdl2_frontend.h"
+#include <QApplication>
+#include "MainWindow.h"
 
 int main(int argc, char* argv[])
 {
-  nes::sdl2_frontend frontend(argc, argv);
+  QApplication a(argc, argv);
 
-  frontend.init();
-  frontend.run();
+  MainWindow w;
+  w.show();
+
+  return a.exec();
 }

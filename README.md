@@ -38,6 +38,7 @@ Generate the solution files using CMake and build it. It has been tested on Wind
   - SDL2 2.0.9
   - {fmt} 6.0.0
   - spdlog 1.4.2
+  - Qt5 5.13
 
 ## Running
 
