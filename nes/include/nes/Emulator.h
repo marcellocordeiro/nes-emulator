@@ -1,18 +1,8 @@
 #pragma once
 
-#include <memory>
-#include <vector>
+#include <array>
+#include <filesystem>
 
-#include "../../src/APU.h"
-#include "../../src/BaseMapper.h"
-#include "../../src/CPU.h"
-#include "../../src/Cartridge.h"
-#include "../../src/Controller.h"
-#include "../../src/PPU.h"
-#include "../../src/Utility/FileManager.h"
-#include "../../src/Utility/Snapshotable.hpp"
-
-namespace nes {
 class Emulator {
 public:
   Emulator(const Emulator&) = delete;
@@ -20,24 +10,28 @@ public:
   Emulator& operator=(const Emulator&) = delete;
   Emulator& operator=(Emulator&&) = delete;
 
-  static Emulator& get();
-
-  void power_on();
-  void reset();
+  static void power_on();
+  static void load(const std::filesystem::path&);
+  static void reset();
 
   //
   // Component access
   //
 
-  void run_frame();
-  void volume(double);
+  static void            run_frame();
+  static const uint32_t* get_back_buffer();
+  static bool            samples_available(size_t);
+  static long            get_audio_samples(std::array<std::int16_t, 4096>&);
+  static void            volume(double);
+
+  static void update_controller_state(size_t, uint8_t);
 
   //
   // Snapshot
   //
 
-  void save_snapshot();
-  void load_snapshot();
+  static void save_snapshot();
+  static void load_snapshot();
 
   static constexpr int width  = 256;
   static constexpr int height = 240;
@@ -46,7 +40,4 @@ public:
 
 private:
   Emulator() = default;
-
-  std::vector<Utility::Snapshotable*> snapshotable;
 };
-}  // namespace nes

@@ -2,12 +2,21 @@
 
 #include <spdlog/spdlog.h>
 
-namespace nes {
-Emulator& Emulator::get()
+#include "APU.h"
+#include "BaseMapper.h"
+#include "CPU.h"
+#include "Cartridge.h"
+#include "Controller.h"
+#include "PPU.h"
+#include "Utility/FileManager.h"
+
+using namespace nes;
+
+/*Emulator& Emulator::get()
 {
   static Emulator instance;
   return instance;
-}
+}*/
 
 void Emulator::power_on()
 {
@@ -16,11 +25,12 @@ void Emulator::power_on()
   CPU::get().power_on();
   PPU::get().power_on();
   APU::get().power_on();
+}
 
-  snapshotable.push_back(&CPU::get());
-  snapshotable.push_back(&PPU::get());
-  snapshotable.push_back(Cartridge::get().get_mapper());
-  snapshotable.push_back(&Controller::get());
+void Emulator::load(const std::filesystem::path& path)
+{
+  Utility::FileManager::get().setup();
+  Utility::FileManager::get().set_rom(path);
 }
 
 void Emulator::reset()
@@ -29,7 +39,29 @@ void Emulator::reset()
   PPU::get().reset();
 }
 
+void Emulator::run_frame() { CPU::get().run_frame(); }
+
+const uint32_t* Emulator::get_back_buffer()
+{
+  return PPU::get().get_back_buffer();
+}
+
+bool Emulator::samples_available(size_t size)
+{
+  return APU::get().samples_available(size);
+}
+
+long Emulator::get_audio_samples(std::array<std::int16_t, 4096>& buffer)
+{
+  return APU::get().get_samples(buffer.data(), buffer.size());
+}
+
 void Emulator::volume(double value) { APU::get().volume(value); }
+
+void Emulator::update_controller_state(size_t port, uint8_t state)
+{
+  nes::Controller::get().update_state(port, state);
+}
 
 //
 // Snapshot
@@ -37,6 +69,10 @@ void Emulator::volume(double value) { APU::get().volume(value); }
 
 void Emulator::save_snapshot()
 {
+  std::array<Utility::Snapshotable*, 4> snapshotable = {
+      &CPU::get(), &PPU::get(), Cartridge::get().get_mapper(),
+      &Controller::get()};
+
   std::ofstream out{Utility::FileManager::get().get_snapshot_path(),
                     std::ios::binary};
   for (auto& component : snapshotable) component->save(out);
@@ -44,6 +80,10 @@ void Emulator::save_snapshot()
 
 void Emulator::load_snapshot()
 {
+  std::array<Utility::Snapshotable*, 4> snapshotable = {
+      &CPU::get(), &PPU::get(), Cartridge::get().get_mapper(),
+      &Controller::get()};
+
   if (!Utility::FileManager::get().has_snapshot()) {
     spdlog::info("Attempting to load a non-existent snapshot file");
     return;
@@ -53,4 +93,3 @@ void Emulator::load_snapshot()
                    std::ios::binary};
   for (auto& component : snapshotable) component->load(in);
 }
-}  // namespace nes

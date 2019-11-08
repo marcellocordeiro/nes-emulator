@@ -19,7 +19,7 @@ public:
   void power_on();
   void reset();
 
-  std::array<uint32_t, 256 * 240> get_back_buffer() const;
+  const uint32_t* get_back_buffer() const;
 
   void set_palette();
   void set_mirroring(int);

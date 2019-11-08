@@ -31,8 +31,10 @@ private:
 
   std::unique_ptr<Ui::MainWindow> ui;
   std::unique_ptr<QTimer>         timer;
-  int                             framerate  = 60;
 
+  bool         running          = false;
+  int          framerate        = 60;
+  double       volume           = 0.1;
   std::uint8_t controller_state = 0;
 
   // TODO: reimplement this

@@ -4,24 +4,21 @@ project(nes-emulator)
 
 # Setting up the target
 
-# set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 add_executable(nes-emulator
   "src/Main.cpp"
-  "src/QtOpenGL.cpp"
-  "src/QtOpenGL.h"
   "src/MainWindow.cpp"
   "src/MainWindow.h"
   "src/MainWindow.ui"
+  "src/QtOpenGL.cpp"
+  "src/QtOpenGL.h"
   "src/Sound_Queue.cpp"
   "src/Sound_Queue.h"
 )
 
-target_include_directories(nes-emulator PRIVATE
-	"src"
-)
+target_include_directories(nes-emulator PRIVATE	"src")
 
 # Dependencies
 

@@ -10,7 +10,7 @@ public:
 
   constexpr bit_field() = default;
 
-  constexpr operator value_type() const noexcept { return get(); }
+  constexpr            operator value_type() const noexcept { return get(); }
   constexpr bit_field& operator=(const bit_field&) = delete;
 
   constexpr bit_field& operator=(value_type val) noexcept

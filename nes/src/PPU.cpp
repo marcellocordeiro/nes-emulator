@@ -51,10 +51,7 @@ void PPU::reset()
   is_odd_frame = false;
 }
 
-std::array<uint32_t, 256 * 240> PPU::get_back_buffer() const
-{
-  return back_buffer;
-}
+const uint32_t* PPU::get_back_buffer() const { return back_buffer.data(); }
 
 void PPU::set_palette()
 {

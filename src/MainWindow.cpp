@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <QCoreApplication>
 #include <QKeyEvent>
+#include <algorithm>
 
 #include <nes/Emulator.h>
 
@@ -25,10 +26,13 @@ MainWindow::MainWindow(QWidget* parent)
   ui->setupUi(this);
   resize(3);
 
-  nes::Utility::FileManager::get().setup();
-  nes::Utility::FileManager::get().set_rom(
-      QCoreApplication::arguments().at(1).toStdString());
-  nes::Emulator::get().power_on();
+  setWindowTitle(Emulator::title);
+  ui->video->setSize(Emulator::width, Emulator::height);
+  ui->video->setBuffer(Emulator::get_back_buffer());
+
+  Emulator::load(QCoreApplication::arguments().at(1).toStdString());
+  Emulator::power_on();
+  Emulator::volume(0.1);
 
   sound_queue = std::make_unique<Sound_Queue>();
   sound_queue->init();
@@ -51,6 +55,8 @@ MainWindow::MainWindow(QWidget* parent)
 
   connect(timer.get(), &QTimer::timeout, this, &MainWindow::run_frame);
   timer->start(1000.0f / framerate);
+
+  running = true;
 }
 
 MainWindow::~MainWindow()
@@ -63,13 +69,20 @@ MainWindow::~MainWindow()
 
 void MainWindow::run_frame()
 {
-  nes::Controller::get().update_state(0, controller_state);
-  nes::CPU::get().run_frame();
+  /*auto fps =
+            elapsed_frames / duration<double>(fps_timer.elapsed_time()).count();
+        auto title = fmt::format("{} | {:5.2f}fps", Emulator::title, fps);
+        SDL_SetWindowTitle(window, title.c_str());
+      } else {
+        SDL_SetWindowTitle(window, "nes-emulator | Paused");*/
+  if (!running) return;
+
+  Emulator::update_controller_state(0, controller_state);
+  Emulator::run_frame();
   ui->video->update();
 
-  if (nes::APU::get().samples_available(audio_buffer.size())) {
-    auto sample_count =
-        nes::APU::get().get_samples(audio_buffer.data(), audio_buffer.size());
+  if (Emulator::samples_available(audio_buffer.size())) {
+    auto sample_count = Emulator::get_audio_samples(audio_buffer);
     sound_queue->write(audio_buffer.data(), sample_count);
   }
 }
@@ -89,6 +102,22 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     case Qt::Key_Down: controller_state |= (1u << 5u); break;
     case Qt::Key_Left: controller_state |= (1u << 6u); break;
     case Qt::Key_Right: controller_state |= (1u << 7u); break;
+
+    case Qt::Key_F1: Emulator::save_snapshot(); break;
+    case Qt::Key_F3: Emulator::load_snapshot(); break;
+    case Qt::Key_Escape: running = !running; break;
+
+    case Qt::Key_Plus: {
+      volume = std::min(volume + 0.1, 1.0);
+      Emulator::volume(volume);
+      break;
+    }
+
+    case Qt::Key_Minus: {
+      volume = std::max(0.0, volume - 0.1);
+      Emulator::volume(volume);
+      break;
+    }
     default: event->ignore();
   }
 }
