@@ -3,12 +3,13 @@
 
 #include <algorithm>
 
+#include <fmt/format.h>
 #include <QCoreApplication>
 #include <QKeyEvent>
 
-#include <SDL.h>
-
 #include <nes/Emulator.h>
+
+using namespace std::chrono_literals;
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent),
@@ -35,57 +36,36 @@ MainWindow::MainWindow(QWidget* parent)
   Emulator::set_app_path(QCoreApplication::applicationDirPath().toStdString());
   Emulator::load(QCoreApplication::arguments().at(1).toStdString());
   Emulator::power_on();
-  Emulator::volume(0.1);
-
-  sound_queue = std::make_unique<Sound_Queue>();
-
-  SDL_AudioSpec want;
-  SDL_zero(want);
-  want.freq     = 44100;
-  want.format   = AUDIO_S16SYS;
-  want.channels = 1;
-  want.samples  = Sound_Queue::buf_size;
-  want.userdata = sound_queue.get();
-  want.callback = [](void* user_data, Uint8* out, int count) {
-    static_cast<Sound_Queue*>(user_data)->fill_buffer(out, count);
-  };
-
-  SDL_Init(SDL_INIT_AUDIO);
-
-  SDL_OpenAudio(&want, nullptr);
-  SDL_PauseAudio(false);
 
   connect(timer.get(), &QTimer::timeout, this, &MainWindow::run_frame);
-  timer->start(1000.0f / framerate);
+  timer->start(1000 / framerate);
 
-  running = true;
+  running  = true;
+  fpsTimer = std::chrono::steady_clock::now();
 }
 
-MainWindow::~MainWindow()
-{
-  SDL_PauseAudio(true);
-  SDL_CloseAudio();
-
-  SDL_Quit();
-}
+MainWindow::~MainWindow() = default;
 
 void MainWindow::run_frame()
 {
-  /*auto fps =
-            elapsed_frames / duration<double>(fps_timer.elapsed_time()).count();
-        auto title = fmt::format("{} | {:5.2f}fps", Emulator::title, fps);
-        SDL_SetWindowTitle(window, title.c_str());
-      } else {
-        SDL_SetWindowTitle(window, "nes-emulator | Paused");*/
   if (!running) return;
 
   Emulator::update_controller_state(0, controller_state);
   Emulator::run_frame();
+  ++elapsedFrames;
+
   ui->video->update();
 
-  if (Emulator::samples_available(audio_buffer.size())) {
-    auto sample_count = Emulator::get_audio_samples(audio_buffer);
-    sound_queue->write(audio_buffer.data(), sample_count);
+  auto elapsedTime = std::chrono::steady_clock::now() - fpsTimer;
+
+  if (elapsedTime > 1s) {
+    auto fps =
+        elapsedFrames / std::chrono::duration<double>(elapsedTime).count();
+    auto title = fmt::format("{} | {:5.2f}fps", Emulator::title, fps);
+    setWindowTitle(title.c_str());
+
+    fpsTimer      = std::chrono::steady_clock::now();
+    elapsedFrames = 0;
   }
 }
 
@@ -107,17 +87,27 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
     case Qt::Key_F1: Emulator::save_snapshot(); break;
     case Qt::Key_F3: Emulator::load_snapshot(); break;
-    case Qt::Key_Escape: running = !running; break;
+    case Qt::Key_Escape:
+      running = !running;
+      if (running) {
+        auto title = fmt::format("{}", Emulator::title);
+        setWindowTitle(title.c_str());
+
+        fpsTimer      = std::chrono::steady_clock::now();
+        elapsedFrames = 0;
+      } else {
+        auto title = fmt::format("{} | Paused", Emulator::title);
+        setWindowTitle(title.c_str());
+      }
+      break;
 
     case Qt::Key_Plus: {
       volume = std::min(volume + 0.1, 1.0);
-      Emulator::volume(volume);
       break;
     }
 
     case Qt::Key_Minus: {
       volume = std::max(0.0, volume - 0.1);
-      Emulator::volume(volume);
       break;
     }
     default: event->ignore();

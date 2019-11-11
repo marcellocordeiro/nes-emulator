@@ -2,7 +2,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include "APU.h"
 #include "BaseMapper.h"
 #include "CPU.h"
 #include "Cartridge.h"
@@ -18,7 +17,6 @@ void Emulator::power_on()
 
   CPU::get().power_on();
   PPU::get().power_on();
-  APU::get().power_on();
 }
 
 void Emulator::set_app_path(const std::filesystem::path& path)
@@ -43,18 +41,6 @@ const uint32_t* Emulator::get_back_buffer()
 {
   return PPU::get().get_back_buffer();
 }
-
-bool Emulator::samples_available(size_t size)
-{
-  return APU::get().samples_available(size);
-}
-
-long Emulator::get_audio_samples(std::array<std::int16_t, 4096>& buffer)
-{
-  return APU::get().get_samples(buffer.data(), buffer.size());
-}
-
-void Emulator::volume(double value) { APU::get().volume(value); }
 
 void Emulator::update_controller_state(size_t port, uint8_t state)
 {

@@ -14,8 +14,6 @@ add_executable(nes-emulator
   "src/MainWindow.ui"
   "src/QtOpenGL.cpp"
   "src/QtOpenGL.h"
-  "src/Sound_Queue.cpp"
-  "src/Sound_Queue.h"
 )
 
 target_include_directories(nes-emulator PRIVATE	"src")
@@ -30,9 +28,6 @@ target_link_libraries(nes-emulator PRIVATE Qt5::Widgets Qt5::OpenGL)
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(nes-emulator PRIVATE OpenGL::OpenGL)
-
-find_package(SDL2 2.0 REQUIRED)
-target_link_libraries(nes-emulator PRIVATE SDL2::SDL2)
 
 find_package(fmt REQUIRED)
 target_link_libraries(nes-emulator PRIVATE fmt::fmt)

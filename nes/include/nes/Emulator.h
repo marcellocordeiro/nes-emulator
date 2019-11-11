@@ -21,9 +21,6 @@ public:
 
   static void            run_frame();
   static const uint32_t* get_back_buffer();
-  static bool            samples_available(size_t);
-  static long            get_audio_samples(std::array<std::int16_t, 4096>&);
-  static void            volume(double);
 
   static void update_controller_state(size_t, uint8_t);
 

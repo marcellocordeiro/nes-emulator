@@ -1,11 +1,10 @@
 #pragma once
 
+#include <chrono>
 #include <memory>
 
 #include <QMainWindow>
 #include <QTimer>
-
-#include "Sound_Queue.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -32,12 +31,11 @@ private:
   std::unique_ptr<Ui::MainWindow> ui;
   std::unique_ptr<QTimer>         timer;
 
+  std::chrono::time_point<std::chrono::steady_clock> fpsTimer;
+
   bool         running          = false;
   int          framerate        = 60;
+  int          elapsedFrames    = 0;
   double       volume           = 0.1;
   std::uint8_t controller_state = 0;
-
-  // TODO: reimplement this
-  std::array<std::int16_t, 4096> audio_buffer = {};
-  std::unique_ptr<Sound_Queue>   sound_queue;
 };
