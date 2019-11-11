@@ -2,7 +2,6 @@
 
 #include <fstream>
 
-#include <system_utils.h>
 #include "Patch.h"
 
 #include <spdlog/spdlog.h>
@@ -14,15 +13,10 @@ FileManager& FileManager::get()
   return instance;
 }
 
-void FileManager::setup()
-{
-  set_app_path(lib::get_app_path());
-  set_palette(app_path / "palette.pal");
-}
-
 void FileManager::set_app_path(const std::filesystem::path& value)
 {
   app_path = std::filesystem::canonical(value);  // May throw
+  set_palette(app_path / "palette.pal");
 }
 
 void FileManager::set_rom(const std::filesystem::path& value)

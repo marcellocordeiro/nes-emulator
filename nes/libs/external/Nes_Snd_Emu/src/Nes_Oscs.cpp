@@ -110,19 +110,19 @@ void Nes_Square::run(cpu_time_t time, cpu_time_t end_time)
     if (time < end_time) {
       Blip_Buffer* const output = this->output;
       const Synth*       synth  = this->synth;
-      int                delta  = amp * 2 - volume;
+      int                delta_ = amp * 2 - volume;
       int                phase  = this->phase;
 
       do {
         phase = (phase + 1) & (phase_range - 1);
         if (phase == 0 || phase == duty) {
-          delta = -delta;
-          synth->offset_inline(time, delta, output);
+          delta_ = -delta_;
+          synth->offset_inline(time, delta_, output);
         }
         time += timer_period;
       } while (time < end_time);
 
-      last_amp    = (delta + volume) >> 1;
+      last_amp    = (delta_ + volume) >> 1;
       this->phase = phase;
     }
   }
@@ -194,35 +194,6 @@ void Nes_Triangle::run(cpu_time_t time, cpu_time_t end_time)
 
 // Nes_Dmc
 
-void Nes_Dmc::reset()
-{
-  address     = 0;
-  dac         = 0;
-  buf         = 0;
-  bits_remain = 1;
-  bits        = 0;
-  buf_empty   = true;
-  silence     = true;
-  next_irq    = Nes_Apu::no_irq;
-  irq_flag    = false;
-  irq_enabled = false;
-
-  Nes_Osc::reset();
-  period = 0x036;
-}
-
-void Nes_Dmc::recalc_irq()
-{
-  cpu_time_t irq = Nes_Apu::no_irq;
-  if (irq_enabled && length_counter)
-    irq = apu->last_time + delay +
-          ((length_counter - 1) * 8 + bits_remain - 1) * cpu_time_t(period) + 1;
-  if (irq != next_irq) {
-    next_irq = irq;
-    apu->irq_changed();
-  }
-}
-
 int Nes_Dmc::count_reads(cpu_time_t time, cpu_time_t* last_read) const
 {
   if (last_read) *last_read = time;
@@ -274,19 +245,14 @@ static const unsigned char dac_table[128] = {
 void Nes_Dmc::write_register(int addr, int data)
 {
   if (addr == 0) {
-    period      = dmc_period_table[pal_mode][data & 15];
-    irq_enabled = (data & 0xc0) == 0x80;  // enabled only if loop disabled
-    irq_flag &= irq_enabled;
-    recalc_irq();
+    period = dmc_period_table[0][data & 15];
   } else if (addr == 1) {
-    if (!nonlinear) {
-      // adjust last_amp so that "pop" amplitude will be properly non-linear
-      // with respect to change in dac
-      int old_amp = dac_table[dac];
-      dac         = data & 0x7F;
-      int diff    = dac_table[dac] - old_amp;
-      last_amp    = dac - diff;
-    }
+    // adjust last_amp so that "pop" amplitude will be properly non-linear
+    // with respect to change in dac
+    int old_amp = dac_table[dac];
+    dac         = data & 0x7F;
+    int diff    = dac_table[dac] - old_amp;
+    last_amp    = dac - diff;
 
     dac = data & 0x7F;
   }
@@ -296,7 +262,6 @@ void Nes_Dmc::start()
 {
   reload_sample();
   fill_buffer();
-  recalc_irq();
 }
 
 void Nes_Dmc::fill_buffer()
@@ -311,9 +276,6 @@ void Nes_Dmc::fill_buffer()
         reload_sample();
       } else {
         apu->osc_enables &= ~0x10;
-        irq_flag = irq_enabled;
-        next_irq = Nes_Apu::no_irq;
-        apu->irq_changed();
       }
     }
   }
@@ -411,9 +373,9 @@ void Nes_Noise::run(cpu_time_t time, cpu_time_t end_time)
           output->resampled_duration(period);
       Blip_Buffer::resampled_time_t rtime = output->resampled_time(time);
 
-      int       noise = this->noise;
-      int       delta = amp * 2 - volume;
-      const int tap   = (regs[2] & mode_flag ? 8 : 13);
+      int       noise  = this->noise;
+      int       delta_ = amp * 2 - volume;
+      const int tap    = (regs[2] & mode_flag ? 8 : 13);
 
       do {
         int feedback = (noise << tap) ^ (noise << 14);
@@ -421,15 +383,15 @@ void Nes_Noise::run(cpu_time_t time, cpu_time_t end_time)
 
         if ((noise + 1) & 2) {
           // bits 0 and 1 of noise differ
-          delta = -delta;
-          synth.offset_resampled(rtime, delta, output);
+          delta_ = -delta_;
+          synth.offset_resampled(rtime, delta_, output);
         }
 
         rtime += rperiod;
         noise = (feedback & 0x4000) | (noise >> 1);
       } while (time < end_time);
 
-      last_amp    = (delta + volume) >> 1;
+      last_amp    = (delta_ + volume) >> 1;
       this->noise = noise;
     }
   }

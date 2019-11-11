@@ -17,35 +17,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. */
 
 #include "Sound_Queue.h"
 
-#include <cassert>
 #include <cstring>
+
+Sound_Queue::Sound_Queue() { free_sem = SDL_CreateSemaphore(buf_count - 1); }
 
 Sound_Queue::~Sound_Queue()
 {
   if (free_sem) SDL_DestroySemaphore(free_sem);
-
-  delete[] bufs;
-}
-
-int Sound_Queue::sample_count() const
-{
-  int buf_free = SDL_SemValue(free_sem) * buf_size + (buf_size - write_pos);
-  return buf_size * buf_count - buf_free;
-}
-
-void Sound_Queue::init()
-{
-  assert(!bufs);  // can only be initialized once
-
-  bufs = new sample_t[(long)buf_size * buf_count];
-
-  free_sem = SDL_CreateSemaphore(buf_count - 1);
 }
 
 inline Sound_Queue::sample_t* Sound_Queue::buf(int index)
 {
-  assert((unsigned)index < buf_count);
-  return bufs + (long)index * buf_size;
+  return bufs.get() + index * buf_size;
 }
 
 void Sound_Queue::write(const sample_t* in, int count)

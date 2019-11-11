@@ -7,8 +7,6 @@
 
 #include <cassert>
 
-#include "Blip_Buffer.h"
-
 // Quality level. Higher levels are slower, and worse in a few cases.
 // Use blip_good_quality as a starting point.
 inline constexpr int blip_low_quality  = 1;
@@ -56,21 +54,9 @@ template <int quality, int range> class Blip_Synth {
 public:
   Blip_Synth() { impulse.init(impulses, width, res, fine_bits); }
 
-  // Configure low-pass filter (see notes.txt). Not optimized for real-time
-  // control
-  void treble_eq(const blip_eq_t& eq) { impulse.treble_eq(eq); }
-
   // Set volume of a transition at amplitude 'range' by setting volume_unit
   // to v / range
   void volume(double v) { impulse.volume_unit(v * (1.0 / abs_range)); }
-
-  // Set base volume unit of transitions, where 1.0 is a full swing between the
-  // positive and negative extremes. Not optimized for real-time control.
-  void volume_unit(double unit) { impulse.volume_unit(unit); }
-
-  // Default Blip_Buffer used for output when none is specified for a given call
-  Blip_Buffer* output() const { return impulse.buf; }
-  void         output(Blip_Buffer* b) { impulse.buf = b; }
 
   // Add an amplitude offset (transition) with a magnitude of delta *
   // volume_unit into the specified buffer (default buffer if none specified) at
@@ -80,73 +66,13 @@ public:
 
   void offset_resampled(Blip_Buffer::resampled_time_t, int delta,
                         Blip_Buffer*) const;
-  void offset_resampled(Blip_Buffer::resampled_time_t t, int o) const
-  {
-    offset_resampled(t, o, impulse.buf);
-  }
-  void offset(blip_time_t t, int delta) const { offset(t, delta, impulse.buf); }
   void offset_inline(blip_time_t time, int delta, Blip_Buffer* buf) const
   {
     offset_resampled(time * buf->factor_ + buf->offset_, delta, buf);
   }
-  void offset_inline(blip_time_t time, int delta) const
-  {
-    offset_inline(time, delta, impulse.buf);
-  }
-};
-
-// Blip_Wave is a synthesizer for adding a *single* waveform to a Blip_Buffer.
-// A wave is built from a series of delays and new amplitudes. This provides a
-// simpler interface than Blip_Synth, nothing more.
-template <int quality, int range> class Blip_Wave {
-  Blip_Synth<quality, range> synth;
-  blip_time_t                time_;
-  int                        last_amp;
-
-public:
-  // Start wave at time 0 and amplitude 0
-  Blip_Wave() : time_(0), last_amp(0) {}
-
-  // See Blip_Synth for description
-  void         volume(double v) { synth.volume(v); }
-  void         volume_unit(double v) { synth.volume_unit(v); }
-  void         treble_eq(const blip_eq_t& eq) { synth.treble_eq(eq); }
-  Blip_Buffer* output() const { return synth.output(); }
-  void         output(Blip_Buffer* b)
-  {
-    synth.output(b);
-    if (!b) time_ = last_amp = 0;
-  }
-
-  // Current time in frame
-  blip_time_t time() const { return time_; }
-  void        time(blip_time_t t) { time_ = t; }
-
-  // Current amplitude of wave
-  int  amplitude() const { return last_amp; }
-  void amplitude(int);
-
-  // Move forward by 't' time units
-  void delay(blip_time_t t) { time_ += t; }
-
-  // End time frame of specified duration. Localize time to new frame.
-  void end_frame(blip_time_t duration)
-  {
-    assert(("Blip_Wave::end_frame(): Wave hadn't yet been run for entire frame",
-            duration <= time_));
-    time_ -= duration;
-  }
 };
 
 // End of public interface
-
-template <int quality, int range>
-void Blip_Wave<quality, range>::amplitude(int amp)
-{
-  int delta = amp - last_amp;
-  last_amp  = amp;
-  synth.offset_inline(time_, delta);
-}
 
 template <int quality, int range>
 inline void Blip_Synth<quality, range>::offset_resampled(

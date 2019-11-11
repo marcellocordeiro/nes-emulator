@@ -27,15 +27,8 @@ public:
   void sample_rate(long samples_per_sec, int msec_length = blip_default_length);
   // to do: rename to set_sample_rate
 
-  // Length of buffer, in milliseconds
-  int length() const;
-
-  // Current output sample rate
-  long sample_rate() const;
-
   // Number of source time units per second
   void clock_rate(long);
-  long clock_rate() const;
 
   // Set frequency at which high-pass filter attenuation passes -3dB
   void bass_freq(int frequency);
@@ -66,17 +59,6 @@ public:
 
   // Remove 'count' samples from those waiting to be read
   void remove_samples(long count);
-
-  // Number of samples delay from synthesis to samples read out
-  int output_latency() const;
-
-  // Experimental external buffer mixing support
-
-  // Number of raw samples that can be mixed within frame of specified duration
-  long count_samples(blip_time_t duration) const;
-
-  // Mix 'count' samples from 'buf' into buffer.
-  void mix_samples(const blip_sample_t* buf, long count);
 
   // not documented yet
 
@@ -124,7 +106,7 @@ private:
 // Low-pass equalization parameters (see notes.txt)
 class blip_eq_t {
 public:
-  blip_eq_t(double treble = 0);
+  blip_eq_t() = default;
   blip_eq_t(double treble, long cutoff, long sample_rate);
 
 private:
@@ -157,8 +139,7 @@ class Blip_Impulse_ {
   void scale_impulse(int unit, imp_t*) const;
 
 public:
-  Blip_Buffer* buf;
-  uint32_t     offset;
+  uint32_t offset;
 
   void init(blip_pair_t_* impulses, int width, int res, int fine_bits = 0);
   void volume_unit(double);

@@ -13,8 +13,6 @@ public:
 
   static FileManager& get();
 
-  void setup();
-
   void set_app_path(const std::filesystem::path&);
   void set_rom(const std::filesystem::path&);
   void set_palette(const std::filesystem::path&);

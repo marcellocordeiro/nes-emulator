@@ -9,12 +9,6 @@ using std::uint16_t;
 using std::uint32_t;
 using std::uint8_t;
 
-#ifdef _WIN32
-#elif __linux__
-#else
-#error
-#endif
-
 #ifdef _DEBUG
 constexpr auto DEBUG_MODE = true;
 #else

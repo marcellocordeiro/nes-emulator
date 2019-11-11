@@ -17,11 +17,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA */
 
 Nes_Apu::Nes_Apu()
 {
-  dmc.apu        = this;
-  dmc.rom_reader = nullptr;
-  square1.synth  = &square_synth;
-  square2.synth  = &square_synth;
-  irq_notifier_  = nullptr;
+  dmc.apu       = this;
+  square1.synth = &square_synth;
+  square2.synth = &square_synth;
 
   oscs[0] = &square1;
   oscs[1] = &square2;
@@ -31,29 +29,17 @@ Nes_Apu::Nes_Apu()
 
   output(nullptr);
   volume(1.0);
-  reset(false);
-}
 
-void Nes_Apu::treble_eq(const blip_eq_t& eq)
-{
-  square_synth.treble_eq(eq);
-  triangle.synth.treble_eq(eq);
-  noise.synth.treble_eq(eq);
-  dmc.synth.treble_eq(eq);
-}
+  write_register(0, 0x4017, 0x00);
+  write_register(0, 0x4015, 0x00);
 
-void Nes_Apu::buffer_cleared()
-{
-  square1.last_amp  = 0;
-  square2.last_amp  = 0;
-  triangle.last_amp = 0;
-  noise.last_amp    = 0;
-  dmc.last_amp      = 0;
+  for (cpu_addr_t addr = start_addr; addr <= 0x4013; addr++) {
+    write_register(0, addr, (addr & 3) ? 0x00 : 0x10);
+  }
 }
 
 void Nes_Apu::volume(double v)
 {
-  dmc.nonlinear = false;
   square_synth.volume(0.1128 * v);
   triangle.synth.volume(0.12765 * v);
   noise.synth.volume(0.0741 * v);
@@ -63,49 +49,6 @@ void Nes_Apu::volume(double v)
 void Nes_Apu::output(Blip_Buffer* buffer)
 {
   for (int i = 0; i < osc_count; i++) osc_output(i, buffer);
-}
-
-void Nes_Apu::reset(bool pal_mode, int initial_dmc_dac)
-{
-  // to do: time pal frame periods exactly
-  frame_period = pal_mode ? 8314 : 7458;
-  dmc.pal_mode = pal_mode;
-
-  square1.reset();
-  square2.reset();
-  triangle.reset();
-  noise.reset();
-  dmc.reset();
-
-  last_time     = 0;
-  osc_enables   = 0;
-  irq_flag      = false;
-  earliest_irq_ = no_irq;
-  frame_delay   = 1;
-  write_register(0, 0x4017, 0x00);
-  write_register(0, 0x4015, 0x00);
-
-  for (cpu_addr_t addr = start_addr; addr <= 0x4013; addr++)
-    write_register(0, addr, (addr & 3) ? 0x00 : 0x10);
-
-  dmc.dac = initial_dmc_dac;
-  if (!dmc.nonlinear)
-    dmc.last_amp = initial_dmc_dac;  // prevent output transition
-}
-
-void Nes_Apu::irq_changed()
-{
-  cpu_time_t new_irq = dmc.next_irq;
-  if (dmc.irq_flag | irq_flag) {
-    new_irq = 0;
-  } else if (new_irq > next_irq) {
-    new_irq = next_irq;
-  }
-
-  if (new_irq != earliest_irq_) {
-    earliest_irq_ = new_irq;
-    if (irq_notifier_) irq_notifier_(irq_data);
-  }
 }
 
 // frames
@@ -136,10 +79,6 @@ void Nes_Apu::run_until(cpu_time_t end_time)
     frame_delay = frame_period;
     switch (frame++) {
       case 0:
-        if (!(frame_mode & 0xc0)) {
-          next_irq = time + frame_period * 4 + 1;
-          irq_flag = true;
-        }
         // fall through
       case 2:
         // clock length and sweep on frames 0 and 2
@@ -180,19 +119,6 @@ void Nes_Apu::end_frame(cpu_time_t end_time)
   // make times relative to new frame
   last_time -= end_time;
   assert(last_time >= 0);
-
-  if (next_irq != no_irq) {
-    next_irq -= end_time;
-    assert(next_irq >= 0);
-  }
-  if (dmc.next_irq != no_irq) {
-    dmc.next_irq -= end_time;
-    assert(dmc.next_irq >= 0);
-  }
-  if (earliest_irq_ != no_irq) {
-    earliest_irq_ -= end_time;
-    if (earliest_irq_ < 0) earliest_irq_ = 0;
-  }
 }
 
 // registers
@@ -238,26 +164,16 @@ void Nes_Apu::write_register(cpu_time_t time, cpu_addr_t addr, int data)
     for (int i = osc_count; i--;)
       if (!((data >> i) & 1)) oscs[i]->length_counter = 0;
 
-    bool recalc_irq = dmc.irq_flag;
-    dmc.irq_flag    = false;
-
     int old_enables = osc_enables;
     osc_enables     = data;
     if (!(data & 0x10)) {
-      dmc.next_irq = no_irq;
-      recalc_irq   = true;
     } else if (!(old_enables & 0x10)) {
       dmc.start();  // dmc just enabled
     }
 
-    if (recalc_irq) irq_changed();
   } else if (addr == 0x4017) {
     // Frame mode
     frame_mode = data;
-
-    bool irq_enabled = !(data & 0x40);
-    irq_flag &= irq_enabled;
-    next_irq = no_irq;
 
     // mode 1
     frame_delay = (frame_delay & 1);
@@ -267,10 +183,7 @@ void Nes_Apu::write_register(cpu_time_t time, cpu_addr_t addr, int data)
       // mode 0
       frame = 1;
       frame_delay += frame_period;
-      if (irq_enabled) next_irq = time + frame_delay + frame_period * 3;
     }
-
-    irq_changed();
   }
 }
 
@@ -278,17 +191,12 @@ int Nes_Apu::read_status(cpu_time_t time)
 {
   run_until(time - 1);
 
-  int result = (dmc.irq_flag << 7) | (irq_flag << 6);
+  int result = 0;
 
   for (int i = 0; i < osc_count; i++)
     if (oscs[i]->length_counter) result |= 1 << i;
 
   run_until(time);
-
-  if (irq_flag) {
-    irq_flag = false;
-    irq_changed();
-  }
 
   return result;
 }
@@ -300,21 +208,8 @@ void Nes_Apu::osc_output(int osc, Blip_Buffer* buf)
   oscs[osc]->output = buf;
 }
 
-cpu_time_t Nes_Apu::earliest_irq() const { return earliest_irq_; }
-
 void Nes_Apu::dmc_reader(int (*func)(void*, cpu_addr_t), void* user_data)
 {
   dmc.rom_reader_data = user_data;
   dmc.rom_reader      = func;
-}
-
-void Nes_Apu::irq_notifier(void (*func)(void*), void* user_data)
-{
-  irq_notifier_ = func;
-  irq_data      = user_data;
-}
-
-int Nes_Apu::count_dmc_reads(cpu_time_t time, cpu_time_t* last_read) const
-{
-  return dmc.count_reads(time, last_read);
 }

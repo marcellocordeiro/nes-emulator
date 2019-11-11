@@ -5,8 +5,6 @@
 namespace nes {
 class Mapper7 final : public BaseMapper {
 public:
-  Mapper7() = default;
-
   void reset() override;
 
   void prg_write(uint16_t, uint8_t) override;

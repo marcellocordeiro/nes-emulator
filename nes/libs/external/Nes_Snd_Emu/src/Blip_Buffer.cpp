@@ -83,12 +83,6 @@ void Blip_Buffer::bass_freq(int freq)
   if (bass_shift > 24) bass_shift = 24;
 }
 
-long Blip_Buffer::count_samples(blip_time_t t) const
-{
-  return (resampled_time(t) >> BLIP_BUFFER_ACCURACY) -
-         (offset_ >> BLIP_BUFFER_ACCURACY);
-}
-
 void Blip_Impulse_::init(blip_pair_t_* imps, int w, int r, int fb)
 {
   fine_bits    = fb;
@@ -97,7 +91,6 @@ void Blip_Impulse_::init(blip_pair_t_* imps, int w, int r, int fb)
   generate     = true;
   volume_unit_ = -1.0;
   res          = r;
-  buf          = nullptr;
 
   impulse = &impulses[width * res * 2 * (fine_bits ? 2 : 1)];
   offset  = 0;
@@ -342,35 +335,14 @@ long Blip_Buffer::read_samples(blip_sample_t* out, long max_samples,
   return count;
 }
 
-void Blip_Buffer::mix_samples(const blip_sample_t* in, long count)
-{
-  buf_t_* buf =
-      &buffer_[(offset_ >> BLIP_BUFFER_ACCURACY) + (widest_impulse_ / 2 - 1)];
-
-  int prev = 0;
-  while (count--) {
-    int s = *in++;
-    *buf += s - prev;
-    prev = s;
-    ++buf;
-  }
-  *buf -= *--in;
-}
-
-blip_eq_t::blip_eq_t(double t) : treble(t), cutoff(0), sample_rate(44100) {}
-
 blip_eq_t::blip_eq_t(double t, long c, long sr)
     : treble(t), cutoff(c), sample_rate(sr)
 {}
-
-int Blip_Buffer::length() const { return length_; }
 
 long Blip_Buffer::samples_avail() const
 {
   return long(offset_ >> BLIP_BUFFER_ACCURACY);
 }
-
-long Blip_Buffer::sample_rate() const { return samples_per_sec; }
 
 void Blip_Buffer::end_frame(blip_time_t t)
 {
@@ -386,7 +358,3 @@ void Blip_Buffer::remove_silence(long count)
                                      // remove more samples than available
   offset_ -= resampled_time_t(count) << BLIP_BUFFER_ACCURACY;
 }
-
-int Blip_Buffer::output_latency() const { return widest_impulse_ / 2; }
-
-long Blip_Buffer::clock_rate() const { return clocks_per_sec; }

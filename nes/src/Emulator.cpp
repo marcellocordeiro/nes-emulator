@@ -12,12 +12,6 @@
 
 using namespace nes;
 
-/*Emulator& Emulator::get()
-{
-  static Emulator instance;
-  return instance;
-}*/
-
 void Emulator::power_on()
 {
   Cartridge::get().load();
@@ -27,9 +21,13 @@ void Emulator::power_on()
   APU::get().power_on();
 }
 
+void Emulator::set_app_path(const std::filesystem::path& path)
+{
+  Utility::FileManager::get().set_app_path(path);
+}
+
 void Emulator::load(const std::filesystem::path& path)
 {
-  Utility::FileManager::get().setup();
   Utility::FileManager::get().set_rom(path);
 }
 

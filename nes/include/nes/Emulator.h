@@ -10,8 +10,9 @@ public:
   Emulator& operator=(const Emulator&) = delete;
   Emulator& operator=(Emulator&&) = delete;
 
-  static void power_on();
+  static void set_app_path(const std::filesystem::path&);
   static void load(const std::filesystem::path&);
+  static void power_on();
   static void reset();
 
   //

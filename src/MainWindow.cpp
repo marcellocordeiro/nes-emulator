@@ -1,10 +1,12 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
-#include <SDL.h>
+#include <algorithm>
+
 #include <QCoreApplication>
 #include <QKeyEvent>
-#include <algorithm>
+
+#include <SDL.h>
 
 #include <nes/Emulator.h>
 
@@ -30,12 +32,12 @@ MainWindow::MainWindow(QWidget* parent)
   ui->video->setSize(Emulator::width, Emulator::height);
   ui->video->setBuffer(Emulator::get_back_buffer());
 
+  Emulator::set_app_path(QCoreApplication::applicationDirPath().toStdString());
   Emulator::load(QCoreApplication::arguments().at(1).toStdString());
   Emulator::power_on();
   Emulator::volume(0.1);
 
   sound_queue = std::make_unique<Sound_Queue>();
-  sound_queue->init();
 
   SDL_AudioSpec want;
   SDL_zero(want);
