@@ -12,8 +12,9 @@ public:
 
   static void set_app_path(const std::filesystem::path&);
   static void load(const std::filesystem::path&);
-  static void power_on();
   static void reset();
+  static void power_on();
+  static void power_off();
 
   //
   // Component access

@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget* parent)
   fpsTimer = std::chrono::steady_clock::now();
 }
 
-MainWindow::~MainWindow() = default;
+MainWindow::~MainWindow() { Emulator::power_off(); }
 
 void MainWindow::run_frame()
 {

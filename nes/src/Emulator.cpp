@@ -11,14 +11,6 @@
 
 using namespace nes;
 
-void Emulator::power_on()
-{
-  Cartridge::get().load();
-
-  CPU::get().power_on();
-  PPU::get().power_on();
-}
-
 void Emulator::set_app_path(const std::filesystem::path& path)
 {
   Utility::FileManager::get().set_app_path(path);
@@ -34,6 +26,16 @@ void Emulator::reset()
   CPU::get().reset();
   PPU::get().reset();
 }
+
+void Emulator::power_on()
+{
+  Cartridge::get().load();
+
+  CPU::get().power_on();
+  PPU::get().power_on();
+}
+
+void Emulator::power_off() { Cartridge::get().dump_prg_ram(); }
 
 void Emulator::run_frame() { CPU::get().run_frame(); }
 

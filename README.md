@@ -54,5 +54,5 @@ Run the `nes-emulator` executable generated in the `bin` folder passing the ROM 
 ## References
 
 - [NESdev](http://wiki.nesdev.com/w/index.php/Nesdev_Wiki)
-- [Mesen](https://www.mesen.ca/) for the excellent debugger and well documented implementation details.
+- [Mesen](https://www.mesen.ca/) for the excellent debugger and well documented hardware behaviour.
 - [@ulfalizer](https://github.com/ulfalizer)'s great PPU implementation and NTSC PPU timing diagram.
