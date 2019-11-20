@@ -22,6 +22,14 @@ NES emulator written in C++ using Qt5 and OpenGL
   - [ ] 64 * 8 colours
   - [x] Auto generation of colour emphasis palettes
 
+## Screenshots
+
+![Alt text](/doc/screenshots/Super_Mario_Bros_3.png?raw=true "Super Mario Bros 3")
+
+![Alt text](/doc/screenshots/The_Legend_of_Zelda.png?raw=true "The Legend of Zelda")
+
+![Alt text](/doc/screenshots/Final_Fantasy_III.png?raw=true "Final Fantasy III")
+
 ## Building
 
 Generate the solution files using CMake and build it. It has been tested on Windows and Arch Linux with the following compilers, tools and libraries:
@@ -35,9 +43,9 @@ Generate the solution files using CMake and build it. It has been tested on Wind
   - CMake 3.15
 
 - Libraries:
+  - Qt5 5.13
   - {fmt} 6.0.0
   - spdlog 1.4.2
-  - Qt5 5.13
 
 ## Running
 
@@ -47,12 +55,12 @@ Run the `nes-emulator` executable generated in the `bin` folder passing the ROM 
 
 - APU
 - Improve the code and make it easier to select games. Maybe a nice UI with a settings editor?
-- Tweak parameters and controls in a configuration file.
-- Automated tests.
-- Debugger/analyser.
+- Tweak parameters and controls in a configuration file
+- Automated tests
+- Debugger/analyser
 
 ## References
 
 - [NESdev](http://wiki.nesdev.com/w/index.php/Nesdev_Wiki)
-- [Mesen](https://www.mesen.ca/) for the excellent debugger and well documented hardware behaviour.
-- [@ulfalizer](https://github.com/ulfalizer)'s great PPU implementation and NTSC PPU timing diagram.
+- [Mesen](https://www.mesen.ca/) for the excellent debugger and well documented hardware behaviour
+- [@ulfalizer](https://github.com/ulfalizer)'s great PPU implementation and NTSC PPU timing diagram
