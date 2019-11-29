@@ -27,7 +27,7 @@ find_package(Qt5 COMPONENTS Widgets OpenGL REQUIRED)
 target_link_libraries(nes-emulator PRIVATE Qt5::Widgets Qt5::OpenGL)
 
 find_package(OpenGL REQUIRED)
-target_link_libraries(nes-emulator PRIVATE OpenGL::OpenGL)
+target_link_libraries(nes-emulator PRIVATE OpenGL::GL)
 
 find_package(fmt REQUIRED)
 target_link_libraries(nes-emulator PRIVATE fmt::fmt)
