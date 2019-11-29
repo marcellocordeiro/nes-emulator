@@ -5,7 +5,6 @@ project(nes-emulator)
 # Setting up the target
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 add_executable(nes-emulator
   "src/Main.cpp"
