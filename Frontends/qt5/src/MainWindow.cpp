@@ -3,10 +3,10 @@
 
 #include <algorithm>
 
-#include <fmt/format.h>
 #include <QCoreApplication>
 #include <QKeyEvent>
 
+#include <fmt/format.h>
 #include <nes/Emulator.h>
 
 using namespace std::chrono_literals;

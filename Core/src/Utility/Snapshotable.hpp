@@ -10,6 +10,9 @@
 namespace nes::Utility {
 class Snapshotable {
 public:
+  Snapshotable()          = default;
+  virtual ~Snapshotable() = default;
+
   virtual void save(std::ofstream&) = 0;
   virtual void load(std::ifstream&) = 0;
 

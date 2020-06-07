@@ -61,15 +61,19 @@ void Cartridge::load()
   std::vector prg(rom.begin() + prg_start, rom.begin() + prg_end);
   std::vector chr(rom.begin() + chr_start, rom.begin() + chr_end);
 
-  auto prg_ram = Utility::FileManager::get().get_prg_ram();
-
   if (chr_ram) {
     chr.resize(0x2000);
   }
 
   mapper->set_prg_rom(std::move(prg));
   mapper->set_chr_rom(std::move(chr));
-  mapper->set_prg_ram(std::move(prg_ram));
+
+  if (Utility::FileManager::get().has_prg_ram()) {
+    mapper->set_prg_ram(Utility::FileManager::get().get_prg_ram());
+  } else {
+    mapper->set_prg_ram(std::vector(0x2000, uint8_t{}));
+  }
+
   mapper->reset();
 
   PPU::get().set_mirroring(mirroring);
