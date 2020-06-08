@@ -2,9 +2,9 @@
 
 #include <fstream>
 
-#include "Patch.h"
-
 #include <spdlog/spdlog.h>
+
+#include "Patch.h"
 
 namespace nes::Utility {
 FileManager& FileManager::get()
@@ -82,8 +82,7 @@ std::vector<std::uint8_t> FileManager::get_palette()
 {
   std::ifstream file(palette_path, std::ios::binary);
 
-  std::vector<uint8_t> palette(std::filesystem::file_size(palette_path),
-                               uint8_t{});
+  std::vector<uint8_t> palette(std::filesystem::file_size(palette_path), uint8_t{});
   file.read(reinterpret_cast<char*>(palette.data()), palette.size());
 
   return palette;
@@ -101,33 +100,15 @@ std::filesystem::path FileManager::get_rom_path() const { return rom_path; }
 
 std::filesystem::path FileManager::get_patch_path() const { return patch_path; }
 
-std::filesystem::path FileManager::get_prg_ram_path() const
-{
-  return prg_ram_path;
-}
+std::filesystem::path FileManager::get_prg_ram_path() const { return prg_ram_path; }
 
-std::filesystem::path FileManager::get_palette_path() const
-{
-  return palette_path;
-}
+std::filesystem::path FileManager::get_palette_path() const { return palette_path; }
 
-std::filesystem::path FileManager::get_snapshot_path() const
-{
-  return snapshot_path;
-}
+std::filesystem::path FileManager::get_snapshot_path() const { return snapshot_path; }
 
-bool FileManager::has_patch() const
-{
-  return std::filesystem::exists(patch_path);
-}
+bool FileManager::has_patch() const { return std::filesystem::exists(patch_path); }
 
-bool FileManager::has_prg_ram() const
-{
-  return std::filesystem::exists(prg_ram_path);
-}
+bool FileManager::has_prg_ram() const { return std::filesystem::exists(prg_ram_path); }
 
-bool FileManager::has_snapshot() const
-{
-  return std::filesystem::exists(snapshot_path);
-}
+bool FileManager::has_snapshot() const { return std::filesystem::exists(snapshot_path); }
 }  // namespace nes::Utility

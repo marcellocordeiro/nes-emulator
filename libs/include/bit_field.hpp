@@ -38,26 +38,17 @@ public:
   }
 
 private:
-  constexpr value_type get() const noexcept
-  {
-    return (data & get_mask()) >> position;
-  }
+  constexpr value_type get() const noexcept { return (data & get_mask()) >> position; }
 
-  constexpr void set(value_type value) noexcept
-  {
-    data = (data & ~get_mask()) | ((value << position) & get_mask());
-  }
+  constexpr void set(value_type value) noexcept { data = (data & ~get_mask()) | ((value << position) & get_mask()); }
 
   constexpr value_type get_mask() const noexcept
   {
-    return (std::numeric_limits<value_type>::max() >>
-            (8 * sizeof(value_type) - bits))
-           << position;
+    return (std::numeric_limits<value_type>::max() >> (8 * sizeof(value_type) - bits)) << position;
   }
 
   value_type data;
 
-  static_assert(std::is_unsigned_v<value_type>,
-                "Value type is not an unsigned integer");
+  static_assert(std::is_unsigned_v<value_type>, "Value type is not an unsigned integer");
 };
 }  // namespace lib

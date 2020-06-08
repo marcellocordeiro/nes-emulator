@@ -367,8 +367,7 @@ uint8_t CPU::shift_right(uint8_t value)
 
 uint8_t CPU::rotate_left(uint8_t value)
 {
-  uint8_t result =
-      (value << 1) | static_cast<uint8_t>(state.check_flags(Carry));
+  uint8_t result = (value << 1) | static_cast<uint8_t>(state.check_flags(Carry));
   state.update_nz(result);
 
   state.clear_flags(Carry);
@@ -434,10 +433,7 @@ uint8_t CPU::pop()
   return memory_read(0x100 + state.sp);
 }
 
-bool CPU::crossed_page(uint16_t addr, uint16_t jump_addr) const
-{
-  return (addr & 0xFF00) != (jump_addr & 0xFF00);
-}
+bool CPU::crossed_page(uint16_t addr, uint16_t jump_addr) const { return (addr & 0xFF00) != (jump_addr & 0xFF00); }
 
 //
 // Storage
@@ -471,8 +467,7 @@ template <auto Mode> void CPU::STA()
 {
   auto addr = get_operand<Mode>();
 
-  if constexpr (Mode == AbsoluteX_Exception || Mode == AbsoluteY_Exception ||
-                Mode == IndirectY_Exception) {
+  if constexpr (Mode == AbsoluteX_Exception || Mode == AbsoluteY_Exception || Mode == IndirectY_Exception) {
     tick();
   }
 
@@ -906,7 +901,7 @@ void CPU::INT_RST()
   state.set_flags(Interrupt);
 
   constexpr uint16_t jmp_addr = 0xFFFC;
-  state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
+  state.pc                    = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
 }
 
 void CPU::INT_IRQ()
@@ -921,7 +916,7 @@ void CPU::INT_IRQ()
   state.set_flags(Interrupt);
 
   constexpr uint16_t jmp_addr = 0xFFFE;
-  state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
+  state.pc                    = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
 }
 
 void CPU::INT_BRK()
@@ -935,7 +930,7 @@ void CPU::INT_BRK()
   state.set_flags(Interrupt);
 
   constexpr uint16_t jmp_addr = 0xFFFE;
-  state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
+  state.pc                    = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
 }
 
 void CPU::NOP() { tick(); }
@@ -1139,8 +1134,7 @@ template <auto Mode> void CPU::SXA()
 
 template <auto Mode> uint16_t CPU::get_operand()
 {
-  static_assert(Mode == Immediate || Mode == Relative,
-                "Invalid addressing mode");
+  static_assert(Mode == Immediate || Mode == Relative, "Invalid addressing mode");
 
   auto addr = state.pc;
   ++state.pc;
@@ -1156,10 +1150,7 @@ template <> uint16_t CPU::get_operand<Relative>()
   return state.pc + offset;
 }
 
-template <> uint16_t CPU::get_operand<ZeroPage>()
-{
-  return memory_read(get_operand<Immediate>());
-}
+template <> uint16_t CPU::get_operand<ZeroPage>() { return memory_read(get_operand<Immediate>()); }
 
 template <> uint16_t CPU::get_operand<ZeroPageX>()
 {
@@ -1193,10 +1184,7 @@ template <> uint16_t CPU::get_operand<AbsoluteX>()
   return addr;
 }
 
-template <> uint16_t CPU::get_operand<AbsoluteX_Exception>()
-{
-  return get_operand<Absolute>() + state.x;
-}
+template <> uint16_t CPU::get_operand<AbsoluteX_Exception>() { return get_operand<Absolute>() + state.x; }
 
 template <> uint16_t CPU::get_operand<AbsoluteY>()
 {
@@ -1210,16 +1198,12 @@ template <> uint16_t CPU::get_operand<AbsoluteY>()
   return addr;
 }
 
-template <> uint16_t CPU::get_operand<AbsoluteY_Exception>()
-{
-  return get_operand<Absolute>() + state.y;
-}
+template <> uint16_t CPU::get_operand<AbsoluteY_Exception>() { return get_operand<Absolute>() + state.y; }
 
 template <> uint16_t CPU::get_operand<Indirect>()
 {
   auto base_addr = get_operand<Absolute>();
-  return memory_read(base_addr) |
-         (memory_read((base_addr & 0xFF00) | ((base_addr + 1) & 0xFF)) << 8);
+  return memory_read(base_addr) | (memory_read((base_addr & 0xFF00) | ((base_addr + 1) & 0xFF)) << 8);
 }
 
 template <> uint16_t CPU::get_operand<IndirectX>()
@@ -1230,10 +1214,9 @@ template <> uint16_t CPU::get_operand<IndirectX>()
 
 template <> uint16_t CPU::get_operand<IndirectY>()
 {
-  auto     zp_addr = get_operand<ZeroPage>();
-  uint16_t base_addr =
-      ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
-  uint16_t addr = base_addr + state.y;
+  auto     zp_addr   = get_operand<ZeroPage>();
+  uint16_t base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+  uint16_t addr      = base_addr + state.y;
 
   if (crossed_page(base_addr, addr)) {
     tick();
@@ -1244,9 +1227,8 @@ template <> uint16_t CPU::get_operand<IndirectY>()
 
 template <> uint16_t CPU::get_operand<IndirectY_Exception>()
 {
-  auto     zp_addr = get_operand<ZeroPage>();
-  uint16_t base_addr =
-      ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+  auto     zp_addr   = get_operand<ZeroPage>();
+  uint16_t base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
 
   return base_addr + state.y;
 }

@@ -4,11 +4,7 @@
 #include <string>
 
 namespace nes::Utility {
-ips_patch::ips_patch(const std::filesystem::path& path)
-    : ips_file(path, std::ios::binary)
-{
-  build();
-}
+ips_patch::ips_patch(const std::filesystem::path& path) : ips_file(path, std::ios::binary) { build(); }
 
 void ips_patch::build()
 {
@@ -17,9 +13,7 @@ void ips_patch::build()
   }
 
   while (read_record()) {
-    min_size =
-        std::max(min_size, records.back().addr +
-                               static_cast<size_t>(records.back().length));
+    min_size = std::max(min_size, records.back().addr + static_cast<size_t>(records.back().length));
   }
 }
 
@@ -30,8 +24,7 @@ std::vector<uint8_t> ips_patch::patch(const std::vector<uint8_t>& rom)
   std::copy(rom.begin(), rom.end(), output.begin());
 
   for (const auto& entry : records) {
-    std::copy(entry.data.begin(), entry.data.end(),
-              output.begin() + entry.addr);
+    std::copy(entry.data.begin(), entry.data.end(), output.begin() + entry.addr);
   }
 
   //

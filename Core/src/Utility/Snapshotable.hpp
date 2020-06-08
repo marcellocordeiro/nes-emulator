@@ -17,14 +17,12 @@ public:
   virtual void load(std::ifstream&) = 0;
 
 protected:
-  template <typename... Args>
-  void dump_snapshot(std::ofstream& out, Args&&... args)
+  template <typename... Args> void dump_snapshot(std::ofstream& out, Args&&... args)
   {
     (dump(out, std::forward<Args>(args)), ...);
   }
 
-  template <typename... Args>
-  void get_snapshot(std::ifstream& in, Args&&... args)
+  template <typename... Args> void get_snapshot(std::ifstream& in, Args&&... args)
   {
     (get(in, std::forward<Args>(args)), ...);
   }
@@ -34,15 +32,13 @@ private:
   // dump specialisations
   //
 
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
-  void dump(std::ofstream& out, T value)
+  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>> void dump(std::ofstream& out, T value)
   {
     static_assert(std::is_integral_v<T>);
     out.write(reinterpret_cast<char*>(&value), sizeof(T));
   }
 
-  template <typename T, std::size_t size>
-  void dump(std::ofstream& out, std::array<T, size>& arr)
+  template <typename T, std::size_t size> void dump(std::ofstream& out, std::array<T, size>& arr)
   {
     for (auto value : arr) dump(out, value);
   }
@@ -57,15 +53,13 @@ private:
   // get specialisations
   //
 
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
-  void get(std::ifstream& in, T& value)
+  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>> void get(std::ifstream& in, T& value)
   {
     static_assert(std::is_integral_v<T>);
     in.read(reinterpret_cast<char*>(&value), sizeof(T));
   }
 
-  template <typename T, std::size_t size>
-  void get(std::ifstream& in, std::array<T, size>& arr)
+  template <typename T, std::size_t size> void get(std::ifstream& in, std::array<T, size>& arr)
   {
     for (auto& ref : arr) get(in, ref);
   }

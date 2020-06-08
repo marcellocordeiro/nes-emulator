@@ -42,9 +42,7 @@ void Cartridge::load()
     case 2: mapper = std::make_unique<Mapper2>(); break;
     case 4: mapper = std::make_unique<Mapper4>(); break;
     case 7: mapper = std::make_unique<Mapper7>(); break;
-    default:
-      throw std::runtime_error(
-          fmt::format("Mapper #{} not implemented", mapper_num));
+    default: throw std::runtime_error(fmt::format("Mapper #{} not implemented", mapper_num));
   }
 
   spdlog::info("PRG-ROM size (16KB banks): {}", prg_size);
@@ -79,30 +77,15 @@ void Cartridge::load()
   PPU::get().set_mirroring(mirroring);
 }
 
-uint8_t Cartridge::prg_read(uint16_t addr) const
-{
-  return mapper->prg_read(addr);
-}
+uint8_t Cartridge::prg_read(uint16_t addr) const { return mapper->prg_read(addr); }
 
-void Cartridge::prg_write(uint16_t addr, uint8_t value)
-{
-  mapper->prg_write(addr, value);
-}
+void Cartridge::prg_write(uint16_t addr, uint8_t value) { mapper->prg_write(addr, value); }
 
-uint8_t Cartridge::chr_read(uint16_t addr) const
-{
-  return mapper->chr_read(addr);
-}
+uint8_t Cartridge::chr_read(uint16_t addr) const { return mapper->chr_read(addr); }
 
-void Cartridge::chr_write(uint16_t addr, uint8_t value)
-{
-  mapper->chr_write(addr, value);
-}
+void Cartridge::chr_write(uint16_t addr, uint8_t value) { mapper->chr_write(addr, value); }
 
 void Cartridge::scanline_counter() { mapper->scanline_counter(); }
 
-void Cartridge::dump_prg_ram() const
-{
-  Utility::FileManager::get().save_prg_ram(mapper->get_prg_ram());
-}
+void Cartridge::dump_prg_ram() const { Utility::FileManager::get().save_prg_ram(mapper->get_prg_ram()); }
 }  // namespace nes

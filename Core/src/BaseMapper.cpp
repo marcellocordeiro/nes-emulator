@@ -1,20 +1,11 @@
 #include "BaseMapper.h"
 
 namespace nes {
-void BaseMapper::set_prg_rom(std::vector<uint8_t>&& vec)
-{
-  prg = std::move(vec);
-}
+void BaseMapper::set_prg_rom(std::vector<uint8_t>&& vec) { prg = std::move(vec); }
 
-void BaseMapper::set_chr_rom(std::vector<uint8_t>&& vec)
-{
-  chr = std::move(vec);
-}
+void BaseMapper::set_chr_rom(std::vector<uint8_t>&& vec) { chr = std::move(vec); }
 
-void BaseMapper::set_prg_ram(std::vector<uint8_t>&& vec)
-{
-  prg_ram = std::move(vec);
-}
+void BaseMapper::set_prg_ram(std::vector<uint8_t>&& vec) { prg_ram = std::move(vec); }
 
 std::vector<uint8_t> BaseMapper::get_prg_ram() const { return prg_ram; }
 
@@ -38,10 +29,7 @@ uint8_t BaseMapper::chr_read(uint16_t addr) const
   return chr[chr_map[slot] + chr_addr];
 }
 
-void BaseMapper::prg_write(uint16_t addr, uint8_t value)
-{
-  prg_ram[addr] = value;
-}
+void BaseMapper::prg_write(uint16_t addr, uint8_t value) { prg_ram[addr] = value; }
 
 void BaseMapper::chr_write(uint16_t addr, uint8_t value) { chr[addr] = value; }
 

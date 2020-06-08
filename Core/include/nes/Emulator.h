@@ -2,6 +2,7 @@
 
 #include <array>
 #include <filesystem>
+#include <string_view>
 
 class Emulator {
 public:
@@ -35,7 +36,7 @@ public:
   static constexpr int width  = 256;
   static constexpr int height = 240;
 
-  static constexpr const char* title = "nes-emulator";
+  static constexpr auto title = std::string_view("nes-emulator");
 
 private:
   Emulator() = default;

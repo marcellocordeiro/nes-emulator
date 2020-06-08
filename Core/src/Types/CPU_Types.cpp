@@ -1,10 +1,7 @@
 #include "CPU_Types.h"
 
 namespace nes::types::cpu {
-bool state::check_flags(uint8_t flags) const
-{
-  return (this->ps & flags) == flags;
-}
+bool state::check_flags(uint8_t flags) const { return (this->ps & flags) == flags; }
 
 void state::set_flags(uint8_t flags) { this->ps |= flags; }
 
@@ -50,9 +47,7 @@ void state::set_ps(uint8_t value) { this->ps = value & 0xCF; }
 namespace memory {
 template <auto Operation> int get_map(uint16_t addr)
 {
-  auto in_range = [addr](const auto lower, const auto upper) {
-    return (addr >= lower) && (addr <= upper);
-  };
+  auto in_range = [addr](const auto lower, const auto upper) { return (addr >= lower) && (addr <= upper); };
 
   if constexpr (Operation == Read) {
     if (addr <= 0x1FFF) {

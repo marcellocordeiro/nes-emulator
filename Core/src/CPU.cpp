@@ -78,8 +78,7 @@ uint8_t CPU::peek(uint16_t addr) const
   switch (get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
     case PPU_Access: return PPU::get().peek_reg(addr);
-    case APU_Access:
-      return 0xFF;  // Avoids APU side effects and satisfies nestest
+    case APU_Access: return 0xFF;  // Avoids APU side effects and satisfies nestest
     case Controller_1: return Controller::get().peek(0);
     case Controller_2: return Controller::get().peek(1);
     case Cartridge_Access: return Cartridge::get().prg_read(addr);
@@ -170,8 +169,7 @@ uint16_t CPU::peek_aby() const
 uint16_t CPU::peek_ind() const
 {
   const auto base_addr = peek_ab();
-  return peek(base_addr) |
-         (peek((base_addr & 0xFF00) | ((base_addr + 1) % 0x100)) << 8);
+  return peek(base_addr) | (peek((base_addr & 0xFF00) | ((base_addr + 1) % 0x100)) << 8);
 }
 
 uint16_t CPU::peek_indx() const
@@ -193,14 +191,14 @@ uint16_t CPU::peek_indy() const
 void CPU::save(std::ofstream& out)
 {
   dump_snapshot(out, ram);
-  dump_snapshot(out, state.a, state.x, state.y, state.pc, state.sp, state.sr,
-                state.ps, state.nmi_flag, state.irq_flag, state.cycle_count);
+  dump_snapshot(out, state.a, state.x, state.y, state.pc, state.sp, state.sr, state.ps, state.nmi_flag, state.irq_flag,
+                state.cycle_count);
 }
 
 void CPU::load(std::ifstream& in)
 {
   get_snapshot(in, ram);
-  get_snapshot(in, state.a, state.x, state.y, state.pc, state.sp, state.sr,
-               state.ps, state.nmi_flag, state.irq_flag, state.cycle_count);
+  get_snapshot(in, state.a, state.x, state.y, state.pc, state.sp, state.sr, state.ps, state.nmi_flag, state.irq_flag,
+               state.cycle_count);
 }
 }  // namespace nes

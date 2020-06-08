@@ -7,10 +7,7 @@ Controller& Controller::get()
   return instance;
 }
 
-void Controller::update_state(size_t port, uint8_t state)
-{
-  controller_state[port] = state;
-}
+void Controller::update_state(size_t port, uint8_t state) { controller_state[port] = state; }
 
 uint8_t Controller::read(size_t port)
 {

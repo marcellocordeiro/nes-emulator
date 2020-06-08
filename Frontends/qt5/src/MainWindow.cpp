@@ -12,9 +12,7 @@
 using namespace std::chrono_literals;
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent),
-      ui(std::make_unique<Ui::MainWindow>()),
-      timer(std::make_unique<QTimer>(this))
+    : QMainWindow(parent), ui(std::make_unique<Ui::MainWindow>()), timer(std::make_unique<QTimer>(this))
 {
   if (QCoreApplication::arguments().size() == 1) {
     throw std::invalid_argument("Too few arguments");
@@ -29,7 +27,7 @@ MainWindow::MainWindow(QWidget* parent)
   ui->setupUi(this);
   resize(3);
 
-  setWindowTitle(Emulator::title);
+  setWindowTitle(Emulator::title.data());
   ui->video->setSize(Emulator::width, Emulator::height);
   ui->video->setBuffer(Emulator::get_back_buffer());
 
@@ -59,8 +57,7 @@ void MainWindow::run_frame()
   auto elapsedTime = std::chrono::steady_clock::now() - fpsTimer;
 
   if (elapsedTime > 1s) {
-    auto fps =
-        elapsedFrames / std::chrono::duration<double>(elapsedTime).count();
+    auto fps   = elapsedFrames / std::chrono::duration<double>(elapsedTime).count();
     auto title = fmt::format("{} | {:5.2f}fps", Emulator::title, fps);
     setWindowTitle(title.c_str());
 

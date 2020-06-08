@@ -3,8 +3,6 @@
 #include <fmt/format.h>
 #include <nes/Emulator.h>
 
-#include "system_utils.h"
-
 using namespace std::chrono_literals;
 
 main_window::main_window(int argc, char* argv[]) : args(argv, argv + argc)
@@ -13,7 +11,7 @@ main_window::main_window(int argc, char* argv[]) : args(argv, argv + argc)
     throw std::invalid_argument("Too few arguments");
   }
 
-  Emulator::set_app_path(lib::get_app_path());
+  Emulator::set_app_path(SDL_GetBasePath());
   Emulator::load(args[1]);
   Emulator::power_on();
 }
@@ -36,17 +34,14 @@ void main_window::init()
   // Bilinear filter
   // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-  window = SDL_CreateWindow("nes-emulator", SDL_WINDOWPOS_CENTERED,
-                            SDL_WINDOWPOS_CENTERED, Emulator::width * 3,
+  window = SDL_CreateWindow(Emulator::title.data(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, Emulator::width * 3,
                             Emulator::height * 3, 0);
 
-  renderer = SDL_CreateRenderer(
-      window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
   SDL_RenderSetLogicalSize(renderer, Emulator::width, Emulator::height);
 
-  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-                              SDL_TEXTUREACCESS_STREAMING, Emulator::width,
+  texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, Emulator::width,
                               Emulator::height);
 
   keys = SDL_GetKeyboardState(nullptr);
@@ -84,15 +79,11 @@ void main_window::get_controllers()
   }
 }
 
-void main_window::update_controllers()
-{
-  Emulator::update_controller_state(0, controller_state[0]);
-}
+void main_window::update_controllers() { Emulator::update_controller_state(0, controller_state[0]); }
 
 void main_window::update_frame()
 {
-  SDL_UpdateTexture(texture, nullptr, Emulator::get_back_buffer(),
-                    Emulator::width * sizeof(std::uint32_t));
+  SDL_UpdateTexture(texture, nullptr, Emulator::get_back_buffer(), Emulator::width * sizeof(std::uint32_t));
 }
 
 void main_window::render()
@@ -165,8 +156,7 @@ void main_window::run()
     auto elapsedTime = std::chrono::steady_clock::now() - fps_timer;
 
     if (elapsedTime > 1s) {
-      auto fps =
-          elapsed_frames / std::chrono::duration<double>(elapsedTime).count();
+      auto fps   = elapsed_frames / std::chrono::duration<double>(elapsedTime).count();
       auto title = fmt::format("{} | {:5.2f}fps", Emulator::title, fps);
       SDL_SetWindowTitle(window, title.c_str());
 

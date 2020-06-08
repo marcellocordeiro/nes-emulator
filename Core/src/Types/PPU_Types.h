@@ -4,11 +4,9 @@
 #include <bit_field.hpp>
 
 namespace nes::types::ppu {
-template <size_t position, size_t bits>
-using bf_8 = lib::bit_field<uint8_t, position, bits>;
+template <size_t position, size_t bits> using bf_8 = lib::bit_field<uint8_t, position, bits>;
 
-template <size_t position, size_t bits>
-using bf_16 = lib::bit_field<uint16_t, position, bits>;
+template <size_t position, size_t bits> using bf_16 = lib::bit_field<uint16_t, position, bits>;
 
 // PPUCTRL ($2000) register
 union ppuctrl {

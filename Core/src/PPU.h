@@ -116,9 +116,9 @@ private:
   // Register access
   //
 
-  uint8_t bus_latch      = 0;  // Register access buffer
-  uint8_t ppudata_buffer = 0;  // PPUDATA read buffer
-  bool    addr_latch = false;  // Address latch used by PPUSCROLL and PPUADDR
+  uint8_t bus_latch      = 0;      // Register access buffer
+  uint8_t ppudata_buffer = 0;      // PPUDATA read buffer
+  bool    addr_latch     = false;  // Address latch used by PPUSCROLL and PPUADDR
 
   int mirroring_mode = 0;
 

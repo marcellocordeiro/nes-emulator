@@ -79,9 +79,7 @@ void Debugger::cpu_log()
   auto peek_indx = [&]() { return cpu_ptr->peek_indx(); };
   auto peek_indy = [&]() { return cpu_ptr->peek_indy(); };
 
-  auto read_word_zp = [&](uint16_t addr) -> uint16_t {
-    return peek((addr + 1) & 0xFF) << 8 | peek(addr);
-  };
+  auto read_word_zp = [&](uint16_t addr) -> uint16_t { return peek((addr + 1) & 0xFF) << 8 | peek(addr); };
 
   auto state = cpu_ptr->get_state();
 
@@ -140,13 +138,11 @@ void Debugger::cpu_log()
       break;
     }
     case ZeroPageX: {
-      ss << fmt::format("${:02X},X @ {:02X} = {:02X}", peek_zp(), peek_zpx(),
-                        peek(peek_zpx()));
+      ss << fmt::format("${:02X},X @ {:02X} = {:02X}", peek_zp(), peek_zpx(), peek(peek_zpx()));
       break;
     }
     case ZeroPageY: {
-      ss << fmt::format("${:02X},Y @ {:02X} = {:02X}", peek_zp(), peek_zpy(),
-                        peek(peek_zpy()));
+      ss << fmt::format("${:02X},Y @ {:02X} = {:02X}", peek_zp(), peek_zpy(), peek(peek_zpy()));
       break;
     }
     case Absolute: {
@@ -158,13 +154,11 @@ void Debugger::cpu_log()
       break;
     }
     case AbsoluteX: {
-      ss << fmt::format("${:04X},X @ {:04X} = {:02X}", arg16, peek_abx(),
-                        peek(peek_abx()));
+      ss << fmt::format("${:04X},X @ {:04X} = {:02X}", arg16, peek_abx(), peek(peek_abx()));
       break;
     }
     case AbsoluteY: {
-      ss << fmt::format("${:04X},Y @ {:04X} = {:02X}", arg16, peek_aby(),
-                        peek(peek_aby()));
+      ss << fmt::format("${:04X},Y @ {:04X} = {:02X}", arg16, peek_aby(), peek(peek_aby()));
       break;
     }
     case Indirect: {
@@ -172,13 +166,12 @@ void Debugger::cpu_log()
       break;
     }
     case IndirectX: {
-      ss << fmt::format("(${:02X},X) @ {:02X} = {:04X} = {:02X}", arg8,
-                        peek_zpx(), peek_indx(), peek(peek_indx()));
+      ss << fmt::format("(${:02X},X) @ {:02X} = {:04X} = {:02X}", arg8, peek_zpx(), peek_indx(), peek(peek_indx()));
       break;
     }
     case IndirectY: {
-      ss << fmt::format("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", arg8,
-                        read_word_zp(arg8), peek_indy(), peek(peek_indy()));
+      ss << fmt::format("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", arg8, read_word_zp(arg8), peek_indy(),
+                        peek(peek_indy()));
       break;
     }
     default: ss << " "; break;
@@ -190,8 +183,7 @@ void Debugger::cpu_log()
   ss << fmt::format(
       "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} PPU:{:3d},{:3d} "
       "CYC:{:d}\n",
-      state.a, state.x, state.y, (state.ps | 0x20), state.sp, ppu_cycle,
-      ppu_scanline, state.cycle_count);
+      state.a, state.x, state.y, (state.ps | 0x20), state.sp, ppu_cycle, ppu_scanline, state.cycle_count);
 
   nestest_log << ss.str();
 

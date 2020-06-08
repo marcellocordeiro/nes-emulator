@@ -1,3 +1,5 @@
+project(nes-emulator-core)
+
 file(GLOB SOURCE_FILES
   "src/Mappers/*.cpp"
   "src/Types/*.cpp"
@@ -5,21 +7,23 @@ file(GLOB SOURCE_FILES
   "src/*.cpp"
 )
 
-add_library(nes-emulator STATIC ${SOURCE_FILES})
+add_library(nes-emulator-core STATIC ${SOURCE_FILES})
 
-target_include_directories(nes-emulator PUBLIC "include")
+target_include_directories(nes-emulator-core PUBLIC "include")
 
 find_package(fmt REQUIRED)
-target_link_libraries(nes-emulator PRIVATE fmt::fmt)
+target_link_libraries(nes-emulator-core PRIVATE fmt::fmt)
 
 find_package(spdlog REQUIRED)
-target_link_libraries(nes-emulator PRIVATE spdlog::spdlog_header_only)
+target_link_libraries(nes-emulator-core PRIVATE spdlog::spdlog_header_only)
 
-target_link_libraries(nes-emulator PRIVATE nes-libs)
+target_link_libraries(nes-emulator-core PRIVATE nes-libs)
 
-set_target_properties(nes-emulator
+set_target_properties(nes-emulator-core
   PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
 )
+
+target_link_libraries(nes-emulator-core PRIVATE project-warnings)
