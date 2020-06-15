@@ -11,6 +11,8 @@ main_window::main_window(int argc, char* argv[]) : args(argv, argv + argc)
     throw std::invalid_argument("Too few arguments");
   }
 
+  buffer = Emulator::get_back_buffer();
+
   Emulator::set_app_path(SDL_GetBasePath());
   Emulator::load(args[1]);
   Emulator::power_on();
@@ -18,9 +20,6 @@ main_window::main_window(int argc, char* argv[]) : args(argv, argv + argc)
 
 main_window::~main_window()
 {
-  SDL_PauseAudio(true);
-  SDL_CloseAudio();
-
   SDL_DestroyTexture(texture);
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
@@ -30,7 +29,7 @@ main_window::~main_window()
 
 void main_window::init()
 {
-  SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+  SDL_Init(SDL_INIT_VIDEO);
   // Bilinear filter
   // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
@@ -45,23 +44,6 @@ void main_window::init()
                               Emulator::height);
 
   keys = SDL_GetKeyboardState(nullptr);
-
-  /*sound_queue = std::make_unique<Sound_Queue>();
-  sound_queue->init();
-
-  SDL_AudioSpec want;
-  SDL_zero(want);
-  want.freq     = 44100;
-  want.format   = AUDIO_S16SYS;
-  want.channels = 1;
-  want.samples  = Sound_Queue::buf_size;
-  want.userdata = sound_queue.get();
-  want.callback = [](void* user_data, Uint8* out, int count) {
-    static_cast<Sound_Queue*>(user_data)->fill_buffer(out, count);
-  };
-
-  SDL_OpenAudio(&want, nullptr);
-  SDL_PauseAudio(false);*/
 }
 
 void main_window::get_controllers()
@@ -83,22 +65,13 @@ void main_window::update_controllers() { Emulator::update_controller_state(0, co
 
 void main_window::update_frame()
 {
-  SDL_UpdateTexture(texture, nullptr, Emulator::get_back_buffer(), Emulator::width * sizeof(std::uint32_t));
+  SDL_UpdateTexture(texture, nullptr, buffer, Emulator::width * sizeof(std::uint32_t));
 }
 
 void main_window::render()
 {
   SDL_RenderCopy(renderer, texture, nullptr, nullptr);
   SDL_RenderPresent(renderer);
-}
-
-void main_window::get_samples()
-{
-  /*if (APU::get().samples_available(audio_buffer.size())) {
-    auto sample_count =
-        APU::get().get_samples(audio_buffer.data(), audio_buffer.size());
-    sound_queue->write(audio_buffer.data(), sample_count);
-  }*/
 }
 
 void main_window::process_keypress(SDL_KeyboardEvent& key_event)
@@ -139,7 +112,6 @@ void main_window::run()
 {
   running   = true;
   fps_timer = std::chrono::steady_clock::now();
-  // APU::get().volume(volume);
 
   while (true) {
     SDL_Event e;
@@ -168,7 +140,6 @@ void main_window::run()
     update_controllers();
     Emulator::run_frame();
 
-    get_samples();
     update_frame();
 
     ++elapsed_frames;

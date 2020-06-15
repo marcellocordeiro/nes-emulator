@@ -7,10 +7,9 @@
 #include <string_view>
 #include <vector>
 
-#include <SDL.h>
+#define SDL_MAIN_HANDLED
 
-// TODO: reimplement this
-// #include "Sound_Queue.h"
+#include <SDL.h>
 
 class main_window {
 public:
@@ -30,7 +29,6 @@ private:
   void get_controllers();
   void update_controllers();
   void update_frame();
-  void get_samples();
 
   void process_keypress(SDL_KeyboardEvent&);
 
@@ -51,9 +49,7 @@ private:
   SDL_Texture*        texture  = nullptr;
   const std::uint8_t* keys     = nullptr;
 
-  // TODO: reimplement this
-  // std::array<std::int16_t, 4096> audio_buffer = {};
-  // std::unique_ptr<Sound_Queue>   sound_queue;
+  const uint32_t* buffer = nullptr;
 
   SDL_Scancode PAUSE          = SDL_SCANCODE_ESCAPE;
   SDL_Scancode RESET          = SDL_SCANCODE_R;

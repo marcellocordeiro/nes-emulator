@@ -2,6 +2,7 @@
 
 #include <spdlog/spdlog.h>
 
+#include "APU.h"
 #include "BaseMapper.h"
 #include "CPU.h"
 #include "Cartridge.h"
@@ -27,6 +28,7 @@ void Emulator::power_on()
 
   CPU::get().power_on();
   PPU::get().power_on();
+  APU::get().power_on();
 }
 
 void Emulator::power_off() { Cartridge::get().dump_prg_ram(); }

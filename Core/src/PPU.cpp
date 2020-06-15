@@ -128,7 +128,7 @@ void PPU::step()
     if (scanline == 240) {
       back_buffer = frame_buffer;
       std::transform(back_buffer.begin(), back_buffer.end(), back_buffer.begin(),
-                     [this](uint8_t p) { return full_nes_palette[mask.rgb][p]; });
+                     [this](uint32_t p) { return full_nes_palette[mask.rgb][p]; });
       ppu_state = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
