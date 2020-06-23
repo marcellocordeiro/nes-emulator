@@ -15,4 +15,4 @@ set_project_warnings(project-warnings)
 
 add_subdirectory("Core")
 add_subdirectory("Frontends")
-add_subdirectory("libs")
+add_subdirectory("lib")

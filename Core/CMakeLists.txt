@@ -17,8 +17,6 @@ target_link_libraries(nes-emulator-core PRIVATE fmt::fmt)
 find_package(spdlog REQUIRED)
 target_link_libraries(nes-emulator-core PRIVATE spdlog::spdlog_header_only)
 
-target_link_libraries(nes-emulator-core PRIVATE nes-libs)
-
 set_target_properties(nes-emulator-core
   PROPERTIES
     CXX_STANDARD 20
@@ -26,4 +24,5 @@ set_target_properties(nes-emulator-core
     CXX_EXTENSIONS NO
 )
 
+target_link_libraries(nes-emulator-core PRIVATE project-lib)
 target_link_libraries(nes-emulator-core PRIVATE project-warnings)
