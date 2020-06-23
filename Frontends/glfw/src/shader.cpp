@@ -42,13 +42,13 @@ shader::~shader()
 
 void shader::configure()
 {
-  auto check_compilation = [](GLuint shader, std::string_view type) {
+  auto check_compilation = [](GLuint s, std::string_view type) {
     GLint  success;
     GLchar infoLog[512];
 
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    glGetShaderiv(s, GL_COMPILE_STATUS, &success);
     if (!success) {
-      glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+      glGetShaderInfoLog(s, 512, nullptr, infoLog);
       fmt::print("{} shader compilation failed: {}\n", type, infoLog);
       throw;
     }
@@ -116,10 +116,10 @@ void shader::configure()
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
   // position attribute
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(0));
   glEnableVertexAttribArray(0);
   // texture coord attribute
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), reinterpret_cast<void *>(3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
   // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex

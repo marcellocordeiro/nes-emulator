@@ -26,8 +26,7 @@ main_window::main_window(int argc, char* argv[]) : args(argv, argv + argc)
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);
 
-  glfwSetFramebufferSizeCallback(window, [](GLFWwindow* window, int width, int height) {
-    (void)window;
+  glfwSetFramebufferSizeCallback(window, [](GLFWwindow*, int width, int height) {
     glViewport(0, 0, width, height);
   });
 
