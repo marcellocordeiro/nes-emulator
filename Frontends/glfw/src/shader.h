@@ -1,18 +1,20 @@
 #pragma once
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
-class shader {
+class Shader {
 public:
-  shader() = default;
-  ~shader();
+  Shader() = default;
+  ~Shader();
 
-  void configure();
+  Shader& init();
+  Shader& attach(const char*, GLenum);
+  void    link();
+
   void use();
 
 private:
-  bool configured = false;
+  GLuint compile(const char*, GLenum);
 
-  GLuint VBO = 0, VAO = 0, EBO = 0;
-  GLuint shaderProgram = 0;
+  GLuint shader_program = 0;
 };

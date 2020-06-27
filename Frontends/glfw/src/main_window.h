@@ -2,11 +2,12 @@
 
 #include <string_view>
 #include <vector>
+#include <chrono>
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "shader.h"
+#include "Renderer.h"
 
 class main_window {
 public:
@@ -19,10 +20,9 @@ public:
 private:
   std::vector<std::string_view> args;
 
+  std::chrono::time_point<std::chrono::steady_clock> fps_timer;
+  int  elapsed_frames = 0;
+
+  Renderer renderer;
   GLFWwindow *window = nullptr;
-  shader      my_shader;
-
-  GLuint texture = 0;
-
-  const uint32_t *buffer = nullptr;
 };

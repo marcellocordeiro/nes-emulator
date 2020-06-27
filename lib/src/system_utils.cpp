@@ -15,7 +15,7 @@ std::filesystem::path get_base_path()
   path.resize(300);
 
 #ifdef WIN32
-  GetModuleFileName(nullptr, path.data(), path.size());
+  GetModuleFileName(nullptr, path.data(), static_cast<DWORD>(path.size()));
   constexpr auto path_separator = "\\";
 #elif defined(__linux__)
   readlink("/proc/self/exe", path.data(), path.size());

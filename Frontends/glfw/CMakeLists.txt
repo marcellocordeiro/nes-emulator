@@ -3,7 +3,8 @@ project(nes-emulator-glfw)
 add_executable(nes-emulator-glfw
   "src/main.cpp"
   "src/main_window.cpp"
-  "src/shader.cpp"
+  "src/Shader.cpp"
+  "src/Renderer.cpp"
 )
 
 target_link_libraries(nes-emulator-glfw PRIVATE nes-emulator-core)
@@ -11,8 +12,7 @@ target_link_libraries(nes-emulator-glfw PRIVATE nes-emulator-core)
 find_package(glfw3 REQUIRED)
 target_link_libraries(nes-emulator-glfw PRIVATE glfw)
 
-find_package(GLEW REQUIRED)
-target_link_libraries(nes-emulator-glfw PRIVATE GLEW::GLEW)
+target_link_libraries(nes-emulator-glfw PRIVATE glad)
 
 find_package(OpenGL REQUIRED)
 target_link_libraries(nes-emulator-glfw PRIVATE OpenGL::GL)

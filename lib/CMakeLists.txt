@@ -14,3 +14,5 @@ set_target_properties(project-lib
 )
 
 target_link_libraries(project-lib PRIVATE project-warnings)
+
+add_subdirectory("external/glad")
