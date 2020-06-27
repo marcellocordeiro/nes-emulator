@@ -21,7 +21,7 @@ Shader& Shader::attach(const char* source, GLenum type)
 
 GLuint Shader::compile(const char* source, GLenum type)
 {
-  auto check_compilation = [](GLuint s, GLenum type) {
+  auto check_compilation = [](GLuint s, GLenum t) {
     GLint  success;
     GLchar infoLog[512];
 
@@ -29,9 +29,9 @@ GLuint Shader::compile(const char* source, GLenum type)
     if (!success) {
       glGetShaderInfoLog(s, 512, nullptr, infoLog);
 
-      if (type == GL_VERTEX_SHADER) {
+      if (t == GL_VERTEX_SHADER) {
         fmt::print("Vertex shader compilation failed: {}\n", infoLog);
-      } else if (type == GL_FRAGMENT_SHADER) {
+      } else if (t == GL_FRAGMENT_SHADER) {
         fmt::print("Fragment shader compilation failed: {}\n", infoLog);
       }
 
