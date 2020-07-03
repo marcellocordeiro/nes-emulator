@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 
-#include "Shader.h"
+#include "ShaderProgram.h"
 
 class Renderer {
 public:
@@ -21,7 +21,7 @@ private:
   int bufferWidth  = 0;
   int bufferHeight = 0;
 
-  Shader shader;
+  ShaderProgram shaderProgram;
 
   GLuint texture = 0;
   GLuint VBO     = 0;

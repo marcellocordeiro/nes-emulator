@@ -27,8 +27,6 @@ public:
   void processInput();
 
 private:
-  
-
   std::vector<std::string_view> args;
 
   std::chrono::time_point<std::chrono::steady_clock> fpsTimer;

@@ -37,7 +37,7 @@ Renderer::~Renderer()
 
 void Renderer::init()
 {
-  shader.init().attach(vertexShaderSource, GL_VERTEX_SHADER).attach(fragmentShaderSource, GL_FRAGMENT_SHADER).link();
+  shaderProgram.init().add(vertexShaderSource, GL_VERTEX_SHADER).add(fragmentShaderSource, GL_FRAGMENT_SHADER).link();
 
   // Texture coordinates are switched (\/ +y, -> +x)
   float vertices[] = {
@@ -105,7 +105,7 @@ void Renderer::render()
   glBindTexture(GL_TEXTURE_2D, texture);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bufferWidth, bufferHeight, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer);
 
-  shader.use();
+  shaderProgram.use();
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }
 

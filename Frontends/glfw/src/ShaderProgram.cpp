@@ -1,25 +1,25 @@
-#include "Shader.h"
+#include "ShaderProgram.h"
 
 #include <fmt/format.h>
 
-Shader::~Shader() { glDeleteProgram(shaderProgram); }
+ShaderProgram::~ShaderProgram() { glDeleteProgram(id); }
 
-Shader& Shader::init()
+ShaderProgram& ShaderProgram::init()
 {
-  shaderProgram = glCreateProgram();
+  id = glCreateProgram();
   return (*this);
 }
 
-Shader& Shader::attach(const char* source, GLenum type)
+ShaderProgram& ShaderProgram::add(const char* source, GLenum type)
 {
   auto shader = compile(source, type);
-  glAttachShader(shaderProgram, shader);
+  glAttachShader(id, shader);
   glDeleteShader(shader);
 
   return (*this);
 }
 
-GLuint Shader::compile(const char* source, GLenum type)
+GLuint ShaderProgram::compile(const char* source, GLenum type)
 {
   auto shader = glCreateShader(type);
   glShaderSource(shader, 1, &source, nullptr);
@@ -46,21 +46,21 @@ GLuint Shader::compile(const char* source, GLenum type)
   return shader;
 }
 
-void Shader::link()
+void ShaderProgram::link()
 {
-  glLinkProgram(shaderProgram);
+  glLinkProgram(id);
 
   {  // Error checking
     GLint  success;
     GLchar infoLog[512];
 
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetProgramiv(id, GL_LINK_STATUS, &success);
     if (!success) {
-      glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
+      glGetProgramInfoLog(id, 512, nullptr, infoLog);
       fmt::print("Shader program linking failed: {}\n", infoLog);
       throw;
     }
   }
 }
 
-void Shader::use() { glUseProgram(shaderProgram); }
+void ShaderProgram::use() { glUseProgram(id); }
