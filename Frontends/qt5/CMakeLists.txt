@@ -1,7 +1,7 @@
 project(nes-emulator-qt5)
 
 add_executable(nes-emulator-qt5
-  "src/Main.cpp"
+  "src/main.cpp"
   "src/MainWindow.cpp"
   "src/MainWindow.h"
   "src/MainWindow.ui"

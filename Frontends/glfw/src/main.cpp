@@ -1,8 +1,12 @@
-#include "main_window.h"
+#include "MainWindow.h"
 
 int main(int argc, char* argv[])
 {
-  main_window w(argc, argv);
+  MainWindow w; 
+  
+  w.setArgs(argc, argv);
+  w.show();
+
   w.run();
 
   return 0;

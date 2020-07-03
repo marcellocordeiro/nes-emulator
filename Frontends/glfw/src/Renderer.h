@@ -14,12 +14,12 @@ public:
   void render();
 
   void init();
-  void set_size(int new_width, int new_height);
-  void set_buffer(const uint32_t* ptr);
+  void setBuffer(const uint32_t*, int, int);
+  void resize(int, int);
 
 private:
-  int width  = 0;
-  int height = 0;
+  int bufferWidth  = 0;
+  int bufferHeight = 0;
 
   Shader shader;
 

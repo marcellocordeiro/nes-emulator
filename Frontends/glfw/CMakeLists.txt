@@ -2,7 +2,7 @@ project(nes-emulator-glfw)
 
 add_executable(nes-emulator-glfw
   "src/main.cpp"
-  "src/main_window.cpp"
+  "src/MainWindow.cpp"
   "src/Shader.cpp"
   "src/Renderer.cpp"
 )

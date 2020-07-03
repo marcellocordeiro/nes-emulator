@@ -16,5 +16,5 @@ public:
 private:
   GLuint compile(const char*, GLenum);
 
-  GLuint shader_program = 0;
+  GLuint shaderProgram = 0;
 };

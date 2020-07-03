@@ -1,6 +1,6 @@
 #include "Renderer.h"
 
-const char *vertex_shader_source = R"(
+const char *vertexShaderSource = R"(
 #version 460 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec2 aTexCoord;
@@ -14,7 +14,7 @@ void main()
 }
 )";
 
-const char *fragment_shader_source = R"(
+const char *fragmentShaderSource = R"(
 #version 460 core
 out vec4 FragColor;
 
@@ -37,10 +37,7 @@ Renderer::~Renderer()
 
 void Renderer::init()
 {
-  shader.init()
-      .attach(vertex_shader_source, GL_VERTEX_SHADER)
-      .attach(fragment_shader_source, GL_FRAGMENT_SHADER)
-      .link();
+  shader.init().attach(vertexShaderSource, GL_VERTEX_SHADER).attach(fragmentShaderSource, GL_FRAGMENT_SHADER).link();
 
   // Texture coordinates are switched (\/ +y, -> +x)
   float vertices[] = {
@@ -106,16 +103,17 @@ void Renderer::render()
   // glClear(GL_COLOR_BUFFER_BIT);
 
   glBindTexture(GL_TEXTURE_2D, texture);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, bufferWidth, bufferHeight, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer);
 
   shader.use();
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 }
 
-void Renderer::set_size(int new_width, int new_height)
+void Renderer::setBuffer(const uint32_t *ptr, int width, int height)
 {
-  width  = new_width;
-  height = new_height;
+  buffer       = ptr;
+  bufferWidth  = width;
+  bufferHeight = height;
 }
 
-void Renderer::set_buffer(const uint32_t *ptr) { buffer = ptr; }
+void Renderer::resize(int width, int height) { glViewport(0, 0, width, height); }
