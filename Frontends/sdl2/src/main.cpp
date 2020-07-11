@@ -1,9 +1,9 @@
-#include "main_window.h"
+#include "MainWindow.h"
 
 int main(int argc, char* argv[])
 {
-  main_window w(argc, argv);
+  MainWindow w(argc, argv);
 
-  w.init();
+  w.show();
   w.run();
 }

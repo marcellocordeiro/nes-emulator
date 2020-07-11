@@ -8,29 +8,25 @@
 #include <vector>
 
 #define SDL_MAIN_HANDLED
-
 #include <SDL.h>
 
-class main_window {
+class MainWindow {
 public:
-  main_window(int, char*[]);
-  ~main_window();
+  MainWindow(int, char*[]);
+  ~MainWindow();
 
-  main_window(const main_window&) = delete;
-  main_window(main_window&&)      = delete;
-  main_window& operator=(const main_window&) = delete;
-  main_window& operator=(main_window&&) = delete;
+  MainWindow(const MainWindow&) = delete;
+  MainWindow(MainWindow&&)      = delete;
+  MainWindow& operator=(const MainWindow&) = delete;
+  MainWindow& operator=(MainWindow&&) = delete;
 
-  void init();
+  void show();
   void run();
 
 private:
-  void render();
-  void get_controllers();
-  void update_controllers();
-  void update_frame();
-
   void process_keypress(SDL_KeyboardEvent&);
+  void update_controllers();
+  void render();
 
   std::vector<std::string_view> args;
 
@@ -42,7 +38,7 @@ private:
 
   std::chrono::time_point<std::chrono::steady_clock> fps_timer;
 
-  std::array<std::uint8_t, 2> controller_state = {};
+  std::uint8_t controller_state = 0;
 
   SDL_Window*         window   = nullptr;
   SDL_Renderer*       renderer = nullptr;
@@ -60,12 +56,12 @@ private:
   SDL_Scancode VOLUME_UP   = SDL_SCANCODE_KP_PLUS;
   SDL_Scancode VOLUME_DOWN = SDL_SCANCODE_KP_MINUS;
 
-  SDL_Scancode KEY_A[2]      = {SDL_SCANCODE_A, SDL_SCANCODE_ESCAPE};
-  SDL_Scancode KEY_B[2]      = {SDL_SCANCODE_S, SDL_SCANCODE_ESCAPE};
-  SDL_Scancode KEY_SELECT[2] = {SDL_SCANCODE_BACKSPACE, SDL_SCANCODE_ESCAPE};
-  SDL_Scancode KEY_START[2]  = {SDL_SCANCODE_RETURN, SDL_SCANCODE_ESCAPE};
-  SDL_Scancode KEY_UP[2]     = {SDL_SCANCODE_UP, SDL_SCANCODE_ESCAPE};
-  SDL_Scancode KEY_DOWN[2]   = {SDL_SCANCODE_DOWN, SDL_SCANCODE_ESCAPE};
-  SDL_Scancode KEY_LEFT[2]   = {SDL_SCANCODE_LEFT, SDL_SCANCODE_ESCAPE};
-  SDL_Scancode KEY_RIGHT[2]  = {SDL_SCANCODE_RIGHT, SDL_SCANCODE_ESCAPE};
+  SDL_Scancode KEY_A      = SDL_SCANCODE_A;
+  SDL_Scancode KEY_B      = SDL_SCANCODE_S;
+  SDL_Scancode KEY_SELECT = SDL_SCANCODE_BACKSPACE;
+  SDL_Scancode KEY_START  = SDL_SCANCODE_RETURN;
+  SDL_Scancode KEY_UP     = SDL_SCANCODE_UP;
+  SDL_Scancode KEY_DOWN   = SDL_SCANCODE_DOWN;
+  SDL_Scancode KEY_LEFT   = SDL_SCANCODE_LEFT;
+  SDL_Scancode KEY_RIGHT  = SDL_SCANCODE_RIGHT;
 };

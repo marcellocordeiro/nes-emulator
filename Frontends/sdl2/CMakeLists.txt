@@ -2,7 +2,7 @@ project(nes-emulator-sdl2)
 
 add_executable(nes-emulator-sdl2
   "src/main.cpp"
-  "src/main_window.cpp"
+  "src/MainWindow.cpp"
 )
 
 find_package(SDL2 2.0 REQUIRED)
