@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <concepts>
 #include <fstream>
 #include <type_traits>
 #include <vector>
@@ -32,9 +33,8 @@ private:
   // dump specialisations
   //
 
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>> void dump(std::ofstream& out, T value)
+  template <typename T> void dump(std::ofstream& out, T value) requires std::integral<T>
   {
-    static_assert(std::is_integral_v<T>);
     out.write(reinterpret_cast<char*>(&value), sizeof(T));
   }
 
@@ -53,9 +53,8 @@ private:
   // get specialisations
   //
 
-  template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>> void get(std::ifstream& in, T& value)
+  template <typename T> void get(std::ifstream& in, T& value) requires std::integral<T>
   {
-    static_assert(std::is_integral_v<T>);
     in.read(reinterpret_cast<char*>(&value), sizeof(T));
   }
 
