@@ -34,7 +34,7 @@ void MainWindow::show()
   glfwMakeContextCurrent(window);
   glfwSwapInterval(1);
 
-  if (!gladLoadGL()) {
+  if (!gladLoadGL(glfwGetProcAddress)) {
     fmt::print("Failed to initialize GLAD\n");
     throw;
   }

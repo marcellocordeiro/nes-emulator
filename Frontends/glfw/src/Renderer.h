@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
 
 #include "ShaderProgram.h"
 
