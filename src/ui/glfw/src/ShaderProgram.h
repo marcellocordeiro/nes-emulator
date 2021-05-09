@@ -7,14 +7,15 @@ public:
   ShaderProgram() = default;
   ~ShaderProgram();
 
-  ShaderProgram& init();
-  ShaderProgram& add(const char*, GLenum);
-  void           link();
+  auto init() -> ShaderProgram&;
+  auto add(const char*, GLenum) -> ShaderProgram&;
+  void link();
 
   void use();
 
 private:
-  GLuint compile(const char*, GLenum);
+private:
+  auto compile(const char*, GLenum) -> GLuint;
 
   GLuint id = 0;
 };

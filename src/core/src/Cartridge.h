@@ -12,17 +12,17 @@ class Cartridge final {
 public:
   Cartridge(const Cartridge&) = delete;
   Cartridge(Cartridge&&)      = delete;
-  Cartridge& operator=(const Cartridge&) = delete;
-  Cartridge& operator=(Cartridge&&) = delete;
+  auto operator=(const Cartridge&) -> Cartridge& = delete;
+  auto operator=(Cartridge&&) -> Cartridge& = delete;
 
-  static Cartridge& get();
+  static auto get() -> Cartridge&;
 
-  BaseMapper* get_mapper();
+  auto get_mapper() -> BaseMapper*;
 
   void load();
 
-  uint8_t prg_read(uint16_t) const;
-  uint8_t chr_read(uint16_t) const;
+  auto prg_read(uint16_t) const -> uint8_t;
+  auto chr_read(uint16_t) const -> uint8_t;
 
   void prg_write(uint16_t, uint8_t);
   void chr_write(uint16_t, uint8_t);

@@ -5,11 +5,7 @@
 #include <nes/Emulator.h>
 #include <system_utils.h>
 
-using namespace std::chrono_literals;
-
-MainWindow::~MainWindow() { glfwTerminate(); }
-
-void MainWindow::setArgs(int argc, char* argv[])
+MainWindow::MainWindow(int argc, char* argv[])
 {
   args = {argv, argv + argc};
 
@@ -17,6 +13,8 @@ void MainWindow::setArgs(int argc, char* argv[])
     throw std::invalid_argument("Too few arguments");
   }
 }
+
+MainWindow::~MainWindow() { glfwTerminate(); }
 
 void MainWindow::show()
 {
@@ -53,12 +51,16 @@ void MainWindow::run()
   renderer.init();
   renderer.setBuffer(Emulator::get_back_buffer(), Emulator::width, Emulator::height);
 
-  fpsTimer = std::chrono::steady_clock::now();
+  auto fpsTimer      = std::chrono::steady_clock::now();
+  int  elapsedFrames = 0;
+  // std::chrono::time_point<std::chrono::steady_clock> fpsTimer;
 
   while (!glfwWindowShouldClose(window)) {
     processInput();
 
     {
+      using namespace std::chrono_literals;
+
       auto elapsedTime = std::chrono::steady_clock::now() - fpsTimer;
 
       if (elapsedTime > 1s) {

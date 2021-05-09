@@ -1,7 +1,7 @@
 #include "PPU_Types.h"
 
 namespace nes::types::ppu::memory {
-int get_mem_map(uint16_t addr)
+auto get_mem_map(uint16_t addr) -> int
 {
   auto in_range = [addr](int lower, int upper) { return (addr >= lower) && (addr <= upper); };
 

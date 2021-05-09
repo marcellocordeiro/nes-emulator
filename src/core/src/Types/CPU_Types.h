@@ -57,7 +57,7 @@ struct state {
 
   int cycle_count = 0;
 
-  bool check_flags(uint8_t) const;
+  auto check_flags(uint8_t) const -> bool;
   void set_flags(uint8_t);
   void clear_flags(uint8_t);
   void update_nz(uint8_t);
@@ -84,6 +84,6 @@ enum map {
   Cartridge_Access
 };
 
-template <auto Operation> int get_map(uint16_t);
+template <auto Operation> auto get_map(uint16_t) -> int;
 }  // namespace memory
 }  // namespace nes::types::cpu

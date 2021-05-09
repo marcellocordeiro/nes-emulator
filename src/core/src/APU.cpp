@@ -1,7 +1,7 @@
 #include "APU.h"
 
 namespace nes {
-APU& APU::get()
+auto APU::get() -> APU&
 {
   static APU instance;
   return instance;
@@ -9,7 +9,7 @@ APU& APU::get()
 
 void APU::power_on() {}
 
-uint8_t APU::read() { return 0; }
+auto APU::read() -> uint8_t { return 0; }
 
 void APU::write(uint16_t addr, uint8_t value)
 {

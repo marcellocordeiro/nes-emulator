@@ -11,12 +11,12 @@ class ips_patch final {
 public:
   ips_patch(const std::filesystem::path&);
 
-  std::vector<uint8_t> patch(const std::vector<uint8_t>&);
+  auto patch(const std::vector<uint8_t>&) -> std::vector<uint8_t>;
 
 private:
-  bool check();
+  auto check() -> bool;
   void build();
-  bool read_record();
+  auto read_record() -> bool;
 
   struct record_entry {
     uint32_t             addr   = 0;

@@ -4,13 +4,13 @@
 
 ShaderProgram::~ShaderProgram() { glDeleteProgram(id); }
 
-ShaderProgram& ShaderProgram::init()
+auto ShaderProgram::init() -> ShaderProgram&
 {
   id = glCreateProgram();
   return (*this);
 }
 
-ShaderProgram& ShaderProgram::add(const char* source, GLenum type)
+auto ShaderProgram::add(const char* source, GLenum type) -> ShaderProgram&
 {
   auto shader = compile(source, type);
   glAttachShader(id, shader);
@@ -19,7 +19,7 @@ ShaderProgram& ShaderProgram::add(const char* source, GLenum type)
   return (*this);
 }
 
-GLuint ShaderProgram::compile(const char* source, GLenum type)
+auto ShaderProgram::compile(const char* source, GLenum type) -> GLuint
 {
   auto shader = glCreateShader(type);
   glShaderSource(shader, 1, &source, nullptr);

@@ -9,8 +9,6 @@
 #include <fmt/format.h>
 #include <nes/Emulator.h>
 
-using namespace std::chrono_literals;
-
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent), ui(std::make_unique<Ui::MainWindow>()), timer(std::make_unique<QTimer>(this))
 {
@@ -54,6 +52,7 @@ void MainWindow::run_frame()
 
   ui->video->update();
 
+  using namespace std::chrono_literals;
   auto elapsedTime = std::chrono::steady_clock::now() - fpsTimer;
 
   if (elapsedTime > 1s) {

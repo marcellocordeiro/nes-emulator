@@ -8,8 +8,8 @@ class Emulator {
 public:
   Emulator(const Emulator&) = delete;
   Emulator(Emulator&&)      = delete;
-  Emulator& operator=(const Emulator&) = delete;
-  Emulator& operator=(Emulator&&) = delete;
+  auto operator=(const Emulator&) -> Emulator& = delete;
+  auto operator=(Emulator&&) -> Emulator& = delete;
 
   static void set_app_path(const std::filesystem::path&);
   static void load(const std::filesystem::path&);
@@ -21,8 +21,8 @@ public:
   // Component access
   //
 
-  static void            run_frame();
-  static const uint32_t* get_back_buffer();
+  static void run_frame();
+  static auto get_back_buffer() -> const uint32_t*;
 
   static void update_controller_state(size_t, uint8_t);
 

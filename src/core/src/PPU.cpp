@@ -7,7 +7,7 @@
 #include "Utility/FileManager.h"
 
 namespace nes {
-PPU& PPU::get()
+auto PPU::get() -> PPU&
 {
   static PPU instance;
   return instance;
@@ -50,7 +50,7 @@ void PPU::reset()
   is_odd_frame = false;
 }
 
-const uint32_t* PPU::get_back_buffer() const { return back_buffer.data(); }
+auto PPU::get_back_buffer() const -> const uint32_t* { return back_buffer.data(); }
 
 void PPU::set_palette()
 {
@@ -150,7 +150,7 @@ void PPU::step()
   }
 }
 
-uint8_t PPU::peek_reg(uint16_t addr) const
+auto PPU::peek_reg(uint16_t addr) const -> uint8_t
 {
   using namespace nes::types::ppu::memory;
 
@@ -169,7 +169,7 @@ uint8_t PPU::peek_reg(uint16_t addr) const
   return bus_latch;
 }
 
-uint8_t PPU::read(uint16_t addr)
+auto PPU::read(uint16_t addr) -> uint8_t
 {
   using namespace nes::types::ppu::memory;
 
@@ -273,9 +273,9 @@ void PPU::write(uint16_t addr, uint8_t value)
   }
 }
 
-uint8_t PPU::peek_vram(uint16_t addr) const { return vram_read(addr); }
+auto PPU::peek_vram(uint16_t addr) const -> uint8_t { return vram_read(addr); }
 
-uint8_t PPU::vram_read(uint16_t addr) const
+auto PPU::vram_read(uint16_t addr) const -> uint8_t
 {
   using namespace nes::types::ppu::memory;
 
@@ -429,7 +429,7 @@ void PPU::background_shift()
   }
 }
 
-auto PPU::get_background_pixel() const
+auto PPU::get_background_pixel() const -> uint8_t
 {
   auto pixel = static_cast<uint8_t>(tick - 2);
 
@@ -447,7 +447,7 @@ auto PPU::get_background_pixel() const
   return uint8_t{0};
 }
 
-auto PPU::get_sprite_pixel()
+auto PPU::get_sprite_pixel() -> uint8_t
 {
   auto pixel = static_cast<uint8_t>(tick - 2);
 
@@ -595,16 +595,16 @@ void PPU::scanline_cycle_nmi()
 // Auxiliary
 //
 
-uint16_t PPU::nt_addr() const { return 0x2000 | (vram_addr.raw & 0x0FFF); }
+auto PPU::nt_addr() const -> uint16_t { return 0x2000 | (vram_addr.raw & 0x0FFF); }
 
-uint16_t PPU::at_addr() const
+auto PPU::at_addr() const -> uint16_t
 {
   return 0x23C0 | (vram_addr.nt << 10) | ((vram_addr.coarse_y / 4) << 3) | (vram_addr.coarse_x / 4);
 }
 
-uint16_t PPU::bg_addr() const { return (ctrl.bg_table * 0x1000) + (nt_latch * 16) + vram_addr.fine_y; }
+auto PPU::bg_addr() const -> uint16_t { return (ctrl.bg_table * 0x1000) + (nt_latch * 16) + vram_addr.fine_y; }
 
-uint16_t PPU::nt_mirror_addr(uint16_t addr) const
+auto PPU::nt_mirror_addr(uint16_t addr) const -> uint16_t
 {
   using namespace nes::mirroring;
   switch (mirroring_mode) {
@@ -619,7 +619,7 @@ uint16_t PPU::nt_mirror_addr(uint16_t addr) const
 
 uint16_t PPU::palette_addr(uint16_t addr) const { return (((addr & 0x13) == 0x10) ? (addr & ~0x10) : addr) & 0x1F; }
 
-template <typename T> uint8_t PPU::get_palette(T low, T high, int offset) const
+template <typename T> auto PPU::get_palette(T low, T high, int offset) const -> uint8_t
 {
   constexpr auto nth_bit = [](auto x, auto n) -> uint8_t { return ((x >> n) & 1); };
 

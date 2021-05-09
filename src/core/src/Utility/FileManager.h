@@ -8,31 +8,31 @@ class FileManager final {
 public:
   FileManager(const FileManager&) = delete;
   FileManager(FileManager&&)      = delete;
-  FileManager& operator=(const FileManager&) = delete;
-  FileManager& operator=(FileManager&&) = delete;
+  auto operator=(const FileManager&) -> FileManager& = delete;
+  auto operator=(FileManager&&) -> FileManager& = delete;
 
-  static FileManager& get();
+  static auto get() -> FileManager&;
 
   void set_app_path(const std::filesystem::path&);
   void set_rom(const std::filesystem::path&);
   void set_palette(const std::filesystem::path&);
 
-  std::vector<std::uint8_t> get_rom();
-  std::vector<std::uint8_t> get_prg_ram();
-  std::vector<std::uint8_t> get_palette();
+  auto get_rom() -> std::vector<std::uint8_t>;
+  auto get_prg_ram() -> std::vector<std::uint8_t>;
+  auto get_palette() -> std::vector<std::uint8_t>;
 
   void save_prg_ram(const std::vector<std::uint8_t>&);
 
-  std::filesystem::path get_app_path() const;
-  std::filesystem::path get_rom_path() const;
-  std::filesystem::path get_patch_path() const;
-  std::filesystem::path get_prg_ram_path() const;
-  std::filesystem::path get_palette_path() const;
-  std::filesystem::path get_snapshot_path() const;
+  auto get_app_path() const -> std::filesystem::path;
+  auto get_rom_path() const -> std::filesystem::path;
+  auto get_patch_path() const -> std::filesystem::path;
+  auto get_prg_ram_path() const -> std::filesystem::path;
+  auto get_palette_path() const -> std::filesystem::path;
+  auto get_snapshot_path() const -> std::filesystem::path;
 
-  bool has_patch() const;
-  bool has_prg_ram() const;
-  bool has_snapshot() const;
+  auto has_patch() const -> bool;
+  auto has_prg_ram() const -> bool;
+  auto has_snapshot() const -> bool;
 
 private:
   FileManager() = default;

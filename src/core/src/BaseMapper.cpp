@@ -7,9 +7,9 @@ void BaseMapper::set_chr_rom(std::vector<uint8_t>&& vec) { chr = std::move(vec);
 
 void BaseMapper::set_prg_ram(std::vector<uint8_t>&& vec) { prg_ram = std::move(vec); }
 
-std::vector<uint8_t> BaseMapper::get_prg_ram() const { return prg_ram; }
+auto BaseMapper::get_prg_ram() const -> std::vector<uint8_t> { return prg_ram; }
 
-uint8_t BaseMapper::prg_read(uint16_t addr) const
+auto BaseMapper::prg_read(uint16_t addr) const -> uint8_t
 {
   if (addr >= 0x8000) {
     size_t slot     = (addr - 0x8000) / 0x2000;
@@ -21,7 +21,7 @@ uint8_t BaseMapper::prg_read(uint16_t addr) const
   }
 }
 
-uint8_t BaseMapper::chr_read(uint16_t addr) const
+auto BaseMapper::chr_read(uint16_t addr) const -> uint8_t
 {
   size_t slot     = addr / 0x400;
   size_t chr_addr = addr % 0x400;

@@ -11,20 +11,20 @@ class PPU final : public Utility::Snapshotable {
 public:
   PPU(const PPU&) = delete;
   PPU(PPU&&)      = delete;
-  PPU& operator=(const PPU&) = delete;
-  PPU& operator=(PPU&&) = delete;
+  auto operator=(const PPU&) -> PPU& = delete;
+  auto operator=(PPU&&) -> PPU& = delete;
 
-  static PPU& get();
+  static auto get() -> PPU&;
 
   void power_on();
   void reset();
 
-  const uint32_t* get_back_buffer() const;
+  auto get_back_buffer() const -> const uint32_t*;
 
   void set_palette();
   void set_mirroring(int);
 
-  uint8_t read(uint16_t);
+  auto read(uint16_t) -> uint8_t;
   void    write(uint16_t, uint8_t);
 
   void step();
@@ -33,12 +33,12 @@ public:
   // Read without side effects
   //
 
-  int cycle_count() const { return tick; }
+  auto cycle_count() const -> int { return tick; }
 
-  int scanline_count() const { return scanline; }
+  auto scanline_count() const -> int { return scanline; }
 
-  uint8_t peek_reg(uint16_t) const;
-  uint8_t peek_vram(uint16_t) const;
+  auto peek_reg(uint16_t) const -> uint8_t;
+  auto peek_vram(uint16_t) const -> uint8_t;
 
   //
   // Snapshot
@@ -54,7 +54,7 @@ private:
   // VRAM access
   //
 
-  uint8_t vram_read(uint16_t) const;
+  auto vram_read(uint16_t) const -> uint8_t;
   void    vram_write(uint16_t, uint8_t);
 
   //
@@ -79,8 +79,8 @@ private:
   // Rendering
   //
 
-  auto get_background_pixel() const;
-  auto get_sprite_pixel();
+  auto get_background_pixel() const -> uint8_t;
+  auto get_sprite_pixel() -> uint8_t;
 
   void render_pixel();
 
@@ -99,13 +99,13 @@ private:
   // Addresses
   //
 
-  uint16_t nt_addr() const;                 // Nametable address
-  uint16_t at_addr() const;                 // Attribute address
-  uint16_t bg_addr() const;                 // Background address
-  uint16_t palette_addr(uint16_t) const;    // Palette address
-  uint16_t nt_mirror_addr(uint16_t) const;  // Relative nametable address
+  auto nt_addr() const -> uint16_t;                 // Nametable address
+  auto at_addr() const -> uint16_t;                 // Attribute address
+  auto bg_addr() const -> uint16_t;                 // Background address
+  auto palette_addr(uint16_t) const -> uint16_t;    // Palette address
+  auto nt_mirror_addr(uint16_t) const -> uint16_t;  // Relative nametable address
 
-  template <typename T> uint8_t get_palette(T, T, int) const;  // Get palette
+  template <typename T> auto get_palette(T, T, int) const -> uint8_t;  // Get palette
 
   enum timing { Idle, Visible, VBlank, PreRender };
 

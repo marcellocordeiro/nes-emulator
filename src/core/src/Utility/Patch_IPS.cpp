@@ -17,7 +17,7 @@ void ips_patch::build()
   }
 }
 
-std::vector<uint8_t> ips_patch::patch(const std::vector<uint8_t>& rom)
+auto ips_patch::patch(const std::vector<uint8_t>& rom) -> std::vector<uint8_t>
 {
   std::vector<uint8_t> output(std::max(min_size, rom.size()));
 
@@ -46,7 +46,7 @@ std::vector<uint8_t> ips_patch::patch(const std::vector<uint8_t>& rom)
   return output;
 }
 
-bool ips_patch::check()
+auto ips_patch::check() -> bool
 {
   std::string header;
   header.resize(5);
@@ -55,7 +55,7 @@ bool ips_patch::check()
   return header == "PATCH";
 }
 
-bool ips_patch::read_record()
+auto ips_patch::read_record() -> bool
 {
   constexpr auto magic_eof = (('E') << 16) | ('O' << 8) | ('F');
 

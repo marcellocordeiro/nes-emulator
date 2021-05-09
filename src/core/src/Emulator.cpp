@@ -35,7 +35,7 @@ void Emulator::power_off() { Cartridge::get().dump_prg_ram(); }
 
 void Emulator::run_frame() { CPU::get().run_frame(); }
 
-const uint32_t* Emulator::get_back_buffer() { return PPU::get().get_back_buffer(); }
+auto Emulator::get_back_buffer() -> const uint32_t* { return PPU::get().get_back_buffer(); }
 
 void Emulator::update_controller_state(size_t port, uint8_t state) { nes::Controller::get().update_state(port, state); }
 

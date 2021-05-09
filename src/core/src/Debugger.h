@@ -11,8 +11,8 @@ public:
 
   Debugger(const Debugger&) = delete;
   Debugger(Debugger&&)      = delete;
-  Debugger& operator=(const Debugger&) = delete;
-  Debugger& operator=(Debugger&&) = delete;
+  auto operator=(const Debugger&) -> Debugger& = delete;
+  auto operator=(Debugger&&) -> Debugger& = delete;
 
   void cpu_log();
 

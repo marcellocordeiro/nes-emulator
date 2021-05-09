@@ -3,5 +3,5 @@
 #include <filesystem>
 
 namespace lib {
-std::filesystem::path get_base_path();
+auto get_base_path() -> std::filesystem::path;
 }  // namespace lib

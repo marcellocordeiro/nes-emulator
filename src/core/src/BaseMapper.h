@@ -14,8 +14,8 @@ public:
 
   BaseMapper(const BaseMapper&) = delete;
   BaseMapper(BaseMapper&&)      = delete;
-  BaseMapper& operator=(const BaseMapper&) = delete;
-  BaseMapper& operator=(BaseMapper&&) = delete;
+  auto operator=(const BaseMapper&) -> BaseMapper& = delete;
+  auto operator=(BaseMapper&&) -> BaseMapper& = delete;
 
   virtual void reset() = 0;
 
@@ -23,10 +23,10 @@ public:
   void set_chr_rom(std::vector<uint8_t>&&);
 
   void                 set_prg_ram(std::vector<uint8_t>&&);
-  std::vector<uint8_t> get_prg_ram() const;
+  auto get_prg_ram() const -> std::vector<uint8_t>;
 
-  uint8_t prg_read(uint16_t) const;
-  uint8_t chr_read(uint16_t) const;
+  auto prg_read(uint16_t) const -> uint8_t;
+  auto chr_read(uint16_t) const -> uint8_t;
 
   virtual void prg_write(uint16_t, uint8_t);
   virtual void chr_write(uint16_t, uint8_t);

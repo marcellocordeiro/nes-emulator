@@ -10,21 +10,21 @@ class Controller final : public Utility::Snapshotable {
 public:
   Controller(const Controller&) = delete;
   Controller(Controller&&)      = delete;
-  Controller& operator=(const Controller&) = delete;
-  Controller& operator=(Controller&&) = delete;
+  auto operator=(const Controller&) -> Controller& = delete;
+  auto operator=(Controller&&) -> Controller& = delete;
 
-  static Controller& get();
+  static auto get() -> Controller&;
 
   void update_state(size_t, uint8_t);
 
-  uint8_t read(size_t);
+  auto read(size_t) -> uint8_t;
   void    write(bool);
 
   //
   // Read status without side effects
   //
 
-  uint8_t peek(size_t) const;
+  auto peek(size_t) const -> uint8_t;
 
   //
   // Snapshot

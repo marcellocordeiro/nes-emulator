@@ -1,9 +1,12 @@
-project(glad)
+project(glad LANGUAGES C)
 
 add_library(glad STATIC "src/gl.c")
 
 target_include_directories(glad SYSTEM PUBLIC "include")
 
-if(UNIX)
-  target_link_libraries(glad PRIVATE dl)
-endif()
+set_target_properties(glad
+  PROPERTIES
+    C_STANDARD 11
+    C_STANDARD_REQUIRED YES
+    C_EXTENSIONS NO
+)

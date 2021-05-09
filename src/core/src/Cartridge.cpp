@@ -13,13 +13,13 @@
 #include "Utility/FileManager.h"
 
 namespace nes {
-Cartridge& Cartridge::get()
+auto Cartridge::get() -> Cartridge&
 {
   static Cartridge instance;
   return instance;
 }
 
-BaseMapper* Cartridge::get_mapper() { return mapper.get(); }
+auto Cartridge::get_mapper() -> BaseMapper* { return mapper.get(); }
 
 void Cartridge::load()
 {
@@ -77,11 +77,11 @@ void Cartridge::load()
   PPU::get().set_mirroring(mirroring);
 }
 
-uint8_t Cartridge::prg_read(uint16_t addr) const { return mapper->prg_read(addr); }
+auto Cartridge::prg_read(uint16_t addr) const -> uint8_t { return mapper->prg_read(addr); }
 
 void Cartridge::prg_write(uint16_t addr, uint8_t value) { mapper->prg_write(addr, value); }
 
-uint8_t Cartridge::chr_read(uint16_t addr) const { return mapper->chr_read(addr); }
+auto Cartridge::chr_read(uint16_t addr) const -> uint8_t { return mapper->chr_read(addr); }
 
 void Cartridge::chr_write(uint16_t addr, uint8_t value) { mapper->chr_write(addr, value); }
 

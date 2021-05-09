@@ -12,15 +12,14 @@
 
 class MainWindow {
 public:
-  MainWindow() = default;
+  MainWindow(int, char*[]);
   ~MainWindow();
 
   MainWindow(const MainWindow&) = delete;
   MainWindow(MainWindow&&)      = delete;
-  MainWindow& operator=(const MainWindow&) = delete;
-  MainWindow& operator=(MainWindow&&) = delete;
+  auto operator=(const MainWindow&) -> MainWindow& = delete;
+  auto operator=(MainWindow&&) -> MainWindow& = delete;
 
-  void setArgs(int, char*[]);
   void show();
 
   void run();
@@ -28,10 +27,6 @@ public:
 
 private:
   std::vector<std::string_view> args;
-
-  std::chrono::time_point<std::chrono::steady_clock> fpsTimer;
-
-  int elapsedFrames = 0;
 
   GLFWwindow* window = nullptr;
   Renderer    renderer;

@@ -1,10 +1,9 @@
 #include "MainWindow.h"
 
-int main(int argc, char* argv[])
+auto main(int argc, char* argv[]) -> int
 {
-  MainWindow w; 
+  MainWindow w(argc, argv); 
   
-  w.setArgs(argc, argv);
   w.show();
 
   w.run();

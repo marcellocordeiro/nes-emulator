@@ -7,14 +7,14 @@ class APU final {
 public:
   APU(const APU&) = delete;
   APU(APU&&)      = delete;
-  APU& operator=(const APU&) = delete;
-  APU& operator=(APU&&) = delete;
+  auto operator=(const APU&) -> APU& = delete;
+  auto operator=(APU&&) -> APU& = delete;
 
-  static APU& get();
+  static auto get() -> APU&;
 
   void power_on();
 
-  uint8_t read();
+  auto read() -> uint8_t;
   void    write(uint16_t, uint8_t);
 
 private:

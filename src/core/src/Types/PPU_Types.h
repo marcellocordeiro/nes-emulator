@@ -86,7 +86,7 @@ enum ppu_map {
 
 enum mem_map { CHR, Nametables, Palettes };
 
-template <auto Operation> int get_map(uint16_t);
-int                           get_mem_map(uint16_t);
+template <auto Operation> auto get_map(uint16_t) -> int;
+auto                           get_mem_map(uint16_t) -> int;
 }  // namespace memory
 }  // namespace nes::types::ppu

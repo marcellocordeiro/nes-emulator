@@ -10,7 +10,7 @@
 using namespace nes::types::cpu;
 
 namespace nes {
-CPU& CPU::get()
+auto CPU::get() -> CPU&
 {
   static CPU instance;
   return instance;
@@ -72,7 +72,7 @@ void CPU::tick()
   ++state.cycle_count;
 }
 
-uint8_t CPU::peek(uint16_t addr) const
+auto CPU::peek(uint16_t addr) const -> uint8_t
 {
   using namespace nes::types::cpu::memory;
 
@@ -88,7 +88,7 @@ uint8_t CPU::peek(uint16_t addr) const
   }
 }
 
-uint8_t CPU::read(uint16_t addr) const
+auto CPU::read(uint16_t addr) const -> uint8_t
 {
   using namespace nes::types::cpu::memory;
 
@@ -119,7 +119,7 @@ void CPU::write(uint16_t addr, uint8_t value)
   }
 }
 
-uint8_t CPU::memory_read(uint16_t addr)
+auto CPU::memory_read(uint16_t addr) -> uint8_t
 {
   tick();
   return read(addr);
@@ -131,11 +131,11 @@ void CPU::memory_write(uint16_t addr, uint8_t value)
   write(addr, value);
 }
 
-types::cpu::state CPU::get_state() const { return state; }
+auto CPU::get_state() const -> types::cpu::state { return state; }
 
-uint16_t CPU::peek_imm() const { return state.pc + 1; }
+auto CPU::peek_imm() const -> uint16_t { return state.pc + 1; }
 
-uint16_t CPU::peek_rel() const
+auto CPU::peek_rel() const -> uint16_t
 {
   auto addr   = peek_imm();
   auto offset = static_cast<int8_t>(peek(addr));
@@ -143,43 +143,43 @@ uint16_t CPU::peek_rel() const
   return (state.pc + 2) + offset;
 }
 
-uint16_t CPU::peek_zp() const { return peek(peek_imm()); }
+auto CPU::peek_zp() const -> uint16_t { return peek(peek_imm()); }
 
-uint16_t CPU::peek_zpx() const { return (peek_zp() + state.x) & 0xFF; }
+auto CPU::peek_zpx() const -> uint16_t { return (peek_zp() + state.x) & 0xFF; }
 
-uint16_t CPU::peek_zpy() const { return (peek_zp() + state.y) & 0xFF; }
+auto CPU::peek_zpy() const -> uint16_t { return (peek_zp() + state.y) & 0xFF; }
 
-uint16_t CPU::peek_ab() const
+auto CPU::peek_ab() const -> uint16_t
 {
   const auto base_addr = peek_imm();
   return (peek(base_addr + 1) << 8) | peek(base_addr);
 }
 
-uint16_t CPU::peek_abx() const
+auto CPU::peek_abx() const -> uint16_t
 {
   const auto base_addr = peek_ab();
   return base_addr + state.x;
 }
 
-uint16_t CPU::peek_aby() const
+auto CPU::peek_aby() const -> uint16_t
 {
   const auto base_addr = peek_ab();
   return base_addr + state.y;
 }
 
-uint16_t CPU::peek_ind() const
+auto CPU::peek_ind() const -> uint16_t
 {
   const auto base_addr = peek_ab();
   return peek(base_addr) | (peek((base_addr & 0xFF00) | ((base_addr + 1) % 0x100)) << 8);
 }
 
-uint16_t CPU::peek_indx() const
+auto CPU::peek_indx() const -> uint16_t
 {
   const auto base_addr = peek_zpx();
   return (peek((base_addr + 1) & 0xFF) << 8) | peek(base_addr);
 }
 
-uint16_t CPU::peek_indy() const
+auto CPU::peek_indy() const -> uint16_t
 {
   const auto base_addr = peek_zp();
   return ((peek((base_addr + 1) & 0xFF) << 8) | peek(base_addr)) + state.y;

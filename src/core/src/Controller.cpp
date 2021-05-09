@@ -1,7 +1,7 @@
 #include "Controller.h"
 
 namespace nes {
-Controller& Controller::get()
+auto Controller::get() -> Controller&
 {
   static Controller instance;
   return instance;
@@ -9,7 +9,7 @@ Controller& Controller::get()
 
 void Controller::update_state(size_t port, uint8_t state) { controller_state[port] = state; }
 
-uint8_t Controller::read(size_t port)
+auto Controller::read(size_t port) -> uint8_t
 {
   if (strobe) {
     return 0x40 | (controller_state[port] & 1);  // 1 == A
@@ -30,7 +30,7 @@ void Controller::write(bool signal)
   strobe = signal;
 }
 
-uint8_t Controller::peek(size_t port) const
+auto Controller::peek(size_t port) const -> uint8_t
 {
   if (strobe) {
     return 0x40 | (controller_state[port] & 1);  // 1 == A

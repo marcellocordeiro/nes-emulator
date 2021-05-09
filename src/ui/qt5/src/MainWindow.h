@@ -33,9 +33,9 @@ private:
 
   std::chrono::time_point<std::chrono::steady_clock> fpsTimer;
 
-  bool         running          = false;
-  int          framerate        = 60;
-  int          elapsedFrames    = 0;
-  double       volume           = 0.1;
-  std::uint8_t controller_state = 0;
+  bool    running          = false;
+  int     framerate        = 60;
+  int     elapsedFrames    = 0;
+  double  volume           = 0.1;
+  uint8_t controller_state = 0;
 };

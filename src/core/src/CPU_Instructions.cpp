@@ -9,19 +9,19 @@ using namespace types::cpu::addressing_mode;
 using namespace types::cpu::flags;
 
 template uint16_t    CPU::get_operand<Immediate>();
-template <> uint16_t CPU::get_operand<Relative>();
-template <> uint16_t CPU::get_operand<ZeroPage>();
-template <> uint16_t CPU::get_operand<ZeroPageX>();
-template <> uint16_t CPU::get_operand<ZeroPageY>();
-template <> uint16_t CPU::get_operand<Absolute>();
-template <> uint16_t CPU::get_operand<AbsoluteX>();
-template <> uint16_t CPU::get_operand<AbsoluteX_Exception>();
-template <> uint16_t CPU::get_operand<AbsoluteY>();
-template <> uint16_t CPU::get_operand<AbsoluteY_Exception>();
-template <> uint16_t CPU::get_operand<Indirect>();
-template <> uint16_t CPU::get_operand<IndirectX>();
-template <> uint16_t CPU::get_operand<IndirectY>();
-template <> uint16_t CPU::get_operand<IndirectY_Exception>();
+template <> auto CPU::get_operand<Relative>() -> uint16_t;
+template <> auto CPU::get_operand<ZeroPage>() -> uint16_t;
+template <> auto CPU::get_operand<ZeroPageX>() -> uint16_t;
+template <> auto CPU::get_operand<ZeroPageY>() -> uint16_t;
+template <> auto CPU::get_operand<Absolute>() -> uint16_t;
+template <> auto CPU::get_operand<AbsoluteX>() -> uint16_t;
+template <> auto CPU::get_operand<AbsoluteX_Exception>() -> uint16_t;
+template <> auto CPU::get_operand<AbsoluteY>() -> uint16_t;
+template <> auto CPU::get_operand<AbsoluteY_Exception>() -> uint16_t;
+template <> auto CPU::get_operand<Indirect>() -> uint16_t;
+template <> auto CPU::get_operand<IndirectX>() -> uint16_t;
+template <> auto CPU::get_operand<IndirectY>() -> uint16_t;
+template <> auto CPU::get_operand<IndirectY_Exception>() -> uint16_t;
 
 void CPU::execute()
 {
@@ -337,7 +337,7 @@ void CPU::add(uint8_t value)
   state.set_a(static_cast<uint8_t>(result));
 }
 
-uint8_t CPU::shift_left(uint8_t value)
+auto CPU::shift_left(uint8_t value) -> uint8_t
 {
   uint8_t result = value << 1;
   state.update_nz(result);
@@ -351,7 +351,7 @@ uint8_t CPU::shift_left(uint8_t value)
   return result;
 }
 
-uint8_t CPU::shift_right(uint8_t value)
+auto CPU::shift_right(uint8_t value) -> uint8_t
 {
   uint8_t result = value >> 1;
   state.update_nz(result);
@@ -365,7 +365,7 @@ uint8_t CPU::shift_right(uint8_t value)
   return result;
 }
 
-uint8_t CPU::rotate_left(uint8_t value)
+auto CPU::rotate_left(uint8_t value) -> uint8_t
 {
   uint8_t result = (value << 1) | static_cast<uint8_t>(state.check_flags(Carry));
   state.update_nz(result);
@@ -379,7 +379,7 @@ uint8_t CPU::rotate_left(uint8_t value)
   return result;
 }
 
-uint8_t CPU::rotate_right(uint8_t value)
+auto CPU::rotate_right(uint8_t value) -> uint8_t
 {
   uint8_t result = (value >> 1) | (state.check_flags(Carry) << 7);
   state.update_nz(result);
@@ -427,7 +427,7 @@ void CPU::push(uint8_t value)
   --state.sp;
 }
 
-uint8_t CPU::pop()
+auto CPU::pop() -> uint8_t
 {
   ++state.sp;
   return memory_read(0x100 + state.sp);
@@ -1132,7 +1132,7 @@ template <auto Mode> void CPU::SXA()
   memory_write(((state.x & (high + 1)) << 8) | low, value);
 }
 
-template <auto Mode> uint16_t CPU::get_operand()
+template <auto Mode> auto CPU::get_operand() -> uint16_t
 {
   static_assert(Mode == Immediate || Mode == Relative, "Invalid addressing mode");
 
@@ -1142,7 +1142,7 @@ template <auto Mode> uint16_t CPU::get_operand()
   return addr;
 }
 
-template <> uint16_t CPU::get_operand<Relative>()
+template <> auto CPU::get_operand<Relative>() -> uint16_t
 {
   auto addr   = get_operand<Immediate>();
   auto offset = static_cast<int8_t>(memory_read(addr));
@@ -1150,21 +1150,21 @@ template <> uint16_t CPU::get_operand<Relative>()
   return state.pc + offset;
 }
 
-template <> uint16_t CPU::get_operand<ZeroPage>() { return memory_read(get_operand<Immediate>()); }
+template <> auto CPU::get_operand<ZeroPage>() -> uint16_t { return memory_read(get_operand<Immediate>()); }
 
-template <> uint16_t CPU::get_operand<ZeroPageX>()
+template <> auto CPU::get_operand<ZeroPageX>() -> uint16_t
 {
   tick();
   return (get_operand<ZeroPage>() + state.x) & 0xFF;
 }
 
-template <> uint16_t CPU::get_operand<ZeroPageY>()
+template <> auto CPU::get_operand<ZeroPageY>() -> uint16_t
 {
   tick();
   return (get_operand<ZeroPage>() + state.y) & 0xFF;
 }
 
-template <> uint16_t CPU::get_operand<Absolute>()
+template <> auto CPU::get_operand<Absolute>() -> uint16_t
 {
   auto base_addr = get_operand<Immediate>();
   ++state.pc;
@@ -1172,7 +1172,7 @@ template <> uint16_t CPU::get_operand<Absolute>()
   return (memory_read(base_addr + 1) << 8) | memory_read(base_addr);
 }
 
-template <> uint16_t CPU::get_operand<AbsoluteX>()
+template <> auto CPU::get_operand<AbsoluteX>() -> uint16_t
 {
   auto     base_addr = get_operand<Absolute>();
   uint16_t addr      = base_addr + state.x;
@@ -1184,9 +1184,9 @@ template <> uint16_t CPU::get_operand<AbsoluteX>()
   return addr;
 }
 
-template <> uint16_t CPU::get_operand<AbsoluteX_Exception>() { return get_operand<Absolute>() + state.x; }
+template <> auto CPU::get_operand<AbsoluteX_Exception>() -> uint16_t { return get_operand<Absolute>() + state.x; }
 
-template <> uint16_t CPU::get_operand<AbsoluteY>()
+template <> auto CPU::get_operand<AbsoluteY>() -> uint16_t
 {
   auto     base_addr = get_operand<Absolute>();
   uint16_t addr      = base_addr + state.y;
@@ -1198,21 +1198,21 @@ template <> uint16_t CPU::get_operand<AbsoluteY>()
   return addr;
 }
 
-template <> uint16_t CPU::get_operand<AbsoluteY_Exception>() { return get_operand<Absolute>() + state.y; }
+template <> auto CPU::get_operand<AbsoluteY_Exception>() -> uint16_t { return get_operand<Absolute>() + state.y; }
 
-template <> uint16_t CPU::get_operand<Indirect>()
+template <> auto CPU::get_operand<Indirect>() -> uint16_t
 {
   auto base_addr = get_operand<Absolute>();
   return memory_read(base_addr) | (memory_read((base_addr & 0xFF00) | ((base_addr + 1) & 0xFF)) << 8);
 }
 
-template <> uint16_t CPU::get_operand<IndirectX>()
+template <> auto CPU::get_operand<IndirectX>() -> uint16_t
 {
   auto base_addr = get_operand<ZeroPageX>();
   return (memory_read((base_addr + 1) & 0xFF) << 8) | memory_read(base_addr);
 }
 
-template <> uint16_t CPU::get_operand<IndirectY>()
+template <> auto CPU::get_operand<IndirectY>() -> uint16_t
 {
   auto     zp_addr   = get_operand<ZeroPage>();
   uint16_t base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
@@ -1225,7 +1225,7 @@ template <> uint16_t CPU::get_operand<IndirectY>()
   return addr;
 }
 
-template <> uint16_t CPU::get_operand<IndirectY_Exception>()
+template <> auto CPU::get_operand<IndirectY_Exception>() -> uint16_t
 {
   auto     zp_addr   = get_operand<ZeroPage>();
   uint16_t base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));

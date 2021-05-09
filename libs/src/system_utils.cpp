@@ -9,7 +9,7 @@
 #endif
 
 namespace lib {
-std::filesystem::path get_base_path()
+auto get_base_path() -> std::filesystem::path
 {
   std::string path;
   path.resize(300);
