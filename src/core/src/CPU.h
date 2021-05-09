@@ -62,10 +62,10 @@ private:
   void tick();
 
   auto read(uint16_t) const -> uint8_t;
-  void    write(uint16_t, uint8_t);
+  void write(uint16_t, uint8_t);
 
   auto memory_read(uint16_t) -> uint8_t;
-  void    memory_write(uint16_t, uint8_t);
+  void memory_write(uint16_t, uint8_t);
 
   //
   // All functions defined here are
@@ -80,7 +80,7 @@ private:
   // Auxiliary
   //
 
-  void    add(uint8_t);
+  void add(uint8_t);
   auto shift_left(uint8_t) -> uint8_t;   // Arithmetic left shift
   auto shift_right(uint8_t) -> uint8_t;  // Logical right shift
   auto rotate_left(uint8_t) -> uint8_t;
@@ -88,7 +88,7 @@ private:
 
   void compare(uint8_t, uint8_t);
 
-  void    push(uint8_t);
+  void push(uint8_t);
   auto pop() -> uint8_t;
 
   void branch(bool);

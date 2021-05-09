@@ -8,20 +8,20 @@ using namespace types::cpu;
 using namespace types::cpu::addressing_mode;
 using namespace types::cpu::flags;
 
-template uint16_t    CPU::get_operand<Immediate>();
-template <> auto CPU::get_operand<Relative>() -> uint16_t;
-template <> auto CPU::get_operand<ZeroPage>() -> uint16_t;
-template <> auto CPU::get_operand<ZeroPageX>() -> uint16_t;
-template <> auto CPU::get_operand<ZeroPageY>() -> uint16_t;
-template <> auto CPU::get_operand<Absolute>() -> uint16_t;
-template <> auto CPU::get_operand<AbsoluteX>() -> uint16_t;
-template <> auto CPU::get_operand<AbsoluteX_Exception>() -> uint16_t;
-template <> auto CPU::get_operand<AbsoluteY>() -> uint16_t;
-template <> auto CPU::get_operand<AbsoluteY_Exception>() -> uint16_t;
-template <> auto CPU::get_operand<Indirect>() -> uint16_t;
-template <> auto CPU::get_operand<IndirectX>() -> uint16_t;
-template <> auto CPU::get_operand<IndirectY>() -> uint16_t;
-template <> auto CPU::get_operand<IndirectY_Exception>() -> uint16_t;
+template uint16_t CPU::get_operand<Immediate>();
+template <> auto  CPU::get_operand<Relative>() -> uint16_t;
+template <> auto  CPU::get_operand<ZeroPage>() -> uint16_t;
+template <> auto  CPU::get_operand<ZeroPageX>() -> uint16_t;
+template <> auto  CPU::get_operand<ZeroPageY>() -> uint16_t;
+template <> auto  CPU::get_operand<Absolute>() -> uint16_t;
+template <> auto  CPU::get_operand<AbsoluteX>() -> uint16_t;
+template <> auto  CPU::get_operand<AbsoluteX_Exception>() -> uint16_t;
+template <> auto  CPU::get_operand<AbsoluteY>() -> uint16_t;
+template <> auto  CPU::get_operand<AbsoluteY_Exception>() -> uint16_t;
+template <> auto  CPU::get_operand<Indirect>() -> uint16_t;
+template <> auto  CPU::get_operand<IndirectX>() -> uint16_t;
+template <> auto  CPU::get_operand<IndirectY>() -> uint16_t;
+template <> auto  CPU::get_operand<IndirectY_Exception>() -> uint16_t;
 
 void CPU::execute()
 {

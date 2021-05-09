@@ -73,7 +73,8 @@ struct sprite_info {
 namespace memory {
 constexpr int Unknown = -1;
 
-enum ppu_map {
+enum ppu_map
+{
   PPUCTRL   = 0,
   PPUMASK   = 1,
   PPUSTATUS = 2,
@@ -84,7 +85,12 @@ enum ppu_map {
   PPUDATA   = 7
 };
 
-enum mem_map { CHR, Nametables, Palettes };
+enum mem_map
+{
+  CHR,
+  Nametables,
+  Palettes
+};
 
 template <auto Operation> auto get_map(uint16_t) -> int;
 auto                           get_mem_map(uint16_t) -> int;

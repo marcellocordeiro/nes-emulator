@@ -2,8 +2,8 @@
 
 auto main(int argc, char* argv[]) -> int
 {
-  MainWindow w(argc, argv); 
-  
+  MainWindow w(argc, argv);
+
   w.show();
 
   w.run();

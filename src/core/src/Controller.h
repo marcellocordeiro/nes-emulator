@@ -18,7 +18,7 @@ public:
   void update_state(size_t, uint8_t);
 
   auto read(size_t) -> uint8_t;
-  void    write(bool);
+  void write(bool);
 
   //
   // Read status without side effects

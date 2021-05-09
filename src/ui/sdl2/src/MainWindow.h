@@ -41,8 +41,27 @@ private:
   auto updateEmulatedControllers() -> void;
   auto processInput(SDL_KeyboardEvent&) -> void;
 
-  enum class Button { A, B, Select, Start, Up, Down, Left, Right };
-  enum class Action { Pause, Reset, SaveSnapshot, LoadSnapshot, ToggleLimiter, VolumeUp, VolumeDown };
+  enum class Button
+  {
+    A,
+    B,
+    Select,
+    Start,
+    Up,
+    Down,
+    Left,
+    Right
+  };
+  enum class Action
+  {
+    Pause,
+    Reset,
+    SaveSnapshot,
+    LoadSnapshot,
+    ToggleLimiter,
+    VolumeUp,
+    VolumeDown
+  };
 
   std::map<Action, SDL_Scancode> actionKeyBindings;
   std::map<Button, SDL_Scancode> controllerKeyBindings;

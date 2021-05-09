@@ -15,7 +15,7 @@ public:
   void power_on();
 
   auto read() -> uint8_t;
-  void    write(uint16_t, uint8_t);
+  void write(uint16_t, uint8_t);
 
 private:
   APU() = default;

@@ -5,13 +5,15 @@ AccessModifierOffset: -2
 AlignAfterOpenBracket: Align
 AlignConsecutiveMacros: false
 AlignConsecutiveAssignments: true
+AlignConsecutiveBitFields: false
 AlignConsecutiveDeclarations: true
 AlignEscapedNewlines: Left
-AlignOperands:   true
+AlignOperands:   Align
 AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: true
 AllowAllConstructorInitializersOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortEnumsOnASingleLine: false
 AllowShortBlocksOnASingleLine: Never
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortFunctionsOnASingleLine: All
@@ -27,7 +29,7 @@ BinPackParameters: true
 BraceWrapping:
   AfterCaseLabel:  false
   AfterClass:      false
-  AfterControlStatement: false
+  AfterControlStatement: Never
   AfterEnum:       false
   AfterFunction:   true
   AfterNamespace:  false
@@ -37,6 +39,8 @@ BraceWrapping:
   AfterExternBlock: false
   BeforeCatch:     false
   BeforeElse:      false
+  BeforeLambdaBody: false
+  BeforeWhile:     false
   IndentBraces:    false
   SplitEmptyFunction: false
   SplitEmptyRecord: true
@@ -83,10 +87,13 @@ IncludeCategories:
 IncludeIsMainRegex: '([-_](test|unittest))?$'
 IncludeIsMainSourceRegex: ''
 IndentCaseLabels: true
+IndentCaseBlocks: false
 IndentGotoLabels: true
 IndentPPDirectives: None
+IndentExternBlock: AfterExternBlock
 IndentWidth:     2
 IndentWrappedFunctionNames: false
+InsertTrailingCommas: None
 JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
@@ -96,6 +103,7 @@ MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 ObjCBinPackProtocolList: Never
 ObjCBlockIndentWidth: 2
+ObjCBreakBeforeNestedBlockParam: true
 ObjCSpaceAfterProperty: false
 ObjCSpaceBeforeProtocolList: true
 PenaltyBreakAssignment: 2
@@ -133,6 +141,8 @@ RawStringFormats:
       - PARSE_TEXT_PROTO
       - ParseTextOrDie
       - ParseTextProtoOrDie
+      - ParseTestProto
+      - ParsePartialTestProto
     CanonicalDelimiter: ''
     BasedOnStyle:    google
 ReflowComments:  true
@@ -157,12 +167,16 @@ SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpaceBeforeSquareBrackets: false
-Standard:        Auto
+Standard:        Latest
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
 TabWidth:        8
 UseCRLF:         false
 UseTab:          Never
+WhitespaceSensitiveMacros:
+  - STRINGIZE
+  - PP_STRINGIZE
+  - BOOST_PP_STRINGIZE
 ...
 

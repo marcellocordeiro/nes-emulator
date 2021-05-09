@@ -4,11 +4,18 @@
 
 namespace nes::types::cpu {
 namespace interruption_type {
-enum interruption_type { NMI, RST, IRQ, BRK };
-}
+enum interruption_type
+{
+  NMI,
+  RST,
+  IRQ,
+  BRK
+};
+}  // namespace interruption_type
 
 namespace addressing_mode {
-enum addressing_mode {
+enum addressing_mode
+{
   Invalid = -1,
   Implicit,
   Accumulator,
@@ -27,10 +34,11 @@ enum addressing_mode {
   IndirectY,
   IndirectY_Exception
 };
-}
+}  // namespace addressing_mode
 
 namespace flags {
-enum flags : uint8_t {
+enum flags : uint8_t
+{
   Carry     = 0x01,
   Zero      = 0x02,
   Interrupt = 0x04,
@@ -40,7 +48,7 @@ enum flags : uint8_t {
   Overflow  = 0x40,
   Negative  = 0x80
 };
-}
+}  // namespace flags
 
 struct state {
   uint8_t  a  = 0;
@@ -70,9 +78,15 @@ struct state {
 };
 
 namespace memory {
-enum operation { None = -1, Read, Write };
+enum operation
+{
+  None = -1,
+  Read,
+  Write
+};
 
-enum map {
+enum map
+{
   Unknown = -1,
   CPU_RAM,
   PPU_Access,

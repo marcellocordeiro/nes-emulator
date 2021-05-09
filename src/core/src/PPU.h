@@ -25,7 +25,7 @@ public:
   void set_mirroring(int);
 
   auto read(uint16_t) -> uint8_t;
-  void    write(uint16_t, uint8_t);
+  void write(uint16_t, uint8_t);
 
   void step();
 
@@ -55,7 +55,7 @@ private:
   //
 
   auto vram_read(uint16_t) const -> uint8_t;
-  void    vram_write(uint16_t, uint8_t);
+  void vram_write(uint16_t, uint8_t);
 
   //
   // Sprites
@@ -107,7 +107,13 @@ private:
 
   template <typename T> auto get_palette(T, T, int) const -> uint8_t;  // Get palette
 
-  enum timing { Idle, Visible, VBlank, PreRender };
+  enum timing
+  {
+    Idle,
+    Visible,
+    VBlank,
+    PreRender
+  };
 
   int      ppu_state = Visible;
   uint16_t ppu_addr  = 0;

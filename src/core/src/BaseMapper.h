@@ -22,7 +22,7 @@ public:
   void set_prg_rom(std::vector<uint8_t>&&);
   void set_chr_rom(std::vector<uint8_t>&&);
 
-  void                 set_prg_ram(std::vector<uint8_t>&&);
+  void set_prg_ram(std::vector<uint8_t>&&);
   auto get_prg_ram() const -> std::vector<uint8_t>;
 
   auto prg_read(uint16_t) const -> uint8_t;
