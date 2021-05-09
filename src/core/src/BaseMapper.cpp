@@ -29,7 +29,7 @@ uint8_t BaseMapper::chr_read(uint16_t addr) const
   return chr[chr_map[slot] + chr_addr];
 }
 
-void BaseMapper::prg_write(uint16_t addr, uint8_t value) { prg_ram[addr] = value; }
+void BaseMapper::prg_write(uint16_t addr, uint8_t value) { prg_ram[addr - 0x6000] = value; }
 
 void BaseMapper::chr_write(uint16_t addr, uint8_t value) { chr[addr] = value; }
 
