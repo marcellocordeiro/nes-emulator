@@ -1,7 +1,6 @@
 #include "Mapper1.h"
 
-#include "../PPU.h"
-#include "../Types/Cartridge_Types.h"
+using namespace nes::types::cartridge;
 
 namespace nes {
 void Mapper1::reset()
@@ -19,8 +18,6 @@ void Mapper1::reset()
 
 void Mapper1::apply()
 {
-  using namespace mirroring;
-
   if (control & 0b1000) {
     // 16KB PRG-ROM
     if (control & 0b100) {
@@ -47,10 +44,10 @@ void Mapper1::apply()
   }
 
   switch (control & 3) {
-    case 0: PPU::get().set_mirroring(One_Screen_Low); break;
-    case 1: PPU::get().set_mirroring(One_Screen_High); break;
-    case 2: PPU::get().set_mirroring(Vertical); break;
-    case 3: PPU::get().set_mirroring(Horizontal); break;
+    case 0: set_mirroring(One_Screen_Low); break;
+    case 1: set_mirroring(One_Screen_High); break;
+    case 2: set_mirroring(Vertical); break;
+    case 3: set_mirroring(Horizontal); break;
   }
 }
 

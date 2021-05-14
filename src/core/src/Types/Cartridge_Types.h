@@ -1,7 +1,7 @@
 #pragma once
 
-namespace nes::mirroring {
-enum mirroring
+namespace nes::types::cartridge {
+enum mirroring_type
 {
   Unset = -1,
   Horizontal,
@@ -10,4 +10,4 @@ enum mirroring
   One_Screen_High,
   Four_Screen
 };
-}  // namespace nes::mirroring
+}  // namespace nes::types::cartridge

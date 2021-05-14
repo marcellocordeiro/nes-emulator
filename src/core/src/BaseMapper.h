@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <common.h>
+#include "Types/Cartridge_Types.h"
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
@@ -18,6 +19,9 @@ public:
   auto operator=(BaseMapper&&) -> BaseMapper& = delete;
 
   virtual void reset() = 0;
+
+  void set_mirroring(types::cartridge::mirroring_type);
+  void set_irq(bool);
 
   void set_prg_rom(std::vector<uint8_t>&&);
   void set_chr_rom(std::vector<uint8_t>&&);
@@ -46,5 +50,8 @@ protected:
 
   std::array<size_t, 4> prg_map = {};
   std::array<size_t, 8> chr_map = {};
+
+  // TODO: fix this mess
+  types::cartridge::mirroring_type mirroring;
 };
 }  // namespace nes

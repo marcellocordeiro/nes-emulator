@@ -4,8 +4,7 @@
 #include <bit_field.hpp>
 
 namespace nes::types::ppu {
-template <size_t position, size_t bits> using bf_8 = lib::bit_field<uint8_t, position, bits>;
-
+template <size_t position, size_t bits> using bf_8  = lib::bit_field<uint8_t, position, bits>;
 template <size_t position, size_t bits> using bf_16 = lib::bit_field<uint16_t, position, bits>;
 
 // PPUCTRL ($2000) register
@@ -70,7 +69,6 @@ struct sprite_info {
   uint8_t data_h = 0;     // Tile data (high)
 };
 
-namespace memory {
 constexpr int Unknown = -1;
 
 enum ppu_map
@@ -85,14 +83,12 @@ enum ppu_map
   PPUDATA   = 7
 };
 
-enum mem_map
+enum memory_map
 {
   CHR,
   Nametables,
   Palettes
 };
 
-template <auto Operation> auto get_map(uint16_t) -> int;
-auto                           get_mem_map(uint16_t) -> int;
-}  // namespace memory
+auto get_memory_map(uint16_t) -> int;
 }  // namespace nes::types::ppu

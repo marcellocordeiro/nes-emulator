@@ -52,37 +52,65 @@ template <auto Operation> auto get_map(uint16_t addr) -> int
   if constexpr (Operation == Read) {
     if (addr <= 0x1FFF) {
       return CPU_RAM;
-    } else if (in_range(0x2000, 0x3FFF)) {
+    }
+
+    if (in_range(0x2000, 0x3FFF)) {
       return PPU_Access;
-    } else if (in_range(0x4000, 0x4013) || addr == 0x4015) {
+    }
+
+    if (in_range(0x4000, 0x4013) || addr == 0x4015) {
       return APU_Access;
-    } else if (addr == 0x4016) {
+    }
+
+    if (addr == 0x4016) {
       return Controller_1;
-    } else if (addr == 0x4017) {
+    }
+
+    if (addr == 0x4017) {
       return Controller_2;
-    } else if (in_range(0x4018, 0x401F)) {
+    }
+
+    if (in_range(0x4018, 0x401F)) {
       return Unknown;
-    } else if (in_range(0x4020, 0x5FFF)) {
+    }
+
+    if (in_range(0x4020, 0x5FFF)) {
       return Unknown;
-    } else if (in_range(0x6000, 0xFFFF)) {
+    }
+
+    if (in_range(0x6000, 0xFFFF)) {
       return Cartridge_Access;
     }
   } else if constexpr (Operation == Write) {
     if (addr <= 0x1FFF) {
       return CPU_RAM;
-    } else if (in_range(0x2000, 0x3FFF)) {
+    }
+
+    if (in_range(0x2000, 0x3FFF)) {
       return PPU_Access;
-    } else if (in_range(0x4000, 0x4013) || addr == 0x4015) {
+    }
+
+    if (in_range(0x4000, 0x4013) || addr == 0x4015) {
       return APU_Access;
-    } else if (addr == 0x4014) {
+    }
+
+    if (addr == 0x4014) {
       return OAMDMA;
-    } else if (addr == 0x4016) {
+    }
+
+    if (addr == 0x4016) {
       return Controller_Access;
-    } else if (addr == 0x4017) {
+    }
+
+    if (addr == 0x4017) {
       return APU_Access;
-    } else if (in_range(0x4018, 0x401F)) {
+    }
+
+    if (in_range(0x4018, 0x401F)) {
       return Unknown;
-    } else if (in_range(0x4020, 0xFFFF)) {
+    }
+
+    if (in_range(0x4020, 0xFFFF)) {
       return Cartridge_Access;
     }
   }

@@ -1,7 +1,6 @@
 #include "Mapper7.h"
 
-#include "../PPU.h"
-#include "../Types/Cartridge_Types.h"
+using namespace nes::types::cartridge;
 
 namespace nes {
 void Mapper7::reset()
@@ -16,8 +15,7 @@ void Mapper7::apply()
 {
   set_prg_map<32>(0, mode & 0x0F);
 
-  using namespace mirroring;
-  PPU::get().set_mirroring((mode & 0x10) ? One_Screen_High : One_Screen_Low);
+  set_mirroring((mode & 0x10) ? One_Screen_High : One_Screen_Low);
 }
 
 void Mapper7::prg_write(uint16_t addr, uint8_t value)

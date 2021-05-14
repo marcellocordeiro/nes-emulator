@@ -134,18 +134,29 @@ private:
   using ppumask     = types::ppu::ppumask;
   using ppustatus   = types::ppu::ppustatus;
 
-  std::array<uint8_t, 0x800> ci_ram  = {};  // Console-Internal RAM
-  std::array<uint8_t, 0x20>  cg_ram  = {};  // Colour generator RAM
-  std::array<uint8_t, 0x100> oam_mem = {};  // Object Attribute Memory (sprites)
+  using ci_ram_type  = std::array<uint8_t, 0x800>;
+  using cg_ram_type  = std::array<uint8_t, 0x20>;
+  using oam_mem_type = std::array<uint8_t, 0x100>;
 
-  std::array<sprite_info, 8> oam     = {};  // Sprite buffer
-  std::array<sprite_info, 8> sec_oam = {};  // Secondary sprite buffer
+  using oam_type     = std::array<sprite_info, 8>;
+  using sec_oam_type = oam_type;
 
-  std::array<uint32_t, 256 * 240> frame_buffer = {};  // Frame buffer
-  std::array<uint32_t, 256 * 240> back_buffer  = {};  // Back buffer
+  using frame_buffer_type = std::array<uint32_t, 256 * 240>;
 
-  std::array<std::array<uint32_t, 64>, 8> full_nes_palette = {};
-  uint8_t                                 selected_palette = 0;
+  using full_nes_palette_type = std::array<std::array<uint32_t, 64>, 8>;
+
+  ci_ram_type  ci_ram  = {};  // Console-Internal RAM
+  cg_ram_type  cg_ram  = {};  // Colour generator RAM
+  oam_mem_type oam_mem = {};  // Object Attribute Memory (sprites)
+
+  oam_type     oam     = {};  // Sprite buffer
+  sec_oam_type sec_oam = {};  // Secondary sprite buffer
+
+  frame_buffer_type frame_buffer = {};  // Frame buffer
+  frame_buffer_type back_buffer  = {};  // Back buffer
+
+  full_nes_palette_type full_nes_palette = {};
+  uint8_t               selected_palette = 0;
   // const uint32_t* nes_to_rgb = full_nes_palette[0].data();
 
   loopy_addr vram_addr;

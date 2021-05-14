@@ -2,12 +2,13 @@
 
 #include <spdlog/spdlog.h>
 
-#include "APU.h"
 #include "Cartridge.h"
 #include "Controller.h"
 #include "PPU.h"
+#include "Types/CPU_Types.h"
 
 using namespace nes::types::cpu;
+using namespace nes::types::cpu::memory;
 
 namespace nes {
 auto CPU::get() -> CPU&
@@ -74,8 +75,6 @@ void CPU::tick()
 
 auto CPU::peek(uint16_t addr) const -> uint8_t
 {
-  using namespace nes::types::cpu::memory;
-
   switch (get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
     case PPU_Access: return PPU::get().peek_reg(addr);
@@ -90,12 +89,10 @@ auto CPU::peek(uint16_t addr) const -> uint8_t
 
 auto CPU::read(uint16_t addr) const -> uint8_t
 {
-  using namespace nes::types::cpu::memory;
-
   switch (get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
     case PPU_Access: return PPU::get().read(addr);
-    case APU_Access: return APU::get().read();
+    case APU_Access: return 0;
     case Controller_1: return Controller::get().read(0);
     case Controller_2: return Controller::get().read(1);
     case Cartridge_Access: return Cartridge::get().prg_read(addr);
@@ -106,12 +103,10 @@ auto CPU::read(uint16_t addr) const -> uint8_t
 
 void CPU::write(uint16_t addr, uint8_t value)
 {
-  using namespace nes::types::cpu::memory;
-
   switch (get_map<Write>(addr)) {
     case CPU_RAM: ram[addr & 0x07FF] = value; break;
     case PPU_Access: PPU::get().write(addr, value); break;
-    case APU_Access: APU::get().write(addr, value); break;
+    case APU_Access: break;
     case OAMDMA: dma_oam(value); break;
     case Controller_Access: Controller::get().write(value & 1); break;
     case Cartridge_Access: Cartridge::get().prg_write(addr, value); break;

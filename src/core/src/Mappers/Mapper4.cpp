@@ -1,8 +1,6 @@
 #include "Mapper4.h"
 
-#include "../CPU.h"
-#include "../PPU.h"
-#include "../Types/Cartridge_Types.h"
+using namespace nes::types::cartridge;
 
 namespace nes {
 void Mapper4::reset()
@@ -10,11 +8,11 @@ void Mapper4::reset()
   regs.fill(0);
   reg_8000 = 0;
 
-  horizontal_mirroring = true;
-  irq_enabled          = false;
-  irq_period           = 0;
-  irq_counter          = 0;
+  irq_enabled = false;
+  irq_period  = 0;
+  irq_counter = 0;
 
+  set_mirroring(Horizontal);
   set_prg_map<8>(3, -1);
   apply();
 }
@@ -46,10 +44,6 @@ void Mapper4::apply()
     set_chr_map<2>(2, regs[0] >> 1);
     set_chr_map<2>(3, regs[1] >> 1);
   }
-
-  using namespace mirroring;
-
-  PPU::get().set_mirroring(horizontal_mirroring ? Horizontal : Vertical);
 }
 
 void Mapper4::prg_write(uint16_t addr, uint8_t value)
@@ -60,11 +54,11 @@ void Mapper4::prg_write(uint16_t addr, uint8_t value)
     switch (addr & 0xE001) {
       case 0x8000: reg_8000 = value; break;
       case 0x8001: regs[reg_8000 & 7] = value; break;
-      case 0xA000: horizontal_mirroring = value & 1; break;
+      case 0xA000: set_mirroring((value & 1) ? Horizontal : Vertical); break;
       case 0xC000: irq_period = value; break;
       case 0xC001: irq_counter = 0; break;
       case 0xE000:
-        CPU::get().set_irq(false);
+        set_irq(false);
         irq_enabled = false;
         break;
       case 0xE001: irq_enabled = true; break;
@@ -83,7 +77,7 @@ void Mapper4::scanline_counter()
   }
 
   if (irq_enabled && irq_counter == 0) {
-    CPU::get().set_irq(true);
+    set_irq(true);
   }
 }
 

@@ -3,7 +3,6 @@
 #include <common.h>
 
 namespace nes::types::cpu {
-namespace interruption_type {
 enum interruption_type
 {
   NMI,
@@ -11,9 +10,7 @@ enum interruption_type
   IRQ,
   BRK
 };
-}  // namespace interruption_type
 
-namespace addressing_mode {
 enum addressing_mode
 {
   Invalid = -1,
@@ -34,9 +31,7 @@ enum addressing_mode
   IndirectY,
   IndirectY_Exception
 };
-}  // namespace addressing_mode
 
-namespace flags {
 enum flags : uint8_t
 {
   Carry     = 0x01,
@@ -48,7 +43,6 @@ enum flags : uint8_t
   Overflow  = 0x40,
   Negative  = 0x80
 };
-}  // namespace flags
 
 struct state {
   uint8_t  a  = 0;

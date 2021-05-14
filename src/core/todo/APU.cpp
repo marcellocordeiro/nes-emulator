@@ -13,7 +13,7 @@ auto APU::read() -> uint8_t { return 0; }
 
 void APU::write(uint16_t addr, uint8_t value)
 {
-  (void)addr;
-  (void)value;
+  UNUSED(addr);
+  UNUSED(value);
 }
 }  // namespace nes

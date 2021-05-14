@@ -6,6 +6,8 @@
 #include "Cartridge.h"
 #include "Utility/FileManager.h"
 
+using namespace nes::types::ppu;
+
 namespace nes {
 auto PPU::get() -> PPU&
 {
@@ -152,7 +154,7 @@ void PPU::step()
 
 auto PPU::peek_reg(uint16_t addr) const -> uint8_t
 {
-  using namespace nes::types::ppu::memory;
+  using namespace nes::types::ppu;
 
   switch (addr % 8) {
     case PPUSTATUS: return (bus_latch & 0x1F) | status.raw;
@@ -171,8 +173,6 @@ auto PPU::peek_reg(uint16_t addr) const -> uint8_t
 
 auto PPU::read(uint16_t addr) -> uint8_t
 {
-  using namespace nes::types::ppu::memory;
-
   switch (addr % 8) {
     case PPUSTATUS: {
       bus_latch     = (bus_latch & 0x1F) | status.raw;
@@ -206,8 +206,6 @@ auto PPU::read(uint16_t addr) -> uint8_t
 
 void PPU::write(uint16_t addr, uint8_t value)
 {
-  using namespace nes::types::ppu::memory;
-
   bus_latch = value;
 
   switch (addr % 8) {
@@ -277,9 +275,7 @@ auto PPU::peek_vram(uint16_t addr) const -> uint8_t { return vram_read(addr); }
 
 auto PPU::vram_read(uint16_t addr) const -> uint8_t
 {
-  using namespace nes::types::ppu::memory;
-
-  switch (get_mem_map(addr)) {
+  switch (get_memory_map(addr)) {
     case CHR: return Cartridge::get().chr_read(addr);
     case Nametables: return ci_ram[nt_mirror_addr(addr)];
     case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
@@ -289,9 +285,7 @@ auto PPU::vram_read(uint16_t addr) const -> uint8_t
 
 void PPU::vram_write(uint16_t addr, uint8_t value)
 {
-  using namespace nes::types::ppu::memory;
-
-  switch (get_mem_map(addr)) {
+  switch (get_memory_map(addr)) {
     case CHR: Cartridge::get().chr_write(addr, value); break;
     case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
     case Palettes: cg_ram[palette_addr(addr)] = value; break;
@@ -329,7 +323,7 @@ void PPU::load_sprites()
   oam = sec_oam;
 
   for (auto& sprite : oam) {
-    uint16_t addr;
+    uint16_t addr = 0;
 
     // Sprite offset in the line
     uint8_t offset = (scanline - sprite.y) % sprite_height;
@@ -354,7 +348,7 @@ void PPU::load_sprites()
     // Horizontal flip
     if (sprite.attr & 0x40) {
       // clang-format off
-      static constexpr uint8_t lookup_table[] = {
+      constexpr auto lookup_table = std::to_array<uint8_t>({
           0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0,
           0x08, 0x88, 0x48, 0xC8, 0x28, 0xA8, 0x68, 0xE8, 0x18, 0x98, 0x58, 0xD8, 0x38, 0xB8, 0x78, 0xF8,
           0x04, 0x84, 0x44, 0xC4, 0x24, 0xA4, 0x64, 0xE4, 0x14, 0x94, 0x54, 0xD4, 0x34, 0xB4, 0x74, 0xF4,
@@ -371,7 +365,7 @@ void PPU::load_sprites()
           0x0B, 0x8B, 0x4B, 0xCB, 0x2B, 0xAB, 0x6B, 0xEB, 0x1B, 0x9B, 0x5B, 0xDB, 0x3B, 0xBB, 0x7B, 0xFB,
           0x07, 0x87, 0x47, 0xC7, 0x27, 0xA7, 0x67, 0xE7, 0x17, 0x97, 0x57, 0xD7, 0x37, 0xB7, 0x77, 0xF7,
           0x0F, 0x8F, 0x4F, 0xCF, 0x2F, 0xAF, 0x6F, 0xEF, 0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF
-      };
+      });
       // clang-format on
 
       sprite.data_l = lookup_table[sprite.data_l];
@@ -431,55 +425,52 @@ void PPU::background_shift()
 
 auto PPU::get_background_pixel() const -> uint8_t
 {
-  auto pixel = static_cast<uint8_t>(tick - 2);
+  uint8_t pixel = tick - 2;
 
   if (mask.show_bg && !(!mask.bg_left && pixel < 8)) {
-    auto bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
+    uint8_t bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
 
     if (bg_palette) {
-      auto attr_palette = get_palette(at_shift_l, at_shift_h, 7 - fine_x);
+      uint8_t attr_palette = get_palette(at_shift_l, at_shift_h, 7 - fine_x);
       bg_palette |= attr_palette << 2;
     }
 
     return bg_palette;
   }
 
-  return uint8_t{0};
+  return 0;
 }
 
 auto PPU::get_sprite_pixel() -> uint8_t
 {
-  auto pixel = static_cast<uint8_t>(tick - 2);
+  uint8_t pixel      = tick - 2;
+  uint8_t bg_palette = get_background_pixel();
 
-  auto bg_palette = get_background_pixel();
+  if (!(mask.show_spr && !(!mask.spr_left && pixel < 8))) return bg_palette;
 
-  if (mask.show_spr && !(!mask.spr_left && pixel < 8)) {
-    for (const auto& sprite : oam) {
-      if (sprite.id == 0xFF) break;
+  for (const auto& sprite : oam) {
+    if (sprite.id == 0xFF) break;
 
-      int offset = pixel - sprite.x;
+    int offset = pixel - sprite.x;
 
-      if (offset < 0 || offset >= 8) continue;  // Not in range
+    if (offset < 0 || offset >= 8) continue;  // Not in range
 
-      auto spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
+    uint8_t spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
 
-      if (spr_palette != 0) {
-        bool is_sprite0   = sprite.id == 0;
-        bool spr_priority = !(sprite.attr & 0x20);
-        spr_palette |= (sprite.attr & 3) << 2;
-        spr_palette += 16;
+    if (spr_palette != 0) {
+      bool is_sprite0   = sprite.id == 0;
+      bool spr_priority = !(sprite.attr & 0x20);
+      spr_palette |= (sprite.attr & 3) << 2;
+      spr_palette += 16;
 
-        if (is_sprite0 && spr_palette && bg_palette && pixel != 255) {
-          status.spr0_hit = true;
-        }
-
-        // Evaluate priority
-        if (spr_palette && (spr_priority || bg_palette == 0)) {
-          return spr_palette;
-        } else {
-          return bg_palette;
-        }
+      if (is_sprite0 && spr_palette && bg_palette && pixel != 255) {
+        status.spr0_hit = true;
       }
+
+      // Evaluate priority
+      if (spr_palette && (spr_priority || bg_palette == 0)) return spr_palette;
+
+      return bg_palette;
     }
   }
 
@@ -488,8 +479,8 @@ auto PPU::get_sprite_pixel() -> uint8_t
 
 void PPU::render_pixel()
 {
-  auto row_pixel = static_cast<size_t>(tick) - 2;
-  auto pixel_pos = static_cast<size_t>(scanline) * 256 + row_pixel;
+  size_t row_pixel = tick - 2;
+  size_t pixel_pos = (scanline * 256) + row_pixel;
 
   if (!is_rendering) {
     frame_buffer[pixel_pos] = vram_read(0x3F00);
@@ -606,7 +597,7 @@ auto PPU::bg_addr() const -> uint16_t { return (ctrl.bg_table * 0x1000) + (nt_la
 
 auto PPU::nt_mirror_addr(uint16_t addr) const -> uint16_t
 {
-  using namespace nes::mirroring;
+  using namespace types::cartridge;
   switch (mirroring_mode) {
     case Vertical: return addr & 0x07FF;
     case Horizontal: return ((addr >> 1) & 0x400) + (addr & 0x03FF);
@@ -617,7 +608,10 @@ auto PPU::nt_mirror_addr(uint16_t addr) const -> uint16_t
   }
 }
 
-uint16_t PPU::palette_addr(uint16_t addr) const { return (((addr & 0x13) == 0x10) ? (addr & ~0x10) : addr) & 0x1F; }
+auto PPU::palette_addr(uint16_t addr) const -> uint16_t
+{
+  return (((addr & 0x13) == 0x10) ? (addr & ~0x10) : addr) & 0x1F;
+}
 
 template <typename T> auto PPU::get_palette(T low, T high, int offset) const -> uint8_t
 {

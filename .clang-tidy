@@ -1,0 +1,21 @@
+---
+Checks: >
+  *,
+  -fuchsia-*,
+  -zircon-*,
+  -abseil-*,
+  -llvm*,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -google-build-using-namespace,
+  -hicpp-signed-bitwise,
+  -hicpp-braces-around-statements,
+  -modernize-use-nodiscard,
+  -readability-magic-numbers,
+  -readability-convert-member-functions-to-static,
+  -readability-implicit-bool-conversion,
+  -readability-braces-around-statements
+
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle:     none

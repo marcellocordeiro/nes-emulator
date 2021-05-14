@@ -34,6 +34,14 @@ public:
 private:
   Cartridge() = default;
 
+  int    mapper_num   = -1;
+  size_t prg_size     = 0;
+  size_t chr_size     = 0;
+  bool   chr_ram      = false;
+  size_t prg_ram_size = 0;
+
+  types::cartridge::mirroring_type mirroring = types::cartridge::mirroring_type::Unset;
+
   std::unique_ptr<BaseMapper> mapper;
 };
 }  // namespace nes

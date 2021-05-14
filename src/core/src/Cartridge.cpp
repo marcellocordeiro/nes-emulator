@@ -10,9 +10,12 @@
 #include "Mappers/Mapper4.h"
 #include "Mappers/Mapper7.h"
 #include "PPU.h"
+#include "Types/Cartridge_Types.h"
 #include "Utility/FileManager.h"
 
 namespace nes {
+using namespace types::cartridge;
+
 auto Cartridge::get() -> Cartridge&
 {
   static Cartridge instance;
@@ -23,18 +26,16 @@ auto Cartridge::get_mapper() -> BaseMapper* { return mapper.get(); }
 
 void Cartridge::load()
 {
-  using namespace mirroring;
-
   auto rom = Utility::FileManager::get().get_rom();
 
   std::vector header(rom.begin(), rom.begin() + 16);
 
-  size_t mapper_num   = (header[7] & 0xF0) | (header[6] >> 4);
-  size_t prg_size     = header[4] * 0x4000;
-  size_t chr_size     = header[5] * 0x2000;
-  bool   chr_ram      = (chr_size == 0);
-  size_t prg_ram_size = header[8] ? header[8] * 0x2000 : 0x2000;
-  int    mirroring    = (header[6] & 1) ? Vertical : Horizontal;
+  mapper_num   = (header[7] & 0xF0) | (header[6] >> 4);
+  prg_size     = header[4] * 0x4000;
+  chr_size     = header[5] * 0x2000;
+  chr_ram      = chr_size == 0;
+  prg_ram_size = header[8] ? header[8] * 0x2000 : 0x2000;
+  mirroring    = (header[6] & 1) ? Vertical : Horizontal;
 
   switch (mapper_num) {
     case 0: mapper = std::make_unique<Mapper0>(); break;
@@ -63,6 +64,7 @@ void Cartridge::load()
     chr.resize(0x2000);
   }
 
+  mapper->set_mirroring(mirroring);
   mapper->set_prg_rom(std::move(prg));
   mapper->set_chr_rom(std::move(chr));
 
@@ -73,8 +75,6 @@ void Cartridge::load()
   }
 
   mapper->reset();
-
-  PPU::get().set_mirroring(mirroring);
 }
 
 auto Cartridge::prg_read(uint16_t addr) const -> uint8_t { return mapper->prg_read(addr); }

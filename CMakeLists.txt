@@ -8,7 +8,6 @@ configure_file("data/nes_mesen.pal" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/palette.p
 include("cmake/Cache.cmake")
 include("cmake/CompilerWarnings.cmake")
 include("cmake/StandardProjectSettings.cmake")
-include("cmake/StaticAnalysers.cmake")
 
 add_library(project-warnings INTERFACE)
 set_project_warnings(project-warnings)

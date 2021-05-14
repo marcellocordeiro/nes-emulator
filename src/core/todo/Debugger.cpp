@@ -14,7 +14,7 @@
 #include <iomanip>  // TODO: remove this
 
 namespace nes {
-using namespace types::cpu::addressing_mode;
+using namespace types::cpu;
 
 // debugger::debugger(emulator& emu_ref) : emu(emu_ref) {}
 

@@ -34,9 +34,9 @@ auto Controller::peek(size_t port) const -> uint8_t
 {
   if (strobe) {
     return 0x40 | (controller_state[port] & 1);  // 1 == A
-  } else {
-    return 0x40 | (controller_bits[port] & 1);
   }
+
+  return 0x40 | (controller_bits[port] & 1);
 }
 
 void Controller::save(std::ofstream& out)
