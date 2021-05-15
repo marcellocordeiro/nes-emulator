@@ -1,10 +1,13 @@
 #pragma once
 
 #include <array>
+#include <memory>
 
 #include <common.h>
 #include "Types/PPU_Types.h"
+#include "Types/Cartridge_Types.h"
 #include "Utility/Snapshotable.hpp"
+#include "Utility/Connection.hpp"
 
 namespace nes {
 class PPU final : public Utility::Snapshotable {
@@ -28,6 +31,9 @@ public:
   void write(uint16_t, uint8_t);
 
   void step();
+
+  std::shared_ptr<Connection<bool>> nmi_conn;
+  std::shared_ptr<Connection<types::cartridge::mirroring_type>> mirroring_conn;
 
   //
   // Read without side effects

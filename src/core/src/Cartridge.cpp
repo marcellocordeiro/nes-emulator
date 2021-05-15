@@ -64,6 +64,8 @@ void Cartridge::load()
     chr.resize(0x2000);
   }
 
+  mapper->mirroring_conn = mirroring_conn;
+  mapper->irq_conn = irq_conn;
   mapper->set_mirroring(mirroring);
   mapper->set_prg_rom(std::move(prg));
   mapper->set_chr_rom(std::move(chr));

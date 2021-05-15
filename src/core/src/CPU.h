@@ -1,10 +1,12 @@
 #pragma once
 
 #include <array>
+#include <memory>
 
 #include <common.h>
 
 #include "Types/CPU_Types.h"
+#include "Utility/Connection.hpp"
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
@@ -25,6 +27,9 @@ public:
   void set_irq(bool = true);
 
   void run_frame();
+
+  std::shared_ptr<Connection<bool>> irq_conn;
+  std::shared_ptr<Connection<bool>> nmi_conn;
 
   //
   // Read without side effects

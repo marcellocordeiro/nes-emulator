@@ -1,10 +1,12 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <vector>
 
 #include <common.h>
 #include "Types/Cartridge_Types.h"
+#include "Utility/Connection.hpp"
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
@@ -53,5 +55,9 @@ protected:
 
   // TODO: fix this mess
   types::cartridge::mirroring_type mirroring;
+
+public:
+  std::shared_ptr<Connection<bool>>                             irq_conn;
+  std::shared_ptr<Connection<types::cartridge::mirroring_type>> mirroring_conn;
 };
 }  // namespace nes

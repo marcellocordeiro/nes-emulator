@@ -31,6 +31,9 @@ public:
 
   void dump_prg_ram() const;
 
+  std::shared_ptr<Connection<bool>>                             irq_conn;
+  std::shared_ptr<Connection<types::cartridge::mirroring_type>> mirroring_conn;
+
 private:
   Cartridge() = default;
 

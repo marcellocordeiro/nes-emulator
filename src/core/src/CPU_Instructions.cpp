@@ -885,7 +885,7 @@ void CPU::INT_NMI()
   constexpr uint16_t jmp_addr = 0xFFFA;
 
   state.pc       = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
-  state.nmi_flag = false;
+  nmi_conn->set(false);
 }
 
 void CPU::INT_RST()

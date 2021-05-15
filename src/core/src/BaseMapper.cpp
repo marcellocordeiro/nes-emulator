@@ -7,10 +7,11 @@ namespace nes {
 void BaseMapper::set_mirroring(types::cartridge::mirroring_type value)
 {
   mirroring = value;
-  PPU::get().set_mirroring(mirroring);
+  //PPU::get().set_mirroring(mirroring);
+  mirroring_conn->set(value);
 }
 
-void BaseMapper::set_irq(bool value) { CPU::get().set_irq(value); }
+void BaseMapper::set_irq(bool value) { irq_conn->set(value); }
 
 void BaseMapper::set_prg_rom(std::vector<uint8_t>&& vec) { prg = std::move(vec); }
 

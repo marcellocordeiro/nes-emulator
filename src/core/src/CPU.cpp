@@ -55,9 +55,9 @@ void CPU::run_frame()
   state.cycle_count %= cycles_per_frame;
 
   while (state.cycle_count < cycles_per_frame) {
-    if (state.nmi_flag) {
+    if (nmi_conn->get()) {
       INT_NMI();
-    } else if (state.irq_flag && !state.check_flags(flags::Interrupt)) {
+    } else if (irq_conn->get() && !state.check_flags(flags::Interrupt)) {
       INT_IRQ();
     }
 

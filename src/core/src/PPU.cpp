@@ -2,11 +2,11 @@
 
 #include <algorithm>
 
-#include "CPU.h"
 #include "Cartridge.h"
 #include "Utility/FileManager.h"
 
 using namespace nes::types::ppu;
+using namespace nes::types::cartridge;
 
 namespace nes {
 auto PPU::get() -> PPU&
@@ -577,7 +577,7 @@ void PPU::scanline_cycle_nmi()
     status.vblank = true;
 
     if (ctrl.nmi) {
-      CPU::get().set_nmi();
+      nmi_conn->set(true);
     }
   }
 }
@@ -597,8 +597,7 @@ auto PPU::bg_addr() const -> uint16_t { return (ctrl.bg_table * 0x1000) + (nt_la
 
 auto PPU::nt_mirror_addr(uint16_t addr) const -> uint16_t
 {
-  using namespace types::cartridge;
-  switch (mirroring_mode) {
+  switch (mirroring_conn->get()) {
     case Vertical: return addr & 0x07FF;
     case Horizontal: return ((addr >> 1) & 0x400) + (addr & 0x03FF);
     case One_Screen_Low: return addr & 0x03FF;
