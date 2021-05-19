@@ -4,9 +4,7 @@
 #include <memory>
 
 #include <common.h>
-
 #include "Types/CPU_Types.h"
-#include "Utility/Connection.hpp"
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
@@ -17,25 +15,31 @@ public:
   auto operator=(const CPU&) -> CPU& = delete;
   auto operator=(CPU&&) -> CPU& = delete;
 
+  using operation_type  = types::cpu::memory::operation;
+  using memory_map      = types::cpu::memory::map;
+  using addressing_mode = types::cpu::addressing_mode;
+  using flags           = types::cpu::flags;
+
+  using state_type = types::cpu::state;
+  using ram_type   = std::array<uint8_t, 0x800>;
+
   static auto get() -> CPU&;
 
   void power_on();
   void reset();
 
   void dma_oam(uint8_t);
-  void set_nmi(bool = true);
-  void set_irq(bool = true);
 
   void run_frame();
 
-  std::shared_ptr<Connection<bool>> irq_conn;
-  std::shared_ptr<Connection<bool>> nmi_conn;
+  std::shared_ptr<bool> irq_conn;
+  std::shared_ptr<bool> nmi_conn;
 
   //
   // Read without side effects
   //
 
-  auto get_state() const -> types::cpu::state;
+  auto get_state() const -> state_type;
 
   auto peek(uint16_t) const -> uint8_t;
 
@@ -61,8 +65,8 @@ public:
 private:
   CPU() = default;
 
-  types::cpu::state          state;
-  std::array<uint8_t, 0x800> ram = {};
+  state_type state;
+  ram_type   ram = {};
 
   void tick();
 

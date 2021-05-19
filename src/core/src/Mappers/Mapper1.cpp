@@ -1,7 +1,5 @@
 #include "Mapper1.h"
 
-using namespace nes::types::cartridge;
-
 namespace nes {
 void Mapper1::reset()
 {
@@ -44,24 +42,22 @@ void Mapper1::apply()
   }
 
   switch (control & 3) {
-    case 0: set_mirroring(One_Screen_Low); break;
-    case 1: set_mirroring(One_Screen_High); break;
-    case 2: set_mirroring(Vertical); break;
-    case 3: set_mirroring(Horizontal); break;
+    case 0: set_mirroring(mirroring_type::One_Screen_Low); break;
+    case 1: set_mirroring(mirroring_type::One_Screen_High); break;
+    case 2: set_mirroring(mirroring_type::Vertical); break;
+    case 3: set_mirroring(mirroring_type::Horizontal); break;
   }
 }
 
-void Mapper1::prg_write(uint16_t addr, uint8_t value)
+void Mapper1::write(uint16_t addr, uint8_t value)
 {
   if (addr < 0x8000) {
-    prg_ram[addr - 0x6000] = value;
+    // prg_ram[addr - 0x6000] = value;
   } else if (addr & 0x8000) {
     if (value & 0x80) {  // Reset
       control |= 0x0C;
       write_delay = 5;
       shift_reg   = 0;
-
-      apply();
     } else {
       shift_reg = ((value & 1) << 4) | (shift_reg >> 1);
       --write_delay;
@@ -76,10 +72,10 @@ void Mapper1::prg_write(uint16_t addr, uint8_t value)
 
         write_delay = 5;
         shift_reg   = 0;
-
-        apply();
       }
     }
+
+    apply();
   }
 }
 

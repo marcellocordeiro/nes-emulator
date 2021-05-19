@@ -3,9 +3,10 @@
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
-using namespace nes::types::cpu;
-
 namespace nes {
+using enum CPU::addressing_mode;
+using enum CPU::flags;
+
 template uint16_t CPU::get_operand<Immediate>();
 template <> auto  CPU::get_operand<Relative>() -> uint16_t;
 template <> auto  CPU::get_operand<ZeroPage>() -> uint16_t;
@@ -406,8 +407,6 @@ void CPU::branch(bool taken)
 {
   uint16_t jump_addr = get_operand<Relative>();
   if (!taken) return;
-
-  // uint16_t jump_addr = state.pc + offset;
 
   if (crossed_page(state.pc, jump_addr)) {
     tick();
@@ -884,8 +883,8 @@ void CPU::INT_NMI()
 
   constexpr uint16_t jmp_addr = 0xFFFA;
 
-  state.pc       = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
-  nmi_conn->set(false);
+  state.pc  = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
+  *nmi_conn = false;
 }
 
 void CPU::INT_RST()

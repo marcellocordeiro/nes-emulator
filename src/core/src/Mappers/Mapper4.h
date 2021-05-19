@@ -7,7 +7,7 @@ class Mapper4 final : public BaseMapper {
 public:
   void reset() override;
 
-  void prg_write(uint16_t, uint8_t) override;
+  void write(uint16_t, uint8_t) override;
 
   void scanline_counter() override;
 

@@ -5,9 +5,6 @@
 #include "Cartridge.h"
 #include "Utility/FileManager.h"
 
-using namespace nes::types::ppu;
-using namespace nes::types::cartridge;
-
 namespace nes {
 auto PPU::get() -> PPU&
 {
@@ -111,8 +108,6 @@ void PPU::set_palette()
   }
 }
 
-void PPU::set_mirroring(int mode) { mirroring_mode = mode; }
-
 void PPU::step()
 {
   switch (ppu_state) {
@@ -154,7 +149,7 @@ void PPU::step()
 
 auto PPU::peek_reg(uint16_t addr) const -> uint8_t
 {
-  using namespace nes::types::ppu;
+  using enum ppu_map;
 
   switch (addr % 8) {
     case PPUSTATUS: return (bus_latch & 0x1F) | status.raw;
@@ -173,6 +168,8 @@ auto PPU::peek_reg(uint16_t addr) const -> uint8_t
 
 auto PPU::read(uint16_t addr) -> uint8_t
 {
+  using enum ppu_map;
+
   switch (addr % 8) {
     case PPUSTATUS: {
       bus_latch     = (bus_latch & 0x1F) | status.raw;
@@ -206,6 +203,8 @@ auto PPU::read(uint16_t addr) -> uint8_t
 
 void PPU::write(uint16_t addr, uint8_t value)
 {
+  using enum ppu_map;
+
   bus_latch = value;
 
   switch (addr % 8) {
@@ -275,7 +274,9 @@ auto PPU::peek_vram(uint16_t addr) const -> uint8_t { return vram_read(addr); }
 
 auto PPU::vram_read(uint16_t addr) const -> uint8_t
 {
-  switch (get_memory_map(addr)) {
+  using enum memory_map;
+
+  switch (types::ppu::get_memory_map(addr)) {
     case CHR: return Cartridge::get().chr_read(addr);
     case Nametables: return ci_ram[nt_mirror_addr(addr)];
     case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
@@ -285,10 +286,13 @@ auto PPU::vram_read(uint16_t addr) const -> uint8_t
 
 void PPU::vram_write(uint16_t addr, uint8_t value)
 {
-  switch (get_memory_map(addr)) {
+  using enum memory_map;
+
+  switch (types::ppu::get_memory_map(addr)) {
     case CHR: Cartridge::get().chr_write(addr, value); break;
     case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
     case Palettes: cg_ram[palette_addr(addr)] = value; break;
+    default: throw;
   }
 }
 
@@ -577,7 +581,7 @@ void PPU::scanline_cycle_nmi()
     status.vblank = true;
 
     if (ctrl.nmi) {
-      nmi_conn->set(true);
+      *nmi_conn = true;
     }
   }
 }
@@ -597,7 +601,8 @@ auto PPU::bg_addr() const -> uint16_t { return (ctrl.bg_table * 0x1000) + (nt_la
 
 auto PPU::nt_mirror_addr(uint16_t addr) const -> uint16_t
 {
-  switch (mirroring_conn->get()) {
+  using enum mirroring_type;
+  switch (*mirroring_conn) {
     case Vertical: return addr & 0x07FF;
     case Horizontal: return ((addr >> 1) & 0x400) + (addr & 0x03FF);
     case One_Screen_Low: return addr & 0x03FF;
@@ -629,7 +634,7 @@ void PPU::save(std::ofstream& out)
   dump_snapshot(out, cg_ram);
   dump_snapshot(out, oam_mem);
 
-  dump_snapshot(out, mirroring_mode);
+  // dump_snapshot(out, mirroring_mode);
   dump_snapshot(out, ppu_state, ppu_addr);
   dump_snapshot(out, scanline, tick, is_odd_frame);
   dump_snapshot(out, ctrl.raw, mask.raw, status.raw);
@@ -646,7 +651,7 @@ void PPU::load(std::ifstream& in)
   get_snapshot(in, cg_ram);
   get_snapshot(in, oam_mem);
 
-  get_snapshot(in, mirroring_mode);
+  // get_snapshot(in, mirroring_mode);
   get_snapshot(in, ppu_state, ppu_addr);
   get_snapshot(in, scanline, tick, is_odd_frame);
   get_snapshot(in, ctrl.raw, mask.raw, status.raw);

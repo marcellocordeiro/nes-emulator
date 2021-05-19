@@ -1,7 +1,5 @@
 #include "Mapper4.h"
 
-using namespace nes::types::cartridge;
-
 namespace nes {
 void Mapper4::reset()
 {
@@ -12,7 +10,7 @@ void Mapper4::reset()
   irq_period  = 0;
   irq_counter = 0;
 
-  set_mirroring(Horizontal);
+  set_mirroring(mirroring_type::Horizontal);
   set_prg_map<8>(3, -1);
   apply();
 }
@@ -46,15 +44,15 @@ void Mapper4::apply()
   }
 }
 
-void Mapper4::prg_write(uint16_t addr, uint8_t value)
+void Mapper4::write(uint16_t addr, uint8_t value)
 {
   if (addr < 0x8000) {
-    prg_ram[addr - 0x6000] = value;
+    // prg_ram[addr - 0x6000] = value;
   } else if (addr & 0x8000) {
     switch (addr & 0xE001) {
       case 0x8000: reg_8000 = value; break;
       case 0x8001: regs[reg_8000 & 7] = value; break;
-      case 0xA000: set_mirroring((value & 1) ? Horizontal : Vertical); break;
+      case 0xA000: set_mirroring((value & 1) ? mirroring_type::Horizontal : mirroring_type::Vertical); break;
       case 0xC000: irq_period = value; break;
       case 0xC001: irq_counter = 0; break;
       case 0xE000:

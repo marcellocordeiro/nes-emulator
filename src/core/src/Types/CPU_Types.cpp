@@ -45,80 +45,80 @@ void state::set_ps(uint8_t value) { this->ps = value & 0xCF; }
 //
 
 namespace memory {
-template <auto Operation> auto get_map(uint16_t addr) -> int
+template <auto Operation> auto get_map(uint16_t addr) -> map
 {
   auto in_range = [addr](const auto lower, const auto upper) { return (addr >= lower) && (addr <= upper); };
 
-  if constexpr (Operation == Read) {
+  if constexpr (Operation == operation::Read) {
     if (addr <= 0x1FFF) {
-      return CPU_RAM;
+      return map::CPU_RAM;
     }
 
     if (in_range(0x2000, 0x3FFF)) {
-      return PPU_Access;
+      return map::PPU_Access;
     }
 
     if (in_range(0x4000, 0x4013) || addr == 0x4015) {
-      return APU_Access;
+      return map::APU_Access;
     }
 
     if (addr == 0x4016) {
-      return Controller_1;
+      return map::Controller_1;
     }
 
     if (addr == 0x4017) {
-      return Controller_2;
+      return map::Controller_2;
     }
 
     if (in_range(0x4018, 0x401F)) {
-      return Unknown;
+      return map::Unknown;
     }
 
     if (in_range(0x4020, 0x5FFF)) {
-      return Unknown;
+      return map::Unknown;
     }
 
     if (in_range(0x6000, 0xFFFF)) {
-      return Cartridge_Access;
+      return map::Cartridge_Access;
     }
-  } else if constexpr (Operation == Write) {
+  } else if constexpr (Operation == operation::Write) {
     if (addr <= 0x1FFF) {
-      return CPU_RAM;
+      return map::CPU_RAM;
     }
 
     if (in_range(0x2000, 0x3FFF)) {
-      return PPU_Access;
+      return map::PPU_Access;
     }
 
     if (in_range(0x4000, 0x4013) || addr == 0x4015) {
-      return APU_Access;
+      return map::APU_Access;
     }
 
     if (addr == 0x4014) {
-      return OAMDMA;
+      return map::OAMDMA;
     }
 
     if (addr == 0x4016) {
-      return Controller_Access;
+      return map::Controller_Access;
     }
 
     if (addr == 0x4017) {
-      return APU_Access;
+      return map::APU_Access;
     }
 
     if (in_range(0x4018, 0x401F)) {
-      return Unknown;
+      return map::Unknown;
     }
 
     if (in_range(0x4020, 0xFFFF)) {
-      return Cartridge_Access;
+      return map::Cartridge_Access;
     }
   }
 
-  return Unknown;
+  return map::Unknown;
 }
 
-template int get_map<Read>(uint16_t);
-template int get_map<Write>(uint16_t);
+template map get_map<operation::Read>(uint16_t);
+template map get_map<operation::Write>(uint16_t);
 }  // namespace memory
 }  // namespace nes::types::cpu

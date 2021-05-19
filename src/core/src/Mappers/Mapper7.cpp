@@ -1,7 +1,5 @@
 #include "Mapper7.h"
 
-using namespace nes::types::cartridge;
-
 namespace nes {
 void Mapper7::reset()
 {
@@ -15,10 +13,10 @@ void Mapper7::apply()
 {
   set_prg_map<32>(0, mode & 0x0F);
 
-  set_mirroring((mode & 0x10) ? One_Screen_High : One_Screen_Low);
+  set_mirroring((mode & 0x10) ? mirroring_type::One_Screen_High : mirroring_type::One_Screen_Low);
 }
 
-void Mapper7::prg_write(uint16_t addr, uint8_t value)
+void Mapper7::write(uint16_t addr, uint8_t value)
 {
   if (addr < 0x8000) {
     throw std::runtime_error("Mapper 7 does not have PRG-RAM");

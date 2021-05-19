@@ -3,7 +3,7 @@
 #include <common.h>
 
 namespace nes::types::cpu {
-enum interruption_type
+enum class interruption_type
 {
   NMI,
   RST,
@@ -11,7 +11,7 @@ enum interruption_type
   BRK
 };
 
-enum addressing_mode
+enum class addressing_mode
 {
   Invalid = -1,
   Implicit,
@@ -72,14 +72,14 @@ struct state {
 };
 
 namespace memory {
-enum operation
+enum class operation
 {
   None = -1,
   Read,
   Write
 };
 
-enum map
+enum class map
 {
   Unknown = -1,
   CPU_RAM,
@@ -92,6 +92,6 @@ enum map
   Cartridge_Access
 };
 
-template <auto Operation> auto get_map(uint16_t) -> int;
+template <auto Operation> auto get_map(uint16_t) -> map;
 }  // namespace memory
 }  // namespace nes::types::cpu

@@ -1,11 +1,10 @@
 #pragma once
 
 #include <memory>
+#include <span>
 
 #include <common.h>
-
 #include "BaseMapper.h"
-#include "Types/Cartridge_Types.h"
 
 namespace nes {
 class Cartridge final {
@@ -14,6 +13,8 @@ public:
   Cartridge(Cartridge&&)      = delete;
   auto operator=(const Cartridge&) -> Cartridge& = delete;
   auto operator=(Cartridge&&) -> Cartridge& = delete;
+
+  using mirroring_type = BaseMapper::mirroring_type;
 
   static auto get() -> Cartridge&;
 
@@ -31,8 +32,8 @@ public:
 
   void dump_prg_ram() const;
 
-  std::shared_ptr<Connection<bool>>                             irq_conn;
-  std::shared_ptr<Connection<types::cartridge::mirroring_type>> mirroring_conn;
+  std::shared_ptr<bool>           irq_conn;
+  std::shared_ptr<mirroring_type> mirroring_conn;
 
 private:
   Cartridge() = default;
@@ -40,11 +41,19 @@ private:
   int    mapper_num   = -1;
   size_t prg_size     = 0;
   size_t chr_size     = 0;
-  bool   chr_ram      = false;
+  bool   has_chr_ram  = false;
   size_t prg_ram_size = 0;
 
-  types::cartridge::mirroring_type mirroring = types::cartridge::mirroring_type::Unset;
+  mirroring_type mirroring = mirroring_type::Unknown;
 
   std::unique_ptr<BaseMapper> mapper;
+
+  std::vector<uint8_t> rom;
+
+  std::span<uint8_t> prg;
+  std::span<uint8_t> chr;
+
+  std::vector<uint8_t> prg_ram;
+  std::vector<uint8_t> chr_ram;
 };
 }  // namespace nes

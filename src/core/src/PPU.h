@@ -5,9 +5,7 @@
 
 #include <common.h>
 #include "Types/PPU_Types.h"
-#include "Types/Cartridge_Types.h"
 #include "Utility/Snapshotable.hpp"
-#include "Utility/Connection.hpp"
 
 namespace nes {
 class PPU final : public Utility::Snapshotable {
@@ -17,6 +15,10 @@ public:
   auto operator=(const PPU&) -> PPU& = delete;
   auto operator=(PPU&&) -> PPU& = delete;
 
+  using mirroring_type = types::ppu::mirroring_type;
+  using ppu_map        = types::ppu::ppu_map;
+  using memory_map     = types::ppu::memory_map;
+
   static auto get() -> PPU&;
 
   void power_on();
@@ -25,15 +27,14 @@ public:
   auto get_back_buffer() const -> const uint32_t*;
 
   void set_palette();
-  void set_mirroring(int);
 
   auto read(uint16_t) -> uint8_t;
   void write(uint16_t, uint8_t);
 
   void step();
 
-  std::shared_ptr<Connection<bool>> nmi_conn;
-  std::shared_ptr<Connection<types::cartridge::mirroring_type>> mirroring_conn;
+  std::shared_ptr<bool>           nmi_conn;
+  std::shared_ptr<mirroring_type> mirroring_conn;
 
   //
   // Read without side effects
@@ -131,8 +132,6 @@ private:
   uint8_t bus_latch      = 0;      // Register access buffer
   uint8_t ppudata_buffer = 0;      // PPUDATA read buffer
   bool    addr_latch     = false;  // Address latch used by PPUSCROLL and PPUADDR
-
-  int mirroring_mode = 0;
 
   using sprite_info = types::ppu::sprite_info;
   using loopy_addr  = types::ppu::loopy_addr;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string_view>
+
 #include <common.h>
 #include <bit_field.hpp>
 
@@ -69,8 +71,6 @@ struct sprite_info {
   uint8_t data_h = 0;     // Tile data (high)
 };
 
-constexpr int Unknown = -1;
-
 enum ppu_map
 {
   PPUCTRL   = 0,
@@ -83,12 +83,25 @@ enum ppu_map
   PPUDATA   = 7
 };
 
-enum memory_map
+enum class memory_map
 {
+  Unknown,
   CHR,
   Nametables,
   Palettes
 };
 
-auto get_memory_map(uint16_t) -> int;
+auto get_memory_map(uint16_t) -> memory_map;
+
+enum class mirroring_type
+{
+  Unknown,
+  Horizontal,
+  Vertical,
+  One_Screen_Low,
+  One_Screen_High,
+  Four_Screen
+};
+
+auto get_mirroring_name(mirroring_type type) -> std::string_view;
 }  // namespace nes::types::ppu

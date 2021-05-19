@@ -1,15 +1,12 @@
 #include "nes/Emulator.h"
 
 #include <spdlog/spdlog.h>
-#include <memory>
 
-#include "BaseMapper.h"
 #include "CPU.h"
 #include "Cartridge.h"
 #include "Controller.h"
 #include "PPU.h"
 #include "Utility/FileManager.h"
-#include "Utility/Connection.hpp"
 
 using namespace nes;
 
@@ -25,16 +22,16 @@ void Emulator::reset()
 
 void Emulator::power_on()
 {
-  auto irq = std::make_shared<Connection<bool>>();
+  auto irq                  = std::make_shared<bool>(false);
   Cartridge::get().irq_conn = irq;
-  CPU::get().irq_conn = irq;
+  CPU::get().irq_conn       = irq;
 
-  auto nmi = std::make_shared<Connection<bool>>();
+  auto nmi            = std::make_shared<bool>(false);
   CPU::get().nmi_conn = nmi;
   PPU::get().nmi_conn = nmi;
 
-  auto mirroring = std::make_shared<Connection<types::cartridge::mirroring_type>>();
-  PPU::get().mirroring_conn = mirroring;
+  auto mirroring                  = std::make_shared<types::ppu::mirroring_type>(types::ppu::mirroring_type::Unknown);
+  PPU::get().mirroring_conn       = mirroring;
   Cartridge::get().mirroring_conn = mirroring;
 
   Cartridge::get().load();

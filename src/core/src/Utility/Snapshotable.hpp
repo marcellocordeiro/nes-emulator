@@ -3,7 +3,6 @@
 #include <array>
 #include <concepts>
 #include <fstream>
-#include <type_traits>
 #include <vector>
 
 #include <common.h>
@@ -11,7 +10,6 @@
 namespace nes::Utility {
 class Snapshotable {
 public:
-  Snapshotable()          = default;
   virtual ~Snapshotable() = default;
 
   virtual void save(std::ofstream&) = 0;

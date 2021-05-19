@@ -5,12 +5,14 @@
 #include "Cartridge.h"
 #include "Controller.h"
 #include "PPU.h"
-#include "Types/CPU_Types.h"
-
-using namespace nes::types::cpu;
-using namespace nes::types::cpu::memory;
 
 namespace nes {
+using enum CPU::operation_type;
+using enum CPU::memory_map;
+using enum CPU::flags;
+
+namespace memory = types::cpu::memory;
+
 auto CPU::get() -> CPU&
 {
   static CPU instance;
@@ -36,10 +38,6 @@ void CPU::power_on()
 
 void CPU::reset() { INT_RST(); }
 
-void CPU::set_nmi(bool value) { state.nmi_flag = value; }
-
-void CPU::set_irq(bool value) { state.irq_flag = value; }
-
 void CPU::dma_oam(uint8_t addr)
 {
   for (uint16_t i = 0; i < 256; ++i) {
@@ -55,9 +53,9 @@ void CPU::run_frame()
   state.cycle_count %= cycles_per_frame;
 
   while (state.cycle_count < cycles_per_frame) {
-    if (nmi_conn->get()) {
+    if (*nmi_conn) {
       INT_NMI();
-    } else if (irq_conn->get() && !state.check_flags(flags::Interrupt)) {
+    } else if (*irq_conn && !state.check_flags(Interrupt)) {
       INT_IRQ();
     }
 
@@ -75,7 +73,7 @@ void CPU::tick()
 
 auto CPU::peek(uint16_t addr) const -> uint8_t
 {
-  switch (get_map<Read>(addr)) {
+  switch (memory::get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
     case PPU_Access: return PPU::get().peek_reg(addr);
     case APU_Access: return 0xFF;  // Avoids APU side effects and satisfies nestest
@@ -89,7 +87,7 @@ auto CPU::peek(uint16_t addr) const -> uint8_t
 
 auto CPU::read(uint16_t addr) const -> uint8_t
 {
-  switch (get_map<Read>(addr)) {
+  switch (memory::get_map<Read>(addr)) {
     case CPU_RAM: return ram[addr & 0x07FF];
     case PPU_Access: return PPU::get().read(addr);
     case APU_Access: return 0;
@@ -103,7 +101,7 @@ auto CPU::read(uint16_t addr) const -> uint8_t
 
 void CPU::write(uint16_t addr, uint8_t value)
 {
-  switch (get_map<Write>(addr)) {
+  switch (memory::get_map<Write>(addr)) {
     case CPU_RAM: ram[addr & 0x07FF] = value; break;
     case PPU_Access: PPU::get().write(addr, value); break;
     case APU_Access: break;
@@ -126,7 +124,7 @@ void CPU::memory_write(uint16_t addr, uint8_t value)
   write(addr, value);
 }
 
-auto CPU::get_state() const -> types::cpu::state { return state; }
+auto CPU::get_state() const -> state_type { return state; }
 
 auto CPU::peek_imm() const -> uint16_t { return state.pc + 1; }
 
