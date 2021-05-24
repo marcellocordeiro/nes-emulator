@@ -79,7 +79,7 @@ void Mapper1::write(uint16_t addr, uint8_t value)
   }
 }
 
-void Mapper1::save(std::ofstream& out)
+void Mapper1::save(std::ofstream& out) const
 {
   BaseMapper::save(out);
 

@@ -79,7 +79,7 @@ void Mapper4::scanline_counter()
   }
 }
 
-void Mapper4::save(std::ofstream& out)
+void Mapper4::save(std::ofstream& out) const
 {
   BaseMapper::save(out);
 

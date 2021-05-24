@@ -20,7 +20,7 @@ void Mapper2::write(uint16_t addr, uint8_t value)
   apply();
 }
 
-void Mapper2::save(std::ofstream& out)
+void Mapper2::save(std::ofstream& out) const
 {
   BaseMapper::save(out);
 

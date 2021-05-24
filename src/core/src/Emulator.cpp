@@ -58,7 +58,7 @@ void Emulator::save_snapshot()
                                                         &Controller::get()};
 
   std::ofstream out{Utility::FileManager::get().get_snapshot_path(), std::ios::binary};
-  for (auto& component : snapshotable) component->save(out);
+  for (const auto& component : snapshotable) component->save(out);
 }
 
 void Emulator::load_snapshot()

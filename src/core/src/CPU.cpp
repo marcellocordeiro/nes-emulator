@@ -182,7 +182,7 @@ auto CPU::peek_indy() const -> uint16_t
 // Snapshot
 //
 
-void CPU::save(std::ofstream& out)
+void CPU::save(std::ofstream& out) const
 {
   dump_snapshot(out, ram);
   dump_snapshot(out, state.a, state.x, state.y, state.pc, state.sp, state.sr, state.ps, state.nmi_flag, state.irq_flag,

@@ -51,7 +51,7 @@ public:
   // Snapshot
   //
 
-  void save(std::ofstream&) override;
+  void save(std::ofstream&) const override;
   void load(std::ifstream&) override;
 
 private:

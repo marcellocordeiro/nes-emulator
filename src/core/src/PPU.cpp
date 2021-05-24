@@ -628,7 +628,7 @@ template <typename T> auto PPU::get_palette(T low, T high, int offset) const -> 
 // Snapshot
 //
 
-void PPU::save(std::ofstream& out)
+void PPU::save(std::ofstream& out) const
 {
   dump_snapshot(out, ci_ram);
   dump_snapshot(out, cg_ram);

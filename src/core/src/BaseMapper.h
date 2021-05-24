@@ -35,7 +35,7 @@ public:
 
   virtual void scanline_counter();
 
-  void save(std::ofstream&) override;
+  void save(std::ofstream&) const override;
   void load(std::ifstream&) override;
 
   // TODO: save mirroring

@@ -61,7 +61,7 @@ template <size_t size> void BaseMapper::set_chr_map(size_t slot, int page)
 void BaseMapper::scanline_counter() {}
 
 // TODO
-void BaseMapper::save(std::ofstream& /*out*/)
+void BaseMapper::save(std::ofstream& /*out*/) const
 {
   // dump_snapshot(out, prg_ram);
   // dump_snapshot(out, chr);

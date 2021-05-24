@@ -12,13 +12,13 @@ class Snapshotable {
 public:
   virtual ~Snapshotable() = default;
 
-  virtual void save(std::ofstream&) = 0;
-  virtual void load(std::ifstream&) = 0;
+  virtual void save(std::ofstream&) const = 0;
+  virtual void load(std::ifstream&)       = 0;
 
 protected:
-  template <typename... Args> void dump_snapshot(std::ofstream& out, Args&&... args)
+  template <typename... Args> void dump_snapshot(std::ofstream& out, const Args&... args) const
   {
-    (dump(out, std::forward<Args>(args)), ...);
+    (dump(out, args), ...);
   }
 
   template <typename... Args> void get_snapshot(std::ifstream& in, Args&&... args)
@@ -31,17 +31,17 @@ private:
   // dump specialisations
   //
 
-  template <typename T> void dump(std::ofstream& out, T value) requires std::integral<T>
+  void dump(std::ofstream& out, std::integral auto value) const
   {
-    out.write(reinterpret_cast<char*>(&value), sizeof(T));
+    out.write(reinterpret_cast<char*>(&value), sizeof(value));
   }
 
-  template <typename T, std::size_t size> void dump(std::ofstream& out, std::array<T, size>& arr)
+  template <typename T, std::size_t size> void dump(std::ofstream& out, const std::array<T, size>& arr) const
   {
     for (auto value : arr) dump(out, value);
   }
 
-  template <typename T> void dump(std::ofstream& out, std::vector<T>& vec)
+  template <typename T> void dump(std::ofstream& out, const std::vector<T>& vec) const
   {
     dump(out, vec.size());
     for (auto value : vec) dump(out, value);
@@ -51,10 +51,7 @@ private:
   // get specialisations
   //
 
-  template <typename T> void get(std::ifstream& in, T& value) requires std::integral<T>
-  {
-    in.read(reinterpret_cast<char*>(&value), sizeof(T));
-  }
+  void get(std::ifstream& in, std::integral auto& value) { in.read(reinterpret_cast<char*>(&value), sizeof(value)); }
 
   template <typename T, std::size_t size> void get(std::ifstream& in, std::array<T, size>& arr)
   {
