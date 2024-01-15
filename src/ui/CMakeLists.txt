@@ -1,6 +1,6 @@
 option(EMULATOR_QT5 "Build with Qt5 frontend" OFF)
-option(EMULATOR_SDL2 "Build with SDL2 frontend" OFF)
-option(EMULATOR_GLFW "Build with GLFW frontend" ON)
+option(EMULATOR_SDL2 "Build with SDL2 frontend" ON)
+option(EMULATOR_GLFW "Build with GLFW frontend" OFF)
 
 # Qt5
 if(EMULATOR_QT5)

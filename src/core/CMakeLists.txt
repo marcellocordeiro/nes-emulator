@@ -19,7 +19,7 @@ target_link_libraries(nes-emulator-core PRIVATE spdlog::spdlog_header_only)
 
 set_target_properties(nes-emulator-core
   PROPERTIES
-    CXX_STANDARD 20
+    CXX_STANDARD 23
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO
 )
