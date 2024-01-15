@@ -7,7 +7,9 @@ add_executable(nes-emulator-glfw
   "src/Renderer.cpp"
 )
 
-target_link_libraries(nes-emulator-glfw PRIVATE nes-emulator-core)
+target_link_libraries(nes-emulator-glfw PRIVATE common)
+
+target_link_libraries(nes-emulator-glfw PRIVATE nes-core)
 
 find_package(glfw3 REQUIRED)
 target_link_libraries(nes-emulator-glfw PRIVATE glfw)
@@ -28,4 +30,3 @@ set_target_properties(nes-emulator-glfw
 )
 
 target_link_libraries(nes-emulator-glfw PRIVATE project-warnings)
-target_link_libraries(nes-emulator-glfw PRIVATE project-lib)
