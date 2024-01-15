@@ -12,8 +12,7 @@ void Mapper7::apply() {
   set_prg_map<32>(0, mode & 0x0F);
 
   set_mirroring(
-    (mode & 0x10) ? mirroring_type::One_Screen_High
-                  : mirroring_type::One_Screen_Low
+    (mode & 0x10) ? MirroringType::OneScreenHigh : MirroringType::OneScreenLow
   );
 }
 

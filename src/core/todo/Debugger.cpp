@@ -7,9 +7,9 @@
 
 #include <common.h>
 
-#include "CPU.h"
-#include "PPU.h"
 #include "Types/CPU_Types.h"
+#include "cpu.h"
+#include "ppu.h"
 
 #include <iomanip>  // TODO: remove this
 

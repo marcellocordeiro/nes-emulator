@@ -5,41 +5,41 @@
 
 namespace lib {
 template <typename T, std::size_t position, std::size_t bits>
-class bit_field {
+class BitField {
 public:
   using value_type = T;
 
-  constexpr bit_field() = default;
+  constexpr BitField() = default;
 
   constexpr operator value_type() const noexcept { return get(); }
-  constexpr auto operator=(const bit_field&) -> bit_field& = delete;
+  constexpr auto operator=(const BitField&) -> BitField& = delete;
 
-  constexpr auto operator=(value_type val) noexcept -> bit_field& {
+  constexpr auto operator=(value_type val) noexcept -> BitField& {
     this->set(val);
     return *this;
   }
 
-  constexpr auto operator+=(value_type rhs) noexcept -> bit_field& {
+  constexpr auto operator+=(value_type rhs) noexcept -> BitField& {
     *this = *this + rhs;
     return *this;
   }
 
-  constexpr auto operator-=(value_type rhs) noexcept -> bit_field& {
+  constexpr auto operator-=(value_type rhs) noexcept -> BitField& {
     *this = *this + rhs;
     return *this;
   }
 
-  constexpr auto operator++() noexcept -> bit_field& {
+  constexpr auto operator++() noexcept -> BitField& {
     *this = *this + 1;
     return *this;
   }
 
-  constexpr auto operator--() noexcept -> bit_field& {
+  constexpr auto operator--() noexcept -> BitField& {
     *this = *this - 1;
     return *this;
   }
 
-  constexpr auto operator^=(value_type rhs) noexcept -> bit_field& {
+  constexpr auto operator^=(value_type rhs) noexcept -> BitField& {
     *this = *this ^ rhs;
     return *this;
   }

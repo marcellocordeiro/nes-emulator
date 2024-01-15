@@ -7,59 +7,59 @@
 
 namespace nes::types::ppu {
 template <size_t position, size_t bits>
-using bf_8 = lib::bit_field<uint8_t, position, bits>;
+using BitFieldU8 = lib::BitField<uint8_t, position, bits>;
 
 template <size_t position, size_t bits>
-using bf_16 = lib::bit_field<uint16_t, position, bits>;
+using BitFieldU16 = lib::BitField<uint16_t, position, bits>;
 
 // PPUCTRL ($2000) register
 union ppuctrl {
   uint8_t raw = 0;
 
-  bf_8<0, 2> nt;         // Base nametable addr [$2000, $2400, $2800, $2C00]
-  bf_8<2, 1> addr_inc;   // Address increment [1, 32]
-  bf_8<3, 1> spr_table;  // Sprite pattern table [$0000, $1000]
-  bf_8<4, 1> bg_table;   // Background pattern table [$0000, $1000]
-  bf_8<5, 1> spr_size;   // Sprite size [8x8, 8x16]
-  bf_8<7, 1> nmi;        // Enable NMI on the next VBlank
+  BitFieldU8<0, 2> nt;  // Base nametable addr [$2000, $2400, $2800, $2C00]
+  BitFieldU8<2, 1> addr_inc;   // Address increment [1, 32]
+  BitFieldU8<3, 1> spr_table;  // Sprite pattern table [$0000, $1000]
+  BitFieldU8<4, 1> bg_table;   // Background pattern table [$0000, $1000]
+  BitFieldU8<5, 1> spr_size;   // Sprite size [8x8, 8x16]
+  BitFieldU8<7, 1> nmi;        // Enable NMI on the next VBlank
 
-  // bf_8<6, 1> slave;  // PPU master/slave (unused)
+  // BitFieldU8<6, 1> slave;  // PPU master/slave (unused)
 };
 
 // PPUMASK ($2001) register
 union ppumask {
   uint8_t raw = 0;
 
-  bf_8<0, 1> grayscale;  // Grayscale
-  bf_8<1, 1> bg_left;    // Show background in the first column (8 pixels)
-  bf_8<2, 1> spr_left;   // Show sprite in the first column (8 pixels)
-  bf_8<3, 1> show_bg;    // Show background
-  bf_8<4, 1> show_spr;   // Show sprites
-  bf_8<5, 3> rgb;        // Palette picker (colour emphasis)
+  BitFieldU8<0, 1> grayscale;  // Grayscale
+  BitFieldU8<1, 1> bg_left;    // Show background in the first column (8 pixels)
+  BitFieldU8<2, 1> spr_left;   // Show sprite in the first column (8 pixels)
+  BitFieldU8<3, 1> show_bg;    // Show background
+  BitFieldU8<4, 1> show_spr;   // Show sprites
+  BitFieldU8<5, 3> rgb;        // Palette picker (colour emphasis)
 };
 
 // PPUSTATUS ($2002) register
 union ppustatus {
   uint8_t raw = 0;
 
-  bf_8<5, 1> spr_overflow;  // Sprite overflow
-  bf_8<6, 1> spr0_hit;      // Sprite 0 hit
-  bf_8<7, 1> vblank;        // In VBlank?
+  BitFieldU8<5, 1> spr_overflow;  // Sprite overflow
+  BitFieldU8<6, 1> spr0_hit;      // Sprite 0 hit
+  BitFieldU8<7, 1> vblank;        // In VBlank?
 };
 
 // Loopy's VRAM address
 union loopy_addr {
   uint16_t raw = 0;
 
-  bf_16<0, 5> coarse_x;  // Coarse X
-  bf_16<5, 5> coarse_y;  // Coarse Y
-  bf_16<10, 2> nt;       // Nametable
-  bf_16<12, 3> fine_y;   // Fine Y
+  BitFieldU16<0, 5> coarse_x;  // Coarse X
+  BitFieldU16<5, 5> coarse_y;  // Coarse Y
+  BitFieldU16<10, 2> nt;       // Nametable
+  BitFieldU16<12, 3> fine_y;   // Fine Y
 
-  bf_16<0, 8> l;  // Low addr part
-  bf_16<8, 7> h;  // High addr part
+  BitFieldU16<0, 8> l;  // Low addr part
+  BitFieldU16<8, 7> h;  // High addr part
 
-  bf_16<0, 14> addr;
+  BitFieldU16<0, 14> addr;
 };
 
 // Sprite info
@@ -74,29 +74,34 @@ struct sprite_info {
   uint8_t data_h = 0;  // Tile data (high)
 };
 
-enum ppu_map {
-  PPUCTRL = 0,
-  PPUMASK = 1,
-  PPUSTATUS = 2,
-  OAMADDR = 3,
-  OAMDATA = 4,
-  PPUSCROLL = 5,
-  PPUADDR = 6,
-  PPUDATA = 7,
+enum PpuMap {
+  PpuCtrl = 0,
+  PpuMask = 1,
+  PpuStatus = 2,
+  OamAddr = 3,
+  OamData = 4,
+  PpuScroll = 5,
+  PpuAddr = 6,
+  PpuData = 7,
 };
 
-enum class memory_map { Unknown, CHR, Nametables, Palettes };
+enum class MemoryMap {
+  Unknown,
+  Chr,
+  Nametables,
+  Palettes,
+};
 
-auto get_memory_map(uint16_t) -> memory_map;
+auto get_memory_map(uint16_t) -> MemoryMap;
 
-enum class mirroring_type {
+enum class MirroringType {
   Unknown,
   Horizontal,
   Vertical,
-  One_Screen_Low,
-  One_Screen_High,
-  Four_Screen,
+  OneScreenLow,
+  OneScreenHigh,
+  FourScreen,
 };
 
-auto get_mirroring_name(mirroring_type type) -> std::string_view;
+auto get_mirroring_name(MirroringType type) -> std::string_view;
 }  // namespace nes::types::ppu

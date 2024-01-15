@@ -40,10 +40,10 @@ void Mapper1::apply() {
   }
 
   switch (control & 3) {
-    case 0: set_mirroring(mirroring_type::One_Screen_Low); break;
-    case 1: set_mirroring(mirroring_type::One_Screen_High); break;
-    case 2: set_mirroring(mirroring_type::Vertical); break;
-    case 3: set_mirroring(mirroring_type::Horizontal); break;
+    case 0: set_mirroring(MirroringType::OneScreenLow); break;
+    case 1: set_mirroring(MirroringType::OneScreenHigh); break;
+    case 2: set_mirroring(MirroringType::Vertical); break;
+    case 3: set_mirroring(MirroringType::Horizontal); break;
   }
 }
 

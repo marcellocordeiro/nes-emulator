@@ -14,7 +14,7 @@ public:
   auto operator=(const Cartridge&) -> Cartridge& = delete;
   auto operator=(Cartridge&&) -> Cartridge& = delete;
 
-  using mirroring_type = BaseMapper::mirroring_type;
+  using MirroringType = BaseMapper::MirroringType;
 
   static auto get() -> Cartridge&;
 
@@ -33,7 +33,7 @@ public:
   void dump_prg_ram() const;
 
   std::shared_ptr<bool> irq_conn;
-  std::shared_ptr<mirroring_type> mirroring_conn;
+  std::shared_ptr<MirroringType> mirroring_conn;
 
 private:
   Cartridge() = default;
@@ -44,7 +44,7 @@ private:
   bool has_chr_ram = false;
   size_t prg_ram_size = 0;
 
-  mirroring_type mirroring = mirroring_type::Unknown;
+  MirroringType mirroring = MirroringType::Unknown;
 
   std::unique_ptr<BaseMapper> mapper;
 

@@ -3,14 +3,14 @@
 #include <common.h>
 
 namespace nes::types::cpu {
-enum class interruption_type {
-  NMI,
-  RST,
-  IRQ,
-  BRK,
+enum class InterruptionType {
+  Nmi,
+  Rst,
+  Irq,
+  Brk,
 };
 
-enum class addressing_mode {
+enum class AddressingMode {
   Invalid = -1,
   Implicit,
   Accumulator,
@@ -41,7 +41,7 @@ enum flags : uint8_t {
   Negative = 0x80,
 };
 
-struct state {
+struct State {
   uint8_t a = 0;
   uint8_t x = 0;
   uint8_t y = 0;
@@ -69,21 +69,25 @@ struct state {
 };
 
 namespace memory {
-enum class operation { None = -1, Read, Write };
+enum class Operation {
+  None = -1,
+  Read,
+  Write,
+};
 
-enum class map {
+enum class MemoryMap {
   Unknown = -1,
-  CPU_RAM,
-  PPU_Access,
-  APU_Access,
-  OAMDMA,
-  Controller_Access,
-  Controller_1,
-  Controller_2,
-  Cartridge_Access
+  CpuRam,
+  PpuAccess,
+  ApuAccess,
+  OamDma,
+  ControllerAccess,
+  Controller1,
+  Controller2,
+  CartridgeAccess
 };
 
 template <auto Operation>
-auto get_map(uint16_t) -> map;
+auto get_map(uint16_t) -> MemoryMap;
 }  // namespace memory
 }  // namespace nes::types::cpu

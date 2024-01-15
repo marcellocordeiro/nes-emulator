@@ -1,55 +1,55 @@
-#include "CPU.h"
+#include "cpu.h"
 
 #include <format>
 
 #include <spdlog/spdlog.h>
 
 namespace nes {
-using enum CPU::addressing_mode;
-using enum CPU::flags;
+using enum types::cpu::AddressingMode;
+using enum types::cpu::flags;
 
-template uint16_t CPU::get_operand<Immediate>();
-
-template <>
-auto CPU::get_operand<Relative>() -> uint16_t;
+template uint16_t Cpu::get_operand<Immediate>();
 
 template <>
-auto CPU::get_operand<ZeroPage>() -> uint16_t;
+auto Cpu::get_operand<Relative>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<ZeroPageX>() -> uint16_t;
+auto Cpu::get_operand<ZeroPage>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<ZeroPageY>() -> uint16_t;
+auto Cpu::get_operand<ZeroPageX>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<Absolute>() -> uint16_t;
+auto Cpu::get_operand<ZeroPageY>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<AbsoluteX>() -> uint16_t;
+auto Cpu::get_operand<Absolute>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<AbsoluteX_Exception>() -> uint16_t;
+auto Cpu::get_operand<AbsoluteX>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<AbsoluteY>() -> uint16_t;
+auto Cpu::get_operand<AbsoluteX_Exception>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<AbsoluteY_Exception>() -> uint16_t;
+auto Cpu::get_operand<AbsoluteY>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<Indirect>() -> uint16_t;
+auto Cpu::get_operand<AbsoluteY_Exception>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<IndirectX>() -> uint16_t;
+auto Cpu::get_operand<Indirect>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<IndirectY>() -> uint16_t;
+auto Cpu::get_operand<IndirectX>() -> uint16_t;
 
 template <>
-auto CPU::get_operand<IndirectY_Exception>() -> uint16_t;
+auto Cpu::get_operand<IndirectY>() -> uint16_t;
 
-void CPU::execute() {
+template <>
+auto Cpu::get_operand<IndirectY_Exception>() -> uint16_t;
+
+void Cpu::execute() {
   uint8_t opcode = memory_read(get_operand<Immediate>());
 
   switch (opcode) {
@@ -345,7 +345,7 @@ void CPU::execute() {
 // Auxiliary functions
 //
 
-void CPU::add(uint8_t value) {
+void Cpu::add(uint8_t value) {
   uint16_t result = state.a + value + state.check_flags(Carry);
 
   state.clear_flags(Carry | Overflow);
@@ -361,7 +361,7 @@ void CPU::add(uint8_t value) {
   state.set_a(static_cast<uint8_t>(result));
 }
 
-auto CPU::shift_left(uint8_t value) -> uint8_t {
+auto Cpu::shift_left(uint8_t value) -> uint8_t {
   uint8_t result = value << 1;
   state.update_nz(result);
 
@@ -374,7 +374,7 @@ auto CPU::shift_left(uint8_t value) -> uint8_t {
   return result;
 }
 
-auto CPU::shift_right(uint8_t value) -> uint8_t {
+auto Cpu::shift_right(uint8_t value) -> uint8_t {
   uint8_t result = value >> 1;
   state.update_nz(result);
 
@@ -387,7 +387,7 @@ auto CPU::shift_right(uint8_t value) -> uint8_t {
   return result;
 }
 
-auto CPU::rotate_left(uint8_t value) -> uint8_t {
+auto Cpu::rotate_left(uint8_t value) -> uint8_t {
   uint8_t result =
     (value << 1) | static_cast<uint8_t>(state.check_flags(Carry));
   state.update_nz(result);
@@ -401,7 +401,7 @@ auto CPU::rotate_left(uint8_t value) -> uint8_t {
   return result;
 }
 
-auto CPU::rotate_right(uint8_t value) -> uint8_t {
+auto Cpu::rotate_right(uint8_t value) -> uint8_t {
   uint8_t result = (value >> 1) | (state.check_flags(Carry) << 7);
   state.update_nz(result);
 
@@ -414,7 +414,7 @@ auto CPU::rotate_right(uint8_t value) -> uint8_t {
   return result;
 }
 
-void CPU::compare(uint8_t reg, uint8_t value) {
+void Cpu::compare(uint8_t reg, uint8_t value) {
   state.update_nz(reg - value);
 
   state.clear_flags(Carry);
@@ -424,7 +424,7 @@ void CPU::compare(uint8_t reg, uint8_t value) {
   }
 }
 
-void CPU::branch(bool taken) {
+void Cpu::branch(bool taken) {
   uint16_t jump_addr = get_operand<Relative>();
   if (!taken) return;
 
@@ -437,17 +437,17 @@ void CPU::branch(bool taken) {
   state.pc = jump_addr;
 }
 
-void CPU::push(uint8_t value) {
+void Cpu::push(uint8_t value) {
   memory_write(0x100 + state.sp, value);
   --state.sp;
 }
 
-auto CPU::pop() -> uint8_t {
+auto Cpu::pop() -> uint8_t {
   ++state.sp;
   return memory_read(0x100 + state.sp);
 }
 
-auto CPU::crossed_page(uint16_t addr, uint16_t jump_addr) const -> bool {
+auto Cpu::crossed_page(uint16_t addr, uint16_t jump_addr) const -> bool {
   return (addr & 0xFF00) != (jump_addr & 0xFF00);
 }
 
@@ -456,7 +456,7 @@ auto CPU::crossed_page(uint16_t addr, uint16_t jump_addr) const -> bool {
 //
 
 template <auto Mode>
-void CPU::LDA() {
+void Cpu::LDA() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -464,7 +464,7 @@ void CPU::LDA() {
 }
 
 template <auto Mode>
-void CPU::LDX() {
+void Cpu::LDX() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -472,7 +472,7 @@ void CPU::LDX() {
 }
 
 template <auto Mode>
-void CPU::LDY() {
+void Cpu::LDY() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -480,7 +480,7 @@ void CPU::LDY() {
 }
 
 template <auto Mode>
-void CPU::STA() {
+void Cpu::STA() {
   uint16_t addr = get_operand<Mode>();
 
   if constexpr (Mode == AbsoluteX_Exception || Mode == AbsoluteY_Exception || Mode == IndirectY_Exception) {
@@ -491,45 +491,45 @@ void CPU::STA() {
 }
 
 template <auto Mode>
-void CPU::STX() {
+void Cpu::STX() {
   uint16_t addr = get_operand<Mode>();
 
   memory_write(addr, state.x);
 }
 
 template <auto Mode>
-void CPU::STY() {
+void Cpu::STY() {
   uint16_t addr = get_operand<Mode>();
 
   memory_write(addr, state.y);
 }
 
-void CPU::TAX() {
+void Cpu::TAX() {
   tick();
   state.set_x(state.a);
 }
 
-void CPU::TAY() {
+void Cpu::TAY() {
   tick();
   state.set_y(state.a);
 }
 
-void CPU::TSX() {
+void Cpu::TSX() {
   tick();
   state.set_x(state.sp);
 }
 
-void CPU::TXA() {
+void Cpu::TXA() {
   tick();
   state.set_a(state.x);
 }
 
-void CPU::TXS() {
+void Cpu::TXS() {
   tick();
   state.sp = state.x;
 }
 
-void CPU::TYA() {
+void Cpu::TYA() {
   tick();
   state.set_a(state.y);
 }
@@ -539,7 +539,7 @@ void CPU::TYA() {
 //
 
 template <auto Mode>
-void CPU::ADC() {
+void Cpu::ADC() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -547,7 +547,7 @@ void CPU::ADC() {
 }
 
 template <auto Mode>
-void CPU::SBC() {
+void Cpu::SBC() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -555,7 +555,7 @@ void CPU::SBC() {
 }
 
 template <auto Mode>
-void CPU::INC() {
+void Cpu::INC() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -571,7 +571,7 @@ void CPU::INC() {
 }
 
 template <auto Mode>
-void CPU::DEC() {
+void Cpu::DEC() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -586,22 +586,22 @@ void CPU::DEC() {
   memory_write(addr, result);
 }
 
-void CPU::INX() {
+void Cpu::INX() {
   tick();
   state.set_x(state.x + 1);
 }
 
-void CPU::INY() {
+void Cpu::INY() {
   tick();
   state.set_y(state.y + 1);
 }
 
-void CPU::DEX() {
+void Cpu::DEX() {
   tick();
   state.set_x(state.x - 1);
 }
 
-void CPU::DEY() {
+void Cpu::DEY() {
   tick();
   state.set_y(state.y - 1);
 }
@@ -611,7 +611,7 @@ void CPU::DEY() {
 //
 
 template <auto Mode>
-void CPU::AND() {
+void Cpu::AND() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -619,7 +619,7 @@ void CPU::AND() {
 }
 
 template <auto Mode>
-void CPU::ORA() {
+void Cpu::ORA() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -627,7 +627,7 @@ void CPU::ORA() {
 }
 
 template <auto Mode>
-void CPU::EOR() {
+void Cpu::EOR() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -635,7 +635,7 @@ void CPU::EOR() {
 }
 
 template <auto Mode>
-void CPU::LSR() {
+void Cpu::LSR() {
   if constexpr (Mode == Accumulator) {
     tick();
     state.set_a(shift_right(state.a));
@@ -653,7 +653,7 @@ void CPU::LSR() {
 }
 
 template <auto Mode>
-void CPU::ASL() {
+void Cpu::ASL() {
   if constexpr (Mode == Accumulator) {
     tick();
     state.set_a(shift_left(state.a));
@@ -671,7 +671,7 @@ void CPU::ASL() {
 }
 
 template <auto Mode>
-void CPU::ROL() {
+void Cpu::ROL() {
   if constexpr (Mode == Accumulator) {
     tick();
     state.set_a(rotate_left(state.a));
@@ -689,7 +689,7 @@ void CPU::ROL() {
 }
 
 template <auto Mode>
-void CPU::ROR() {
+void Cpu::ROR() {
   if constexpr (Mode == Accumulator) {
     tick();
     state.set_a(rotate_right(state.a));
@@ -710,43 +710,43 @@ void CPU::ROR() {
 // Flags
 //
 
-void CPU::CLC() {
+void Cpu::CLC() {
   tick();
   state.clear_flags(Carry);
 }
 
-void CPU::CLD() {
+void Cpu::CLD() {
   tick();
   state.clear_flags(Decimal);
 }
 
-void CPU::CLI() {
+void Cpu::CLI() {
   tick();
   state.clear_flags(Interrupt);
 }
 
-void CPU::CLV() {
+void Cpu::CLV() {
   tick();
   state.clear_flags(Overflow);
 }
 
-void CPU::SEC() {
+void Cpu::SEC() {
   tick();
   state.set_flags(Carry);
 }
 
-void CPU::SED() {
+void Cpu::SED() {
   tick();
   state.set_flags(Decimal);
 }
 
-void CPU::SEI() {
+void Cpu::SEI() {
   tick();
   state.set_flags(Interrupt);
 }
 
 template <auto Mode>
-void CPU::CMP() {
+void Cpu::CMP() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -754,7 +754,7 @@ void CPU::CMP() {
 }
 
 template <auto Mode>
-void CPU::CPX() {
+void Cpu::CPX() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -762,7 +762,7 @@ void CPU::CPX() {
 }
 
 template <auto Mode>
-void CPU::CPY() {
+void Cpu::CPY() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -770,7 +770,7 @@ void CPU::CPY() {
 }
 
 template <auto Mode>
-void CPU::BIT() {
+void Cpu::BIT() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -794,11 +794,11 @@ void CPU::BIT() {
 //
 
 template <auto Mode>
-void CPU::JMP() {
+void Cpu::JMP() {
   state.set_pc(get_operand<Mode>());
 }
 
-void CPU::JSR() {
+void Cpu::JSR() {
   tick();
   push(static_cast<uint8_t>((state.pc + 1) >> 8));
   push(static_cast<uint8_t>(state.pc + 1));
@@ -806,30 +806,30 @@ void CPU::JSR() {
   state.set_pc(get_operand<Absolute>());
 }
 
-void CPU::BCC() { branch(!state.check_flags(Carry)); }
+void Cpu::BCC() { branch(!state.check_flags(Carry)); }
 
-void CPU::BCS() { branch(state.check_flags(Carry)); }
+void Cpu::BCS() { branch(state.check_flags(Carry)); }
 
-void CPU::BEQ() { branch(state.check_flags(Zero)); }
+void Cpu::BEQ() { branch(state.check_flags(Zero)); }
 
-void CPU::BMI() { branch(state.check_flags(Negative)); }
+void Cpu::BMI() { branch(state.check_flags(Negative)); }
 
-void CPU::BNE() { branch(!state.check_flags(Zero)); }
+void Cpu::BNE() { branch(!state.check_flags(Zero)); }
 
-void CPU::BPL() { branch(!state.check_flags(Negative)); }
+void Cpu::BPL() { branch(!state.check_flags(Negative)); }
 
-void CPU::BVC() { branch(!state.check_flags(Overflow)); }
+void Cpu::BVC() { branch(!state.check_flags(Overflow)); }
 
-void CPU::BVS() { branch(state.check_flags(Overflow)); }
+void Cpu::BVS() { branch(state.check_flags(Overflow)); }
 
-void CPU::RTS() {
+void Cpu::RTS() {
   tick();
   tick();
   tick();
   state.set_pc((pop() | (pop() << 8)) + 1);
 }
 
-void CPU::RTI() {
+void Cpu::RTI() {
   tick();
   tick();
   state.set_ps(pop());
@@ -840,23 +840,23 @@ void CPU::RTI() {
 // Stack
 //
 
-void CPU::PHA() {
+void Cpu::PHA() {
   tick();
   push(state.a);
 }
 
-void CPU::PLA() {
+void Cpu::PLA() {
   tick();
   tick();
   state.set_a(pop());
 }
 
-void CPU::PHP() {
+void Cpu::PHP() {
   tick();
   push(state.ps | Break | Reserved);
 }
 
-void CPU::PLP() {
+void Cpu::PLP() {
   tick();
   tick();
   state.set_ps(pop());
@@ -866,7 +866,7 @@ void CPU::PLP() {
 // System
 //
 
-void CPU::INT_NMI() {
+void Cpu::INT_NMI() {
   tick();
   tick();
 
@@ -882,7 +882,7 @@ void CPU::INT_NMI() {
   *nmi_conn = false;
 }
 
-void CPU::INT_RST() {
+void Cpu::INT_RST() {
   tick();
   tick();
 
@@ -897,7 +897,7 @@ void CPU::INT_RST() {
   state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
 }
 
-void CPU::INT_IRQ() {
+void Cpu::INT_IRQ() {
   tick();
   tick();
 
@@ -911,7 +911,7 @@ void CPU::INT_IRQ() {
   state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
 }
 
-void CPU::INT_BRK() {
+void Cpu::INT_BRK() {
   tick();
 
   push((state.pc + 1) >> 8);
@@ -924,20 +924,20 @@ void CPU::INT_BRK() {
   state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
 }
 
-void CPU::NOP() { tick(); }
+void Cpu::NOP() { tick(); }
 
 //
 // Unofficial instructions
 //
 
 template <auto Mode>
-void CPU::NOP() {
+void Cpu::NOP() {
   tick();
   get_operand<Mode>();  // Discard it
 }
 
 template <auto Mode>
-void CPU::LAX() {
+void Cpu::LAX() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -946,14 +946,14 @@ void CPU::LAX() {
 }
 
 template <auto Mode>
-void CPU::SAX() {
+void Cpu::SAX() {
   uint16_t addr = get_operand<Mode>();
 
   memory_write(addr, state.a & state.x);
 }
 
 template <auto Mode>
-void CPU::DCP() {
+void Cpu::DCP() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr) - 1;
 
@@ -971,7 +971,7 @@ void CPU::DCP() {
 }
 
 template <auto Mode>
-void CPU::ISB() {
+void Cpu::ISB() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr) + 1;
 
@@ -982,7 +982,7 @@ void CPU::ISB() {
 }
 
 template <auto Mode>
-void CPU::SLO() {
+void Cpu::SLO() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -995,7 +995,7 @@ void CPU::SLO() {
 }
 
 template <auto Mode>
-void CPU::RLA() {
+void Cpu::RLA() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -1008,7 +1008,7 @@ void CPU::RLA() {
 }
 
 template <auto Mode>
-void CPU::SRE() {
+void Cpu::SRE() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -1021,7 +1021,7 @@ void CPU::SRE() {
 }
 
 template <auto Mode>
-void CPU::RRA() {
+void Cpu::RRA() {
   uint16_t addr = get_operand<Mode>();
   uint8_t value = memory_read(addr);
 
@@ -1034,7 +1034,7 @@ void CPU::RRA() {
 }
 
 template <auto Mode>
-void CPU::AAC() {
+void Cpu::AAC() {
   uint16_t addr = get_operand<Mode>();
   state.set_a(state.a & memory_read(addr));
 
@@ -1046,7 +1046,7 @@ void CPU::AAC() {
 }
 
 template <auto Mode>
-void CPU::ASR() {
+void Cpu::ASR() {
   uint16_t addr = get_operand<Mode>();
   state.set_a(state.a & memory_read(addr));
 
@@ -1060,7 +1060,7 @@ void CPU::ASR() {
 }
 
 template <auto Mode>
-void CPU::ARR() {
+void Cpu::ARR() {
   uint16_t addr = get_operand<Mode>();
   state.set_a((state.a & memory_read(addr)) >> 1);
 
@@ -1080,7 +1080,7 @@ void CPU::ARR() {
 }
 
 template <auto Mode>
-void CPU::ATX() {
+void Cpu::ATX() {
   uint8_t value = memory_read(get_operand<Mode>());
 
   state.set_x(value);
@@ -1088,7 +1088,7 @@ void CPU::ATX() {
 }
 
 template <auto Mode>
-void CPU::AXS() {
+void Cpu::AXS() {
   uint8_t value = memory_read(get_operand<Mode>());
   uint8_t result = (state.a & state.x) - value;
 
@@ -1102,7 +1102,7 @@ void CPU::AXS() {
 }
 
 template <auto Mode>
-void CPU::SYA() {
+void Cpu::SYA() {
   uint16_t addr = get_operand<Mode>();
 
   uint8_t high = addr >> 8;
@@ -1113,7 +1113,7 @@ void CPU::SYA() {
 }
 
 template <auto Mode>
-void CPU::SXA() {
+void Cpu::SXA() {
   uint16_t addr = get_operand<Mode>();
 
   uint8_t high = addr >> 8;
@@ -1124,7 +1124,7 @@ void CPU::SXA() {
 }
 
 template <auto Mode>
-auto CPU::get_operand() -> uint16_t {
+auto Cpu::get_operand() -> uint16_t {
   static_assert(
     Mode == Immediate || Mode == Relative, "Invalid addressing mode"
   );
@@ -1136,7 +1136,7 @@ auto CPU::get_operand() -> uint16_t {
 }
 
 template <>
-auto CPU::get_operand<Relative>() -> uint16_t {
+auto Cpu::get_operand<Relative>() -> uint16_t {
   uint16_t addr = get_operand<Immediate>();
   int8_t offset = memory_read(addr);
 
@@ -1144,24 +1144,24 @@ auto CPU::get_operand<Relative>() -> uint16_t {
 }
 
 template <>
-auto CPU::get_operand<ZeroPage>() -> uint16_t {
+auto Cpu::get_operand<ZeroPage>() -> uint16_t {
   return memory_read(get_operand<Immediate>());
 }
 
 template <>
-auto CPU::get_operand<ZeroPageX>() -> uint16_t {
+auto Cpu::get_operand<ZeroPageX>() -> uint16_t {
   tick();
   return (get_operand<ZeroPage>() + state.x) & 0xFF;
 }
 
 template <>
-auto CPU::get_operand<ZeroPageY>() -> uint16_t {
+auto Cpu::get_operand<ZeroPageY>() -> uint16_t {
   tick();
   return (get_operand<ZeroPage>() + state.y) & 0xFF;
 }
 
 template <>
-auto CPU::get_operand<Absolute>() -> uint16_t {
+auto Cpu::get_operand<Absolute>() -> uint16_t {
   uint16_t base_addr = get_operand<Immediate>();
   ++state.pc;
 
@@ -1169,7 +1169,7 @@ auto CPU::get_operand<Absolute>() -> uint16_t {
 }
 
 template <>
-auto CPU::get_operand<AbsoluteX>() -> uint16_t {
+auto Cpu::get_operand<AbsoluteX>() -> uint16_t {
   uint16_t base_addr = get_operand<Absolute>();
   uint16_t addr = base_addr + state.x;
 
@@ -1181,12 +1181,12 @@ auto CPU::get_operand<AbsoluteX>() -> uint16_t {
 }
 
 template <>
-auto CPU::get_operand<AbsoluteX_Exception>() -> uint16_t {
+auto Cpu::get_operand<AbsoluteX_Exception>() -> uint16_t {
   return get_operand<Absolute>() + state.x;
 }
 
 template <>
-auto CPU::get_operand<AbsoluteY>() -> uint16_t {
+auto Cpu::get_operand<AbsoluteY>() -> uint16_t {
   uint16_t base_addr = get_operand<Absolute>();
   uint16_t addr = base_addr + state.y;
 
@@ -1198,25 +1198,25 @@ auto CPU::get_operand<AbsoluteY>() -> uint16_t {
 }
 
 template <>
-auto CPU::get_operand<AbsoluteY_Exception>() -> uint16_t {
+auto Cpu::get_operand<AbsoluteY_Exception>() -> uint16_t {
   return get_operand<Absolute>() + state.y;
 }
 
 template <>
-auto CPU::get_operand<Indirect>() -> uint16_t {
+auto Cpu::get_operand<Indirect>() -> uint16_t {
   uint16_t base_addr = get_operand<Absolute>();
   return memory_read(base_addr)
          | (memory_read((base_addr & 0xFF00) | ((base_addr + 1) & 0xFF)) << 8);
 }
 
 template <>
-auto CPU::get_operand<IndirectX>() -> uint16_t {
+auto Cpu::get_operand<IndirectX>() -> uint16_t {
   uint16_t base_addr = get_operand<ZeroPageX>();
   return (memory_read((base_addr + 1) & 0xFF) << 8) | memory_read(base_addr);
 }
 
 template <>
-auto CPU::get_operand<IndirectY>() -> uint16_t {
+auto Cpu::get_operand<IndirectY>() -> uint16_t {
   uint16_t zp_addr = get_operand<ZeroPage>();
   uint16_t base_addr =
     ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
@@ -1230,7 +1230,7 @@ auto CPU::get_operand<IndirectY>() -> uint16_t {
 }
 
 template <>
-auto CPU::get_operand<IndirectY_Exception>() -> uint16_t {
+auto Cpu::get_operand<IndirectY_Exception>() -> uint16_t {
   uint16_t zp_addr = get_operand<ZeroPage>();
   uint16_t base_addr =
     ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));

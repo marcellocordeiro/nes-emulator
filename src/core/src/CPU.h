@@ -8,22 +8,16 @@
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
-class CPU final : public Utility::Snapshotable {
+class Cpu final : public Utility::Snapshotable {
 public:
-  CPU(const CPU&) = delete;
-  CPU(CPU&&) = delete;
-  auto operator=(const CPU&) -> CPU& = delete;
-  auto operator=(CPU&&) -> CPU& = delete;
+  Cpu(const Cpu&) = delete;
+  Cpu(Cpu&&) = delete;
+  auto operator=(const Cpu&) -> Cpu& = delete;
+  auto operator=(Cpu&&) -> Cpu& = delete;
 
-  using operation_type = types::cpu::memory::operation;
-  using memory_map = types::cpu::memory::map;
-  using addressing_mode = types::cpu::addressing_mode;
-  using flags = types::cpu::flags;
-
-  using state_type = types::cpu::state;
   using ram_type = std::array<uint8_t, 0x800>;
 
-  static auto get() -> CPU&;
+  static auto get() -> Cpu&;
 
   void power_on();
   void reset();
@@ -39,7 +33,7 @@ public:
   // Read without side effects
   //
 
-  auto get_state() const -> state_type;
+  auto get_state() const -> types::cpu::State;
 
   auto peek(uint16_t) const -> uint8_t;
 
@@ -63,9 +57,9 @@ public:
   void load(std::ifstream&) override;
 
 private:
-  CPU() = default;
+  Cpu() = default;
 
-  state_type state;
+  types::cpu::State state;
   ram_type ram = {};
 
   void tick();

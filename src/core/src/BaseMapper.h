@@ -18,11 +18,11 @@ public:
   auto operator=(const BaseMapper&) -> BaseMapper& = delete;
   auto operator=(BaseMapper&&) -> BaseMapper& = delete;
 
-  using mirroring_type = types::ppu::mirroring_type;
+  using MirroringType = types::ppu::MirroringType;
 
   virtual void reset() = 0;
 
-  void set_mirroring(mirroring_type);
+  void set_mirroring(MirroringType);
   void set_irq(bool);
 
   auto get_prg_addr(uint16_t addr) const -> size_t;
@@ -44,7 +44,7 @@ public:
   // TODO: save mirroring
   // TODO: fix this
   std::shared_ptr<bool> irq_conn;
-  std::shared_ptr<mirroring_type> mirroring_conn;
+  std::shared_ptr<MirroringType> mirroring_conn;
 
   size_t prg_size = 0;
   size_t chr_size = 0;

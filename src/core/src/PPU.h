@@ -8,18 +8,14 @@
 #include "Utility/Snapshotable.hpp"
 
 namespace nes {
-class PPU final : public Utility::Snapshotable {
+class Ppu final : public Utility::Snapshotable {
 public:
-  PPU(const PPU&) = delete;
-  PPU(PPU&&) = delete;
-  auto operator=(const PPU&) -> PPU& = delete;
-  auto operator=(PPU&&) -> PPU& = delete;
+  Ppu(const Ppu&) = delete;
+  Ppu(Ppu&&) = delete;
+  auto operator=(const Ppu&) -> Ppu& = delete;
+  auto operator=(Ppu&&) -> Ppu& = delete;
 
-  using mirroring_type = types::ppu::mirroring_type;
-  using ppu_map = types::ppu::ppu_map;
-  using memory_map = types::ppu::memory_map;
-
-  static auto get() -> PPU&;
+  static auto get() -> Ppu&;
 
   void power_on();
   void reset();
@@ -34,7 +30,7 @@ public:
   void step();
 
   std::shared_ptr<bool> nmi_conn;
-  std::shared_ptr<mirroring_type> mirroring_conn;
+  std::shared_ptr<types::ppu::MirroringType> mirroring_conn;
 
   //
   // Read without side effects
@@ -55,7 +51,7 @@ public:
   void load(std::ifstream&) override;
 
 private:
-  PPU() = default;
+  Ppu() = default;
 
   //
   // VRAM access

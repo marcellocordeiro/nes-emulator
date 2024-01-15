@@ -1,7 +1,7 @@
 #include "BaseMapper.h"
 
 namespace nes {
-void BaseMapper::set_mirroring(mirroring_type value) {
+void BaseMapper::set_mirroring(MirroringType value) {
   // TODO: save this?
   // mirroring = value;
   *mirroring_conn = value;

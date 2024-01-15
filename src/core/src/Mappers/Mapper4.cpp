@@ -9,7 +9,7 @@ void Mapper4::reset() {
   irq_period = 0;
   irq_counter = 0;
 
-  set_mirroring(mirroring_type::Horizontal);
+  set_mirroring(MirroringType::Horizontal);
   set_prg_map<8>(3, -1);
   apply();
 }
@@ -51,7 +51,7 @@ void Mapper4::write(uint16_t addr, uint8_t value) {
       case 0x8001: regs[reg_8000 & 7] = value; break;
       case 0xA000:
         set_mirroring(
-          (value & 1) ? mirroring_type::Horizontal : mirroring_type::Vertical
+          (value & 1) ? MirroringType::Horizontal : MirroringType::Vertical
         );
         break;
       case 0xC000: irq_period = value; break;

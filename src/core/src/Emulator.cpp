@@ -2,11 +2,11 @@
 
 #include <spdlog/spdlog.h>
 
-#include "CPU.h"
 #include "Cartridge.h"
 #include "Controller.h"
-#include "PPU.h"
 #include "Utility/FileManager.h"
+#include "cpu.h"
+#include "ppu.h"
 
 using namespace nes;
 
@@ -19,37 +19,37 @@ void Emulator::load(const std::filesystem::path& path) {
 }
 
 void Emulator::reset() {
-  CPU::get().reset();
-  PPU::get().reset();
+  Cpu::get().reset();
+  Ppu::get().reset();
 }
 
 void Emulator::power_on() {
   auto irq = std::make_shared<bool>(false);
   Cartridge::get().irq_conn = irq;
-  CPU::get().irq_conn = irq;
+  Cpu::get().irq_conn = irq;
 
   auto nmi = std::make_shared<bool>(false);
-  CPU::get().nmi_conn = nmi;
-  PPU::get().nmi_conn = nmi;
+  Cpu::get().nmi_conn = nmi;
+  Ppu::get().nmi_conn = nmi;
 
-  auto mirroring = std::make_shared<types::ppu::mirroring_type>(
-    types::ppu::mirroring_type::Unknown
+  auto mirroring = std::make_shared<types::ppu::MirroringType>(
+    types::ppu::MirroringType::Unknown
   );
-  PPU::get().mirroring_conn = mirroring;
+  Ppu::get().mirroring_conn = mirroring;
   Cartridge::get().mirroring_conn = mirroring;
 
   Cartridge::get().load();
 
-  CPU::get().power_on();
-  PPU::get().power_on();
+  Cpu::get().power_on();
+  Ppu::get().power_on();
 }
 
 void Emulator::power_off() { Cartridge::get().dump_prg_ram(); }
 
-void Emulator::run_frame() { CPU::get().run_frame(); }
+void Emulator::run_frame() { Cpu::get().run_frame(); }
 
 auto Emulator::get_back_buffer() -> const uint32_t* {
-  return PPU::get().get_back_buffer();
+  return Ppu::get().get_back_buffer();
 }
 
 void Emulator::update_controller_state(size_t port, uint8_t state) {
@@ -62,7 +62,7 @@ void Emulator::update_controller_state(size_t port, uint8_t state) {
 
 void Emulator::save_snapshot() {
   std::array<Utility::Snapshotable*, 4> snapshotable = {
-    &CPU::get(), &PPU::get(), Cartridge::get().get_mapper(), &Controller::get()
+    &Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()
   };
 
   std::ofstream out{
@@ -73,7 +73,7 @@ void Emulator::save_snapshot() {
 
 void Emulator::load_snapshot() {
   std::array<Utility::Snapshotable*, 4> snapshotable = {
-    &CPU::get(), &PPU::get(), Cartridge::get().get_mapper(), &Controller::get()
+    &Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()
   };
 
   if (!Utility::FileManager::get().has_snapshot()) {

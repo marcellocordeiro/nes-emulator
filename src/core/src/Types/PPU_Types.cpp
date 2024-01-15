@@ -1,27 +1,27 @@
 #include "PPU_Types.h"
 
 namespace nes::types::ppu {
-auto get_memory_map(uint16_t addr) -> memory_map {
+auto get_memory_map(uint16_t addr) -> MemoryMap {
   auto in_range = [addr](int lower, int upper) {
     return (addr >= lower) && (addr <= upper);
   };
 
   if (in_range(0x0000, 0x1FFF)) {
-    return memory_map::CHR;
+    return MemoryMap::Chr;
   }
 
   if (in_range(0x2000, 0x3EFF)) {
-    return memory_map::Nametables;
+    return MemoryMap::Nametables;
   }
 
   if (in_range(0x3F00, 0x3FFF)) {
-    return memory_map::Palettes;
+    return MemoryMap::Palettes;
   }
 
-  return memory_map::Unknown;
+  return MemoryMap::Unknown;
 }
 
-auto get_mirroring_name(mirroring_type type) -> std::string_view {
+auto get_mirroring_name(MirroringType type) -> std::string_view {
   static std::string_view horizontal = "Horizontal";
   static std::string_view vertical = "Vertical";
   static std::string_view one_screen_low = "One Screen Low";
@@ -30,11 +30,11 @@ auto get_mirroring_name(mirroring_type type) -> std::string_view {
   static std::string_view unknown = "Unknown";
 
   switch (type) {
-    case mirroring_type::Horizontal: return horizontal;
-    case mirroring_type::Vertical: return vertical;
-    case mirroring_type::One_Screen_Low: return one_screen_low;
-    case mirroring_type::One_Screen_High: return one_screen_high;
-    case mirroring_type::Four_Screen: return four_screen;
+    case MirroringType::Horizontal: return horizontal;
+    case MirroringType::Vertical: return vertical;
+    case MirroringType::OneScreenLow: return one_screen_low;
+    case MirroringType::OneScreenHigh: return one_screen_high;
+    case MirroringType::FourScreen: return four_screen;
     default: return unknown;
   }
 }

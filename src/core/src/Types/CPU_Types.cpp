@@ -1,15 +1,15 @@
 #include "CPU_Types.h"
 
 namespace nes::types::cpu {
-auto state::check_flags(uint8_t flags) const -> bool {
+auto State::check_flags(uint8_t flags) const -> bool {
   return (this->ps & flags) == flags;
 }
 
-void state::set_flags(uint8_t flags) { this->ps |= flags; }
+void State::set_flags(uint8_t flags) { this->ps |= flags; }
 
-void state::clear_flags(uint8_t flags) { this->ps &= ~flags; }
+void State::clear_flags(uint8_t flags) { this->ps &= ~flags; }
 
-void state::update_nz(uint8_t value) {
+void State::update_nz(uint8_t value) {
   clear_flags(flags::Zero | flags::Negative);
 
   if (value == 0) {
@@ -19,24 +19,24 @@ void state::update_nz(uint8_t value) {
   }
 }
 
-void state::set_a(uint8_t value) {
+void State::set_a(uint8_t value) {
   this->a = value;
   this->update_nz(this->a);
 }
 
-void state::set_x(uint8_t value) {
+void State::set_x(uint8_t value) {
   this->x = value;
   this->update_nz(this->x);
 }
 
-void state::set_y(uint8_t value) {
+void State::set_y(uint8_t value) {
   this->y = value;
   this->update_nz(this->y);
 }
 
-void state::set_pc(uint16_t addr) { this->pc = addr; }
+void State::set_pc(uint16_t addr) { this->pc = addr; }
 
-void state::set_ps(uint8_t value) { this->ps = value & 0xCF; }
+void State::set_ps(uint8_t value) { this->ps = value & 0xCF; }
 
 //
 // CPU (memory)
@@ -44,81 +44,81 @@ void state::set_ps(uint8_t value) { this->ps = value & 0xCF; }
 
 namespace memory {
 template <auto Operation>
-auto get_map(uint16_t addr) -> map {
+auto get_map(uint16_t addr) -> MemoryMap {
   auto in_range = [addr](const auto lower, const auto upper) {
     return (addr >= lower) && (addr <= upper);
   };
 
-  if constexpr (Operation == operation::Read) {
+  if constexpr (Operation == Operation::Read) {
     if (addr <= 0x1FFF) {
-      return map::CPU_RAM;
+      return MemoryMap::CpuRam;
     }
 
     if (in_range(0x2000, 0x3FFF)) {
-      return map::PPU_Access;
+      return MemoryMap::PpuAccess;
     }
 
     if (in_range(0x4000, 0x4013) || addr == 0x4015) {
-      return map::APU_Access;
+      return MemoryMap::ApuAccess;
     }
 
     if (addr == 0x4016) {
-      return map::Controller_1;
+      return MemoryMap::Controller1;
     }
 
     if (addr == 0x4017) {
-      return map::Controller_2;
+      return MemoryMap::Controller2;
     }
 
     if (in_range(0x4018, 0x401F)) {
-      return map::Unknown;
+      return MemoryMap::Unknown;
     }
 
     if (in_range(0x4020, 0x5FFF)) {
-      return map::Unknown;
+      return MemoryMap::Unknown;
     }
 
     if (in_range(0x6000, 0xFFFF)) {
-      return map::Cartridge_Access;
+      return MemoryMap::CartridgeAccess;
     }
-  } else if constexpr (Operation == operation::Write) {
+  } else if constexpr (Operation == Operation::Write) {
     if (addr <= 0x1FFF) {
-      return map::CPU_RAM;
+      return MemoryMap::CpuRam;
     }
 
     if (in_range(0x2000, 0x3FFF)) {
-      return map::PPU_Access;
+      return MemoryMap::PpuAccess;
     }
 
     if (in_range(0x4000, 0x4013) || addr == 0x4015) {
-      return map::APU_Access;
+      return MemoryMap::ApuAccess;
     }
 
     if (addr == 0x4014) {
-      return map::OAMDMA;
+      return MemoryMap::OamDma;
     }
 
     if (addr == 0x4016) {
-      return map::Controller_Access;
+      return MemoryMap::ControllerAccess;
     }
 
     if (addr == 0x4017) {
-      return map::APU_Access;
+      return MemoryMap::ApuAccess;
     }
 
     if (in_range(0x4018, 0x401F)) {
-      return map::Unknown;
+      return MemoryMap::Unknown;
     }
 
     if (in_range(0x4020, 0xFFFF)) {
-      return map::Cartridge_Access;
+      return MemoryMap::CartridgeAccess;
     }
   }
 
-  return map::Unknown;
+  return MemoryMap::Unknown;
 }
 
-template map get_map<operation::Read>(uint16_t);
-template map get_map<operation::Write>(uint16_t);
+template MemoryMap get_map<Operation::Read>(uint16_t);
+template MemoryMap get_map<Operation::Write>(uint16_t);
 }  // namespace memory
 }  // namespace nes::types::cpu

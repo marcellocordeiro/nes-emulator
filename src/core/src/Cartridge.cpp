@@ -30,7 +30,7 @@ void Cartridge::load() {
   has_chr_ram = chr_size == 0;
   prg_ram_size = header[8] ? header[8] * 0x2000 : 0x2000;
   mirroring =
-    (header[6] & 1) ? mirroring_type::Vertical : mirroring_type::Horizontal;
+    (header[6] & 1) ? MirroringType::Vertical : MirroringType::Horizontal;
 
   switch (mapper_num) {
     case 0: mapper = std::make_unique<Mapper0>(); break;
