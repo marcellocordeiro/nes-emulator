@@ -3,16 +3,14 @@
 #include <common.h>
 
 namespace nes::types::cpu {
-enum class interruption_type
-{
+enum class interruption_type {
   NMI,
   RST,
   IRQ,
-  BRK
+  BRK,
 };
 
-enum class addressing_mode
-{
+enum class addressing_mode {
   Invalid = -1,
   Implicit,
   Accumulator,
@@ -29,28 +27,27 @@ enum class addressing_mode
   Indirect,
   IndirectX,
   IndirectY,
-  IndirectY_Exception
+  IndirectY_Exception,
 };
 
-enum flags : uint8_t
-{
-  Carry     = 0x01,
-  Zero      = 0x02,
+enum flags : uint8_t {
+  Carry = 0x01,
+  Zero = 0x02,
   Interrupt = 0x04,
-  Decimal   = 0x08,
-  Break     = 0x10,
-  Reserved  = 0x20,
-  Overflow  = 0x40,
-  Negative  = 0x80
+  Decimal = 0x08,
+  Break = 0x10,
+  Reserved = 0x20,
+  Overflow = 0x40,
+  Negative = 0x80,
 };
 
 struct state {
-  uint8_t  a  = 0;
-  uint8_t  x  = 0;
-  uint8_t  y  = 0;
+  uint8_t a = 0;
+  uint8_t x = 0;
+  uint8_t y = 0;
   uint16_t pc = 0;
-  uint8_t  sp = 0;
-  uint8_t  sr = 0;
+  uint8_t sp = 0;
+  uint8_t sr = 0;
 
   uint8_t ps = 0;
 
@@ -72,15 +69,9 @@ struct state {
 };
 
 namespace memory {
-enum class operation
-{
-  None = -1,
-  Read,
-  Write
-};
+enum class operation { None = -1, Read, Write };
 
-enum class map
-{
+enum class map {
   Unknown = -1,
   CPU_RAM,
   PPU_Access,
@@ -92,6 +83,7 @@ enum class map
   Cartridge_Access
 };
 
-template <auto Operation> auto get_map(uint16_t) -> map;
+template <auto Operation>
+auto get_map(uint16_t) -> map;
 }  // namespace memory
 }  // namespace nes::types::cpu

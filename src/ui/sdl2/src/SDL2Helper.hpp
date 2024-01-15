@@ -5,38 +5,33 @@
 
 class SDL2Helper {
 public:
-  explicit SDL2Helper(Uint32 flags)
-  {
+  explicit SDL2Helper(Uint32 flags) {
     SDL_Init(flags);
     ++counter;
   }
 
-  ~SDL2Helper()
-  {
+  ~SDL2Helper() {
     --counter;
     if (!counter) SDL_Quit();
   }
 
   struct Deleter {
-    void operator()(SDL_Window* ptr)
-    {
+    void operator()(SDL_Window* ptr) {
       if (ptr) SDL_DestroyWindow(ptr);
     }
 
-    void operator()(SDL_Renderer* ptr)
-    {
+    void operator()(SDL_Renderer* ptr) {
       if (ptr) SDL_DestroyRenderer(ptr);
     }
 
-    void operator()(SDL_Texture* ptr)
-    {
+    void operator()(SDL_Texture* ptr) {
       if (ptr) SDL_DestroyTexture(ptr);
     }
   };
 
-  using Window   = std::unique_ptr<SDL_Window, Deleter>;
+  using Window = std::unique_ptr<SDL_Window, Deleter>;
   using Renderer = std::unique_ptr<SDL_Renderer, Deleter>;
-  using Texture  = std::unique_ptr<SDL_Texture, Deleter>;
+  using Texture = std::unique_ptr<SDL_Texture, Deleter>;
 
 private:
   static inline int counter = 0;

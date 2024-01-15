@@ -1,12 +1,11 @@
 #include "MainWindow.h"
 
-#include <fmt/format.h>
+#include <format>
 
 #include <nes/Emulator.h>
 #include <system_utils.h>
 
-MainWindow::MainWindow(int argc, char* argv[])
-{
+MainWindow::MainWindow(int argc, char* argv[]) {
   args = {argv, argv + argc};
 
   if (args.size() == 1) {
@@ -16,14 +15,19 @@ MainWindow::MainWindow(int argc, char* argv[])
 
 MainWindow::~MainWindow() { glfwTerminate(); }
 
-void MainWindow::show()
-{
+void MainWindow::show() {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-  window = glfwCreateWindow(Emulator::width * 3, Emulator::height * 3, Emulator::title.data(), nullptr, nullptr);
+  window = glfwCreateWindow(
+    Emulator::width * 3,
+    Emulator::height * 3,
+    Emulator::title.data(),
+    nullptr,
+    nullptr
+  );
   if (!window) {
     fmt::print("Failed to create GLFW window\n");
     throw;
@@ -37,22 +41,28 @@ void MainWindow::show()
     throw;
   }
 
-  glfwSetFramebufferSizeCallback(window, [](GLFWwindow*, int width, int height) { glViewport(0, 0, width, height); });
+  glfwSetFramebufferSizeCallback(
+    window,
+    [](GLFWwindow*, int width, int height) { glViewport(0, 0, width, height); }
+  );
 
-  glfwSetErrorCallback([](int, const char* description) { fmt::print("Error: {}\n", description); });
+  glfwSetErrorCallback([](int, const char* description) {
+    fmt::print("Error: {}\n", description);
+  });
 }
 
-void MainWindow::run()
-{
+void MainWindow::run() {
   Emulator::set_app_path(lib::get_base_path());
   Emulator::load(args[1]);
   Emulator::power_on();
 
   renderer.init();
-  renderer.setBuffer(Emulator::get_back_buffer(), Emulator::width, Emulator::height);
+  renderer.setBuffer(
+    Emulator::get_back_buffer(), Emulator::width, Emulator::height
+  );
 
-  auto fpsTimer      = std::chrono::steady_clock::now();
-  int  elapsedFrames = 0;
+  auto fpsTimer = std::chrono::steady_clock::now();
+  int elapsedFrames = 0;
   // std::chrono::time_point<std::chrono::steady_clock> fpsTimer;
 
   while (!glfwWindowShouldClose(window)) {
@@ -64,11 +74,12 @@ void MainWindow::run()
       auto elapsedTime = std::chrono::steady_clock::now() - fpsTimer;
 
       if (elapsedTime > 1s) {
-        auto fps   = elapsedFrames / std::chrono::duration<double>(elapsedTime).count();
-        auto title = fmt::format("{} | {:5.2f}fps", Emulator::title, fps);
+        auto fps =
+          elapsedFrames / std::chrono::duration<double>(elapsedTime).count();
+        auto title = std::format("{} | {:5.2f}fps", Emulator::title, fps);
         glfwSetWindowTitle(window, title.c_str());
 
-        fpsTimer      = std::chrono::steady_clock::now();
+        fpsTimer = std::chrono::steady_clock::now();
         elapsedFrames = 0;
       }
     }
@@ -84,8 +95,7 @@ void MainWindow::run()
   }
 }
 
-void MainWindow::processInput()
-{
+void MainWindow::processInput() {
   for (size_t i = 0; i < 2; ++i) {
     controllerState[i] = 0;
     controllerState[i] |= glfwGetKey(window, GLFW_KEY_A) << 0;

@@ -18,7 +18,7 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(nes-emulator-qt5 PRIVATE OpenGL::GL)
 
 find_package(fmt REQUIRED)
-target_link_libraries(nes-emulator-qt5 PRIVATE fmt::fmt)
+target_link_libraries(nes-emulator-qt5 PRIVATE fmt::fmt-header-only)
 
 target_link_libraries(nes-emulator-qt5 PRIVATE nes-emulator-core)
 

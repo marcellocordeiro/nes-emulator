@@ -1,21 +1,35 @@
 ---
 Checks: >
   *,
-  -fuchsia-*,
-  -zircon-*,
   -abseil-*,
+  -altera-*,
+  -android-*,
+  -fuchsia-*,
+  -google-*,
   -llvm*,
+  -zircon-*,
+  -misc-non-private-member-variables-in-classes,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-pro-bounds-constant-array-index,
   -google-build-using-namespace,
   -hicpp-signed-bitwise,
   -hicpp-braces-around-statements,
   -modernize-use-nodiscard,
+  -readability-else-after-return,
+  -readability-static-accessed-through-instance,
+  -readability-avoid-const-params-in-decls,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
   -readability-magic-numbers,
   -readability-convert-member-functions-to-static,
   -readability-implicit-bool-conversion,
-  -readability-braces-around-statements
+  -readability-braces-around-statements,
 
-WarningsAsErrors: ''
-HeaderFilterRegex: ''
-FormatStyle:     none
+WarningsAsErrors: ""
+HeaderFilterRegex: ""
+FormatStyle: none
+
+CheckOptions:
+  - key: readability-identifier-length.IgnoredVariableNames
+    value: "x|y|z"
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: "x|y|z"

@@ -1,13 +1,12 @@
 #include "Mapper4.h"
 
 namespace nes {
-void Mapper4::reset()
-{
+void Mapper4::reset() {
   regs.fill(0);
   reg_8000 = 0;
 
   irq_enabled = false;
-  irq_period  = 0;
+  irq_period = 0;
   irq_counter = 0;
 
   set_mirroring(mirroring_type::Horizontal);
@@ -15,8 +14,7 @@ void Mapper4::reset()
   apply();
 }
 
-void Mapper4::apply()
-{
+void Mapper4::apply() {
   set_prg_map<8>(1, regs[7]);
 
   if (!(reg_8000 & (1 << 6))) {
@@ -44,15 +42,18 @@ void Mapper4::apply()
   }
 }
 
-void Mapper4::write(uint16_t addr, uint8_t value)
-{
+void Mapper4::write(uint16_t addr, uint8_t value) {
   if (addr < 0x8000) {
     // prg_ram[addr - 0x6000] = value;
   } else if (addr & 0x8000) {
     switch (addr & 0xE001) {
       case 0x8000: reg_8000 = value; break;
       case 0x8001: regs[reg_8000 & 7] = value; break;
-      case 0xA000: set_mirroring((value & 1) ? mirroring_type::Horizontal : mirroring_type::Vertical); break;
+      case 0xA000:
+        set_mirroring(
+          (value & 1) ? mirroring_type::Horizontal : mirroring_type::Vertical
+        );
+        break;
       case 0xC000: irq_period = value; break;
       case 0xC001: irq_counter = 0; break;
       case 0xE000:
@@ -66,8 +67,7 @@ void Mapper4::write(uint16_t addr, uint8_t value)
   }
 }
 
-void Mapper4::scanline_counter()
-{
+void Mapper4::scanline_counter() {
   if (irq_counter == 0) {
     irq_counter = irq_period;
   } else {
@@ -79,8 +79,7 @@ void Mapper4::scanline_counter()
   }
 }
 
-void Mapper4::save(std::ofstream& out) const
-{
+void Mapper4::save(std::ofstream& out) const {
   BaseMapper::save(out);
 
   dump_snapshot(out, regs);
@@ -89,8 +88,7 @@ void Mapper4::save(std::ofstream& out) const
   dump_snapshot(out, irq_period, irq_counter, irq_enabled);
 }
 
-void Mapper4::load(std::ifstream& in)
-{
+void Mapper4::load(std::ifstream& in) {
   BaseMapper::load(in);
 
   get_snapshot(in, regs);

@@ -6,7 +6,7 @@ namespace nes {
 class APU final {
 public:
   APU(const APU&) = delete;
-  APU(APU&&)      = delete;
+  APU(APU&&) = delete;
   auto operator=(const APU&) -> APU& = delete;
   auto operator=(APU&&) -> APU& = delete;
 

@@ -11,17 +11,17 @@ namespace nes {
 class CPU final : public Utility::Snapshotable {
 public:
   CPU(const CPU&) = delete;
-  CPU(CPU&&)      = delete;
+  CPU(CPU&&) = delete;
   auto operator=(const CPU&) -> CPU& = delete;
   auto operator=(CPU&&) -> CPU& = delete;
 
-  using operation_type  = types::cpu::memory::operation;
-  using memory_map      = types::cpu::memory::map;
+  using operation_type = types::cpu::memory::operation;
+  using memory_map = types::cpu::memory::map;
   using addressing_mode = types::cpu::addressing_mode;
-  using flags           = types::cpu::flags;
+  using flags = types::cpu::flags;
 
   using state_type = types::cpu::state;
-  using ram_type   = std::array<uint8_t, 0x800>;
+  using ram_type = std::array<uint8_t, 0x800>;
 
   static auto get() -> CPU&;
 
@@ -66,7 +66,7 @@ private:
   CPU() = default;
 
   state_type state;
-  ram_type   ram = {};
+  ram_type ram = {};
 
   void tick();
 
@@ -104,19 +104,30 @@ private:
 
   auto crossed_page(uint16_t, uint16_t) const -> bool;
 
-  template <auto Mode> auto get_operand() -> uint16_t;
+  template <auto Mode>
+  auto get_operand() -> uint16_t;
 
   //
   // Storage
   //
 
-  template <auto Mode> void LDA();
-  template <auto Mode> void LDX();
-  template <auto Mode> void LDY();
+  template <auto Mode>
+  void LDA();
 
-  template <auto Mode> void STA();
-  template <auto Mode> void STX();
-  template <auto Mode> void STY();
+  template <auto Mode>
+  void LDX();
+
+  template <auto Mode>
+  void LDY();
+
+  template <auto Mode>
+  void STA();
+
+  template <auto Mode>
+  void STX();
+
+  template <auto Mode>
+  void STY();
 
   void TAX();
   void TAY();
@@ -129,26 +140,47 @@ private:
   // Math
   //
 
-  template <auto Mode> void ADC();
-  template <auto Mode> void SBC();
-  template <auto Mode> void INC();
-  template <auto Mode> void DEC();
-  void                      INX();
-  void                      INY();
-  void                      DEX();
-  void                      DEY();
+  template <auto Mode>
+  void ADC();
+
+  template <auto Mode>
+  void SBC();
+
+  template <auto Mode>
+  void INC();
+
+  template <auto Mode>
+  void DEC();
+
+  void INX();
+  void INY();
+  void DEX();
+  void DEY();
 
   //
   // Bitwise
   //
 
-  template <auto Mode> void AND();
-  template <auto Mode> void ORA();
-  template <auto Mode> void EOR();
-  template <auto Mode> void LSR();
-  template <auto Mode> void ASL();
-  template <auto Mode> void ROL();
-  template <auto Mode> void ROR();
+  template <auto Mode>
+  void AND();
+
+  template <auto Mode>
+  void ORA();
+
+  template <auto Mode>
+  void EOR();
+
+  template <auto Mode>
+  void LSR();
+
+  template <auto Mode>
+  void ASL();
+
+  template <auto Mode>
+  void ROL();
+
+  template <auto Mode>
+  void ROR();
 
   //
   // Flags
@@ -162,19 +194,28 @@ private:
   void SED();
   void SEI();
 
-  template <auto Mode> void CMP();
-  template <auto Mode> void CPX();
-  template <auto Mode> void CPY();
-  template <auto Mode> void BIT();
+  template <auto Mode>
+  void CMP();
+
+  template <auto Mode>
+  void CPX();
+
+  template <auto Mode>
+  void CPY();
+
+  template <auto Mode>
+  void BIT();
 
   //
   // Jumps and branches
   //
 
-  template <auto Mode> void JMP();
-  void                      JSR();
-  void                      RTS();
-  void                      RTI();
+  template <auto Mode>
+  void JMP();
+
+  void JSR();
+  void RTS();
+  void RTI();
 
   void BCC();
   void BCS();
@@ -209,21 +250,52 @@ private:
   // Unofficial instructions
   //
 
-  template <auto Mode> void NOP();
-  template <auto Mode> void LAX();
-  template <auto Mode> void SAX();
-  template <auto Mode> void DCP();
-  template <auto Mode> void ISB();
-  template <auto Mode> void SLO();
-  template <auto Mode> void RLA();
-  template <auto Mode> void SRE();
-  template <auto Mode> void RRA();
-  template <auto Mode> void AAC();
-  template <auto Mode> void ASR();
-  template <auto Mode> void ARR();
-  template <auto Mode> void ATX();
-  template <auto Mode> void AXS();
-  template <auto Mode> void SYA();
-  template <auto Mode> void SXA();
+  template <auto Mode>
+  void NOP();
+
+  template <auto Mode>
+  void LAX();
+
+  template <auto Mode>
+  void SAX();
+
+  template <auto Mode>
+  void DCP();
+
+  template <auto Mode>
+  void ISB();
+
+  template <auto Mode>
+  void SLO();
+
+  template <auto Mode>
+  void RLA();
+
+  template <auto Mode>
+  void SRE();
+
+  template <auto Mode>
+  void RRA();
+
+  template <auto Mode>
+  void AAC();
+
+  template <auto Mode>
+  void ASR();
+
+  template <auto Mode>
+  void ARR();
+
+  template <auto Mode>
+  void ATX();
+
+  template <auto Mode>
+  void AXS();
+
+  template <auto Mode>
+  void SYA();
+
+  template <auto Mode>
+  void SXA();
 };
 }  // namespace nes

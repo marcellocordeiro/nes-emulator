@@ -7,7 +7,7 @@
 class Emulator {
 public:
   Emulator(const Emulator&) = delete;
-  Emulator(Emulator&&)      = delete;
+  Emulator(Emulator&&) = delete;
   auto operator=(const Emulator&) -> Emulator& = delete;
   auto operator=(Emulator&&) -> Emulator& = delete;
 
@@ -33,7 +33,7 @@ public:
   static void save_snapshot();
   static void load_snapshot();
 
-  static constexpr int width  = 256;
+  static constexpr int width = 256;
   static constexpr int height = 240;
 
   static constexpr auto title = std::string_view("nes-emulator");

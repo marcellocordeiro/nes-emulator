@@ -10,11 +10,11 @@
 namespace nes {
 class BaseMapper : public Utility::Snapshotable {
 public:
-  BaseMapper()           = default;
+  BaseMapper() = default;
   ~BaseMapper() override = default;
 
   BaseMapper(const BaseMapper&) = delete;
-  BaseMapper(BaseMapper&&)      = delete;
+  BaseMapper(BaseMapper&&) = delete;
   auto operator=(const BaseMapper&) -> BaseMapper& = delete;
   auto operator=(BaseMapper&&) -> BaseMapper& = delete;
 
@@ -30,8 +30,11 @@ public:
 
   virtual void write(uint16_t, uint8_t);
 
-  template <size_t> void set_prg_map(size_t, int);
-  template <size_t> void set_chr_map(size_t, int);
+  template <size_t>
+  void set_prg_map(size_t, int);
+
+  template <size_t>
+  void set_chr_map(size_t, int);
 
   virtual void scanline_counter();
 
@@ -40,7 +43,7 @@ public:
 
   // TODO: save mirroring
   // TODO: fix this
-  std::shared_ptr<bool>           irq_conn;
+  std::shared_ptr<bool> irq_conn;
   std::shared_ptr<mirroring_type> mirroring_conn;
 
   size_t prg_size = 0;

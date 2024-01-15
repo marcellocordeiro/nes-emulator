@@ -6,8 +6,11 @@
 #include <bit_field.hpp>
 
 namespace nes::types::ppu {
-template <size_t position, size_t bits> using bf_8  = lib::bit_field<uint8_t, position, bits>;
-template <size_t position, size_t bits> using bf_16 = lib::bit_field<uint16_t, position, bits>;
+template <size_t position, size_t bits>
+using bf_8 = lib::bit_field<uint8_t, position, bits>;
+
+template <size_t position, size_t bits>
+using bf_16 = lib::bit_field<uint16_t, position, bits>;
 
 // PPUCTRL ($2000) register
 union ppuctrl {
@@ -48,10 +51,10 @@ union ppustatus {
 union loopy_addr {
   uint16_t raw = 0;
 
-  bf_16<0, 5>  coarse_x;  // Coarse X
-  bf_16<5, 5>  coarse_y;  // Coarse Y
-  bf_16<10, 2> nt;        // Nametable
-  bf_16<12, 3> fine_y;    // Fine Y
+  bf_16<0, 5> coarse_x;  // Coarse X
+  bf_16<5, 5> coarse_y;  // Coarse Y
+  bf_16<10, 2> nt;       // Nametable
+  bf_16<12, 3> fine_y;   // Fine Y
 
   bf_16<0, 8> l;  // Low addr part
   bf_16<8, 7> h;  // High addr part
@@ -61,46 +64,38 @@ union loopy_addr {
 
 // Sprite info
 struct sprite_info {
-  uint8_t y    = 64;    // Y position
+  uint8_t y = 64;       // Y position
   uint8_t tile = 0xFF;  // Tile index
   uint8_t attr = 0xFF;  // Attributes
-  uint8_t x    = 0xFF;  // X position
+  uint8_t x = 0xFF;     // X position
 
-  size_t  id     = 0xFF;  // Index in OAM
-  uint8_t data_l = 0;     // Tile data (low)
-  uint8_t data_h = 0;     // Tile data (high)
+  size_t id = 0xFF;    // Index in OAM
+  uint8_t data_l = 0;  // Tile data (low)
+  uint8_t data_h = 0;  // Tile data (high)
 };
 
-enum ppu_map
-{
-  PPUCTRL   = 0,
-  PPUMASK   = 1,
+enum ppu_map {
+  PPUCTRL = 0,
+  PPUMASK = 1,
   PPUSTATUS = 2,
-  OAMADDR   = 3,
-  OAMDATA   = 4,
+  OAMADDR = 3,
+  OAMDATA = 4,
   PPUSCROLL = 5,
-  PPUADDR   = 6,
-  PPUDATA   = 7
+  PPUADDR = 6,
+  PPUDATA = 7,
 };
 
-enum class memory_map
-{
-  Unknown,
-  CHR,
-  Nametables,
-  Palettes
-};
+enum class memory_map { Unknown, CHR, Nametables, Palettes };
 
 auto get_memory_map(uint16_t) -> memory_map;
 
-enum class mirroring_type
-{
+enum class mirroring_type {
   Unknown,
   Horizontal,
   Vertical,
   One_Screen_Low,
   One_Screen_High,
-  Four_Screen
+  Four_Screen,
 };
 
 auto get_mirroring_name(mirroring_type type) -> std::string_view;

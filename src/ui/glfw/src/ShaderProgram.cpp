@@ -4,14 +4,12 @@
 
 ShaderProgram::~ShaderProgram() { glDeleteProgram(id); }
 
-auto ShaderProgram::init() -> ShaderProgram&
-{
+auto ShaderProgram::init() -> ShaderProgram& {
   id = glCreateProgram();
   return (*this);
 }
 
-auto ShaderProgram::add(const char* source, GLenum type) -> ShaderProgram&
-{
+auto ShaderProgram::add(const char* source, GLenum type) -> ShaderProgram& {
   auto shader = compile(source, type);
   glAttachShader(id, shader);
   glDeleteShader(shader);
@@ -19,14 +17,13 @@ auto ShaderProgram::add(const char* source, GLenum type) -> ShaderProgram&
   return (*this);
 }
 
-auto ShaderProgram::compile(const char* source, GLenum type) -> GLuint
-{
+auto ShaderProgram::compile(const char* source, GLenum type) -> GLuint {
   auto shader = glCreateShader(type);
   glShaderSource(shader, 1, &source, nullptr);
   glCompileShader(shader);
 
   {  // Error checking
-    GLint  success;
+    GLint success;
     GLchar infoLog[512];
 
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
@@ -46,12 +43,11 @@ auto ShaderProgram::compile(const char* source, GLenum type) -> GLuint
   return shader;
 }
 
-void ShaderProgram::link()
-{
+void ShaderProgram::link() {
   glLinkProgram(id);
 
   {  // Error checking
-    GLint  success;
+    GLint success;
     GLchar infoLog[512];
 
     glGetProgramiv(id, GL_LINK_STATUS, &success);

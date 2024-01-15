@@ -29,13 +29,13 @@ private:
   void resize(int);
 
   std::unique_ptr<Ui::MainWindow> ui;
-  std::unique_ptr<QTimer>         timer;
+  std::unique_ptr<QTimer> timer;
 
   std::chrono::time_point<std::chrono::steady_clock> fpsTimer;
 
-  bool    running          = false;
-  int     framerate        = 60;
-  int     elapsedFrames    = 0;
-  double  volume           = 0.1;
+  bool running = false;
+  int framerate = 60;
+  int elapsedFrames = 0;
+  double volume = 0.1;
   uint8_t controller_state = 0;
 };

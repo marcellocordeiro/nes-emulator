@@ -9,7 +9,7 @@ find_package(SDL2 2.0 REQUIRED)
 target_link_libraries(nes-emulator-sdl2 PRIVATE SDL2::SDL2)
 
 find_package(fmt REQUIRED)
-target_link_libraries(nes-emulator-sdl2 PRIVATE fmt::fmt)
+target_link_libraries(nes-emulator-sdl2 PRIVATE fmt::fmt-header-only)
 
 target_link_libraries(nes-emulator-sdl2 PRIVATE nes-emulator-core)
 

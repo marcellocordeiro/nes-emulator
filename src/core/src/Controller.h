@@ -9,7 +9,7 @@ namespace nes {
 class Controller final : public Utility::Snapshotable {
 public:
   Controller(const Controller&) = delete;
-  Controller(Controller&&)      = delete;
+  Controller(Controller&&) = delete;
   auto operator=(const Controller&) -> Controller& = delete;
   auto operator=(Controller&&) -> Controller& = delete;
 
@@ -36,8 +36,8 @@ public:
 private:
   Controller() = default;
 
-  bool                   strobe           = false;  // Controller strobe latch
-  std::array<uint8_t, 2> controller_bits  = {};     // Controller shift registers
-  std::array<uint8_t, 2> controller_state = {};     // Controller states
+  bool strobe = false;                           // Controller strobe latch
+  std::array<uint8_t, 2> controller_bits = {};   // Controller shift registers
+  std::array<uint8_t, 2> controller_state = {};  // Controller states
 };
 }  // namespace nes

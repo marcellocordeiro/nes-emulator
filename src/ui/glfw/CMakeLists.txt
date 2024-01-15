@@ -18,7 +18,7 @@ find_package(OpenGL REQUIRED)
 target_link_libraries(nes-emulator-glfw PRIVATE OpenGL::GL)
 
 find_package(fmt REQUIRED)
-target_link_libraries(nes-emulator-glfw PRIVATE fmt::fmt)
+target_link_libraries(nes-emulator-glfw PRIVATE fmt::fmt-header-only)
 
 set_target_properties(nes-emulator-glfw
   PROPERTIES

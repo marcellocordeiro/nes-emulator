@@ -12,7 +12,7 @@ add_library(nes-emulator-core STATIC ${SOURCE_FILES})
 target_include_directories(nes-emulator-core PUBLIC "include")
 
 find_package(fmt REQUIRED)
-target_link_libraries(nes-emulator-core PRIVATE fmt::fmt)
+target_link_libraries(nes-emulator-core PRIVATE fmt::fmt-header-only)
 
 find_package(spdlog REQUIRED)
 target_link_libraries(nes-emulator-core PRIVATE spdlog::spdlog_header_only)

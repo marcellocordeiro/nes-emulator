@@ -6,53 +6,51 @@
 #include "Utility/FileManager.h"
 
 namespace nes {
-auto PPU::get() -> PPU&
-{
+auto PPU::get() -> PPU& {
   static PPU instance;
   return instance;
 }
 
-void PPU::power_on()
-{
+void PPU::power_on() {
   this->set_palette();
 
-  ctrl.raw   = 0;
-  mask.raw   = 0;
+  ctrl.raw = 0;
+  mask.raw = 0;
   status.raw = 0;
-  oam_addr   = 0;
+  oam_addr = 0;
   addr_latch = false;
 
   vram_addr.raw = 0;
   temp_addr.raw = 0;
-  fine_x        = 0;
-  oam_addr      = 0;
+  fine_x = 0;
+  oam_addr = 0;
 
-  bus_latch      = 0;
+  bus_latch = 0;
   ppudata_buffer = 0;
 
   is_odd_frame = false;
 }
 
-void PPU::reset()
-{
-  ctrl.raw   = 0;
-  mask.raw   = 0;
+void PPU::reset() {
+  ctrl.raw = 0;
+  mask.raw = 0;
   addr_latch = false;
 
   vram_addr.raw = 0;
   temp_addr.raw = 0;
-  fine_x        = 0;
+  fine_x = 0;
 
-  bus_latch      = 0;
+  bus_latch = 0;
   ppudata_buffer = 0;
 
   is_odd_frame = false;
 }
 
-auto PPU::get_back_buffer() const -> const uint32_t* { return back_buffer.data(); }
+auto PPU::get_back_buffer() const -> const uint32_t* {
+  return back_buffer.data();
+}
 
-void PPU::set_palette()
-{
+void PPU::set_palette() {
   auto palette = Utility::FileManager::get().get_palette();
 
   if (palette.size() != 64 * 3) {
@@ -70,9 +68,9 @@ void PPU::set_palette()
   // Generate full colour palette
   for (size_t i = 1; i < 8; ++i) {
     for (size_t j = 0; j < 64; ++j) {
-      double red   = static_cast<uint8_t>(full_nes_palette[0][j] >> 16);
+      double red = static_cast<uint8_t>(full_nes_palette[0][j] >> 16);
       double green = static_cast<uint8_t>(full_nes_palette[0][j] >> 8);
-      double blue  = static_cast<uint8_t>(full_nes_palette[0][j] >> 0);
+      double blue = static_cast<uint8_t>(full_nes_palette[0][j] >> 0);
 
       constexpr double factor = 0.3;
 
@@ -108,8 +106,7 @@ void PPU::set_palette()
   }
 }
 
-void PPU::step()
-{
+void PPU::step() {
   switch (ppu_state) {
     case Visible: scanline_cycle_visible(); break;
     case VBlank: scanline_cycle_nmi(); break;
@@ -124,8 +121,12 @@ void PPU::step()
 
     if (scanline == 240) {
       back_buffer = frame_buffer;
-      std::transform(back_buffer.begin(), back_buffer.end(), back_buffer.begin(),
-                     [this](uint32_t p) { return full_nes_palette[mask.rgb][p]; });
+      std::transform(
+        back_buffer.begin(),
+        back_buffer.end(),
+        back_buffer.begin(),
+        [this](uint32_t p) { return full_nes_palette[mask.rgb][p]; }
+      );
       ppu_state = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
@@ -140,15 +141,14 @@ void PPU::step()
         tick = 1;  // Skip the first cycle of the visible scanline
       }
 
-      ppu_state    = Visible;
-      scanline     = 0;
+      ppu_state = Visible;
+      scanline = 0;
       is_odd_frame = !is_odd_frame;
     }
   }
 }
 
-auto PPU::peek_reg(uint16_t addr) const -> uint8_t
-{
+auto PPU::peek_reg(uint16_t addr) const -> uint8_t {
   using enum ppu_map;
 
   switch (addr % 8) {
@@ -166,15 +166,14 @@ auto PPU::peek_reg(uint16_t addr) const -> uint8_t
   return bus_latch;
 }
 
-auto PPU::read(uint16_t addr) -> uint8_t
-{
+auto PPU::read(uint16_t addr) -> uint8_t {
   using enum ppu_map;
 
   switch (addr % 8) {
     case PPUSTATUS: {
-      bus_latch     = (bus_latch & 0x1F) | status.raw;
+      bus_latch = (bus_latch & 0x1F) | status.raw;
       status.vblank = 0;
-      addr_latch    = false;
+      addr_latch = false;
       break;
     }
 
@@ -185,11 +184,11 @@ auto PPU::read(uint16_t addr) -> uint8_t
 
     case PPUDATA: {
       if (vram_addr.addr <= 0x3EFF) {
-        bus_latch      = ppudata_buffer;
+        bus_latch = ppudata_buffer;
         ppudata_buffer = vram_read(vram_addr.addr);
       } else {
         ppudata_buffer = vram_read(vram_addr.addr);
-        bus_latch      = ppudata_buffer;
+        bus_latch = ppudata_buffer;
       }
 
       vram_addr.addr += addr_increment;
@@ -201,18 +200,17 @@ auto PPU::read(uint16_t addr) -> uint8_t
   return bus_latch;
 }
 
-void PPU::write(uint16_t addr, uint8_t value)
-{
+void PPU::write(uint16_t addr, uint8_t value) {
   using enum ppu_map;
 
   bus_latch = value;
 
   switch (addr % 8) {
     case PPUCTRL: {
-      ctrl.raw     = value;
+      ctrl.raw = value;
       temp_addr.nt = ctrl.nt;
 
-      sprite_height  = ctrl.spr_size ? 16 : 8;
+      sprite_height = ctrl.spr_size ? 16 : 8;
       addr_increment = ctrl.addr_inc ? 32 : 1;
       break;
     }
@@ -220,8 +218,8 @@ void PPU::write(uint16_t addr, uint8_t value)
     case PPUMASK: {
       mask.raw = value;
 
-      is_rendering     = mask.show_bg || mask.show_spr;
-      grayscale_mask   = mask.grayscale ? 0x30 : 0x3F;
+      is_rendering = mask.show_bg || mask.show_spr;
+      grayscale_mask = mask.grayscale ? 0x30 : 0x3F;
       selected_palette = mask.rgb;
       break;
     }
@@ -239,10 +237,10 @@ void PPU::write(uint16_t addr, uint8_t value)
 
     case PPUSCROLL: {
       if (!addr_latch) {  // First write
-        fine_x             = value & 7;
+        fine_x = value & 7;
         temp_addr.coarse_x = value >> 3;
       } else {  // Second write
-        temp_addr.fine_y   = value & 7;
+        temp_addr.fine_y = value & 7;
         temp_addr.coarse_y = value >> 3;
       }
 
@@ -254,7 +252,7 @@ void PPU::write(uint16_t addr, uint8_t value)
       if (!addr_latch) {  // First write
         temp_addr.h = value & 0x3F;
       } else {  // Second write
-        temp_addr.l   = value;
+        temp_addr.l = value;
         vram_addr.raw = temp_addr.raw;
       }
 
@@ -272,8 +270,7 @@ void PPU::write(uint16_t addr, uint8_t value)
 
 auto PPU::peek_vram(uint16_t addr) const -> uint8_t { return vram_read(addr); }
 
-auto PPU::vram_read(uint16_t addr) const -> uint8_t
-{
+auto PPU::vram_read(uint16_t addr) const -> uint8_t {
   using enum memory_map;
 
   switch (types::ppu::get_memory_map(addr)) {
@@ -284,8 +281,7 @@ auto PPU::vram_read(uint16_t addr) const -> uint8_t
   }
 }
 
-void PPU::vram_write(uint16_t addr, uint8_t value)
-{
+void PPU::vram_write(uint16_t addr, uint8_t value) {
   using enum memory_map;
 
   switch (types::ppu::get_memory_map(addr)) {
@@ -298,19 +294,18 @@ void PPU::vram_write(uint16_t addr, uint8_t value)
 
 void PPU::clear_sec_oam() { sec_oam.fill({}); }
 
-void PPU::sprite_evaluation()
-{
+void PPU::sprite_evaluation() {
   size_t size = 0;
 
   for (size_t i = 0; i < 64; ++i) {
     int line = scanline - oam_mem[i * 4];
 
     if (line >= 0 && line < sprite_height) {
-      sec_oam[size].id   = i;
-      sec_oam[size].y    = oam_mem[(i * 4) + 0];
+      sec_oam[size].id = i;
+      sec_oam[size].y = oam_mem[(i * 4) + 0];
       sec_oam[size].tile = oam_mem[(i * 4) + 1];
       sec_oam[size].attr = oam_mem[(i * 4) + 2];
-      sec_oam[size].x    = oam_mem[(i * 4) + 3];
+      sec_oam[size].x = oam_mem[(i * 4) + 3];
 
       ++size;
 
@@ -322,8 +317,7 @@ void PPU::sprite_evaluation()
   }
 }
 
-void PPU::load_sprites()
-{
+void PPU::load_sprites() {
   oam = sec_oam;
 
   for (auto& sprite : oam) {
@@ -378,8 +372,7 @@ void PPU::load_sprites()
   }
 }
 
-void PPU::horizontal_scroll()
-{
+void PPU::horizontal_scroll() {
   if (vram_addr.coarse_x == 31) {
     vram_addr.raw ^= 0x41F;
   } else {
@@ -387,8 +380,7 @@ void PPU::horizontal_scroll()
   }
 }
 
-void PPU::vertical_scroll()
-{
+void PPU::vertical_scroll() {
   if (vram_addr.fine_y < 7) {
     ++vram_addr.fine_y;
   } else {
@@ -404,12 +396,15 @@ void PPU::vertical_scroll()
   }
 }
 
-void PPU::horizontal_update() { vram_addr.raw = (vram_addr.raw & ~0x041F) | (temp_addr.raw & 0x041F); }
+void PPU::horizontal_update() {
+  vram_addr.raw = (vram_addr.raw & ~0x041F) | (temp_addr.raw & 0x041F);
+}
 
-void PPU::vertical_update() { vram_addr.raw = (vram_addr.raw & ~0x7BE0) | (temp_addr.raw & 0x7BE0); }
+void PPU::vertical_update() {
+  vram_addr.raw = (vram_addr.raw & ~0x7BE0) | (temp_addr.raw & 0x7BE0);
+}
 
-void PPU::background_shift()
-{
+void PPU::background_shift() {
   bg_shift_l <<= 1;
   bg_shift_h <<= 1;
   at_shift_l = (at_shift_l << 1) | at_latch_l;
@@ -420,15 +415,16 @@ void PPU::background_shift()
     bg_shift_l = (bg_shift_l & 0xFF00) | bg_latch_l;
     bg_shift_h = (bg_shift_h & 0xFF00) | bg_latch_h;
 
-    at_latch >>= 2 * ((vram_addr.coarse_y & 0x02) | (((vram_addr.coarse_x - 1) & 0x02) >> 1));
+    at_latch >>=
+      2
+      * ((vram_addr.coarse_y & 0x02) | (((vram_addr.coarse_x - 1) & 0x02) >> 1));
 
     at_latch_l = at_latch & 1;
     at_latch_h = (at_latch >> 1) & 1;
   }
 }
 
-auto PPU::get_background_pixel() const -> uint8_t
-{
+auto PPU::get_background_pixel() const -> uint8_t {
   uint8_t pixel = tick - 2;
 
   if (mask.show_bg && !(!mask.bg_left && pixel < 8)) {
@@ -445,9 +441,8 @@ auto PPU::get_background_pixel() const -> uint8_t
   return 0;
 }
 
-auto PPU::get_sprite_pixel() -> uint8_t
-{
-  uint8_t pixel      = tick - 2;
+auto PPU::get_sprite_pixel() -> uint8_t {
+  uint8_t pixel = tick - 2;
   uint8_t bg_palette = get_background_pixel();
 
   if (!(mask.show_spr && !(!mask.spr_left && pixel < 8))) return bg_palette;
@@ -462,7 +457,7 @@ auto PPU::get_sprite_pixel() -> uint8_t
     uint8_t spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
 
     if (spr_palette != 0) {
-      bool is_sprite0   = sprite.id == 0;
+      bool is_sprite0 = sprite.id == 0;
       bool spr_priority = !(sprite.attr & 0x20);
       spr_palette |= (sprite.attr & 3) << 2;
       spr_palette += 16;
@@ -481,8 +476,7 @@ auto PPU::get_sprite_pixel() -> uint8_t
   return bg_palette;
 }
 
-void PPU::render_pixel()
-{
+void PPU::render_pixel() {
   size_t row_pixel = tick - 2;
   size_t pixel_pos = (scanline * 256) + row_pixel;
 
@@ -494,9 +488,10 @@ void PPU::render_pixel()
   frame_buffer[pixel_pos] = vram_read(0x3F00 + get_sprite_pixel());
 }
 
-void PPU::background_fetch()
-{
-  auto in_range = [this](int lower, int upper) { return (tick >= lower) && (tick <= upper); };
+void PPU::background_fetch() {
+  auto in_range = [this](int lower, int upper) {
+    return (tick >= lower) && (tick <= upper);
+  };
 
   if (in_range(2, 257) || in_range(322, 337)) {
     background_shift();
@@ -536,14 +531,15 @@ void PPU::background_fetch()
   }
 }
 
-void PPU::scanline_cycle_pre()
-{
-  auto in_range = [this](int lower, int upper) { return (tick >= lower) && (tick <= upper); };
+void PPU::scanline_cycle_pre() {
+  auto in_range = [this](int lower, int upper) {
+    return (tick >= lower) && (tick <= upper);
+  };
 
   if (tick == 1) {
-    status.vblank       = false;
+    status.vblank = false;
     status.spr_overflow = false;
-    status.spr0_hit     = false;
+    status.spr0_hit = false;
   }
 
   if (is_rendering) {
@@ -555,8 +551,7 @@ void PPU::scanline_cycle_pre()
   }
 }
 
-void PPU::scanline_cycle_visible()
-{
+void PPU::scanline_cycle_visible() {
   if (tick >= 2 && tick <= 257) {
     render_pixel();
   }
@@ -575,8 +570,7 @@ void PPU::scanline_cycle_visible()
   }
 }
 
-void PPU::scanline_cycle_nmi()
-{
+void PPU::scanline_cycle_nmi() {
   if (tick == 1) {
     status.vblank = true;
 
@@ -590,17 +584,20 @@ void PPU::scanline_cycle_nmi()
 // Auxiliary
 //
 
-auto PPU::nt_addr() const -> uint16_t { return 0x2000 | (vram_addr.raw & 0x0FFF); }
-
-auto PPU::at_addr() const -> uint16_t
-{
-  return 0x23C0 | (vram_addr.nt << 10) | ((vram_addr.coarse_y / 4) << 3) | (vram_addr.coarse_x / 4);
+auto PPU::nt_addr() const -> uint16_t {
+  return 0x2000 | (vram_addr.raw & 0x0FFF);
 }
 
-auto PPU::bg_addr() const -> uint16_t { return (ctrl.bg_table * 0x1000) + (nt_latch * 16) + vram_addr.fine_y; }
+auto PPU::at_addr() const -> uint16_t {
+  return 0x23C0 | (vram_addr.nt << 10) | ((vram_addr.coarse_y / 4) << 3)
+         | (vram_addr.coarse_x / 4);
+}
 
-auto PPU::nt_mirror_addr(uint16_t addr) const -> uint16_t
-{
+auto PPU::bg_addr() const -> uint16_t {
+  return (ctrl.bg_table * 0x1000) + (nt_latch * 16) + vram_addr.fine_y;
+}
+
+auto PPU::nt_mirror_addr(uint16_t addr) const -> uint16_t {
   using enum mirroring_type;
   switch (*mirroring_conn) {
     case Vertical: return addr & 0x07FF;
@@ -612,14 +609,15 @@ auto PPU::nt_mirror_addr(uint16_t addr) const -> uint16_t
   }
 }
 
-auto PPU::palette_addr(uint16_t addr) const -> uint16_t
-{
+auto PPU::palette_addr(uint16_t addr) const -> uint16_t {
   return (((addr & 0x13) == 0x10) ? (addr & ~0x10) : addr) & 0x1F;
 }
 
-template <typename T> auto PPU::get_palette(T low, T high, int offset) const -> uint8_t
-{
-  constexpr auto nth_bit = [](auto x, auto n) -> uint8_t { return ((x >> n) & 1); };
+template <typename T>
+auto PPU::get_palette(T low, T high, int offset) const -> uint8_t {
+  constexpr auto nth_bit = [](auto x, auto n) -> uint8_t {
+    return ((x >> n) & 1);
+  };
 
   return nth_bit(high, offset) << 1 | nth_bit(low, offset);
 }
@@ -628,8 +626,7 @@ template <typename T> auto PPU::get_palette(T low, T high, int offset) const -> 
 // Snapshot
 //
 
-void PPU::save(std::ofstream& out) const
-{
+void PPU::save(std::ofstream& out) const {
   dump_snapshot(out, ci_ram);
   dump_snapshot(out, cg_ram);
   dump_snapshot(out, oam_mem);
@@ -641,12 +638,22 @@ void PPU::save(std::ofstream& out) const
   dump_snapshot(out, bus_latch, ppudata_buffer, addr_latch);
   dump_snapshot(out, vram_addr.raw, temp_addr.raw, fine_x, oam_addr);
 
-  dump_snapshot(out, nt_latch, at_latch, bg_latch_l, bg_latch_h, at_shift_l, at_shift_h, bg_shift_l, bg_shift_h,
-                at_latch_l, at_latch_h);
+  dump_snapshot(
+    out,
+    nt_latch,
+    at_latch,
+    bg_latch_l,
+    bg_latch_h,
+    at_shift_l,
+    at_shift_h,
+    bg_shift_l,
+    bg_shift_h,
+    at_latch_l,
+    at_latch_h
+  );
 }
 
-void PPU::load(std::ifstream& in)
-{
+void PPU::load(std::ifstream& in) {
   get_snapshot(in, ci_ram);
   get_snapshot(in, cg_ram);
   get_snapshot(in, oam_mem);
@@ -658,15 +665,26 @@ void PPU::load(std::ifstream& in)
   get_snapshot(in, bus_latch, ppudata_buffer, addr_latch);
   get_snapshot(in, vram_addr.raw, temp_addr.raw, fine_x, oam_addr);
 
-  get_snapshot(in, nt_latch, at_latch, bg_latch_l, bg_latch_h, at_shift_l, at_shift_h, bg_shift_l, bg_shift_h,
-               at_latch_l, at_latch_h);
+  get_snapshot(
+    in,
+    nt_latch,
+    at_latch,
+    bg_latch_l,
+    bg_latch_h,
+    at_shift_l,
+    at_shift_h,
+    bg_shift_l,
+    bg_shift_h,
+    at_latch_l,
+    at_latch_h
+  );
 
   // Restore auxiliary
-  is_rendering     = mask.show_bg || mask.show_spr;
-  grayscale_mask   = mask.grayscale ? 0x30 : 0x3F;
+  is_rendering = mask.show_bg || mask.show_spr;
+  grayscale_mask = mask.grayscale ? 0x30 : 0x3F;
   selected_palette = mask.rgb;
-  sprite_height    = ctrl.spr_size ? 16 : 8;
-  addr_increment   = ctrl.addr_inc ? 32 : 1;
+  sprite_height = ctrl.spr_size ? 16 : 8;
+  addr_increment = ctrl.addr_inc ? 32 : 1;
 
   // Evaluate and load sprites
   // Might be enough to restore the state

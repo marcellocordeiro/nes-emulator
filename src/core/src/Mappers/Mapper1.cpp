@@ -1,21 +1,19 @@
 #include "Mapper1.h"
 
 namespace nes {
-void Mapper1::reset()
-{
+void Mapper1::reset() {
   write_delay = 5;
-  shift_reg   = 0;
+  shift_reg = 0;
 
-  control    = 0x0C;
+  control = 0x0C;
   chr_bank_0 = 0;
   chr_bank_1 = 0;
-  prg_bank   = 0;
+  prg_bank = 0;
 
   apply();
 }
 
-void Mapper1::apply()
-{
+void Mapper1::apply() {
   if (control & 0b1000) {
     // 16KB PRG-ROM
     if (control & 0b100) {
@@ -49,15 +47,14 @@ void Mapper1::apply()
   }
 }
 
-void Mapper1::write(uint16_t addr, uint8_t value)
-{
+void Mapper1::write(uint16_t addr, uint8_t value) {
   if (addr < 0x8000) {
     // prg_ram[addr - 0x6000] = value;
   } else if (addr & 0x8000) {
     if (value & 0x80) {  // Reset
       control |= 0x0C;
       write_delay = 5;
-      shift_reg   = 0;
+      shift_reg = 0;
     } else {
       shift_reg = ((value & 1) << 4) | (shift_reg >> 1);
       --write_delay;
@@ -71,7 +68,7 @@ void Mapper1::write(uint16_t addr, uint8_t value)
         }
 
         write_delay = 5;
-        shift_reg   = 0;
+        shift_reg = 0;
       }
     }
 
@@ -79,16 +76,14 @@ void Mapper1::write(uint16_t addr, uint8_t value)
   }
 }
 
-void Mapper1::save(std::ofstream& out) const
-{
+void Mapper1::save(std::ofstream& out) const {
   BaseMapper::save(out);
 
   dump_snapshot(out, write_delay, shift_reg);
   dump_snapshot(out, control, chr_bank_0, chr_bank_1, prg_bank);
 }
 
-void Mapper1::load(std::ifstream& in)
-{
+void Mapper1::load(std::ifstream& in) {
   BaseMapper::load(in);
 
   get_snapshot(in, write_delay, shift_reg);

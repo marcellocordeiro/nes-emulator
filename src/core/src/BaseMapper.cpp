@@ -1,8 +1,7 @@
 #include "BaseMapper.h"
 
 namespace nes {
-void BaseMapper::set_mirroring(mirroring_type value)
-{
+void BaseMapper::set_mirroring(mirroring_type value) {
   // TODO: save this?
   // mirroring = value;
   *mirroring_conn = value;
@@ -10,32 +9,29 @@ void BaseMapper::set_mirroring(mirroring_type value)
 
 void BaseMapper::set_irq(bool value) { *irq_conn = value; }
 
-auto BaseMapper::get_prg_addr(uint16_t addr) const -> size_t
-{
-  size_t slot     = (addr - 0x8000) / 0x2000;
+auto BaseMapper::get_prg_addr(uint16_t addr) const -> size_t {
+  size_t slot = (addr - 0x8000) / 0x2000;
   size_t prg_addr = (addr - 0x8000) % 0x2000;
 
   return prg_map[slot] + prg_addr;
 }
 
-auto BaseMapper::get_chr_addr(uint16_t addr) const -> size_t
-{
-  size_t slot     = addr / 0x400;
+auto BaseMapper::get_chr_addr(uint16_t addr) const -> size_t {
+  size_t slot = addr / 0x400;
   size_t chr_addr = addr % 0x400;
 
   return chr_map[slot] + chr_addr;
 }
 
-void BaseMapper::write(uint16_t addr, uint8_t value)
-{
+void BaseMapper::write(uint16_t addr, uint8_t value) {
   UNUSED(addr);
   UNUSED(value);
 }
 
 // Size must be in KB
-template <size_t size> void BaseMapper::set_prg_map(size_t slot, int page)
-{
-  constexpr size_t pages   = size / 8;
+template <size_t size>
+void BaseMapper::set_prg_map(size_t slot, int page) {
+  constexpr size_t pages = size / 8;
   constexpr size_t pages_b = size * 0x400;  // In bytes
 
   if (page < 0) {
@@ -48,9 +44,9 @@ template <size_t size> void BaseMapper::set_prg_map(size_t slot, int page)
 }
 
 // Size must be in KB
-template <size_t size> void BaseMapper::set_chr_map(size_t slot, int page)
-{
-  constexpr size_t pages   = size;
+template <size_t size>
+void BaseMapper::set_chr_map(size_t slot, int page) {
+  constexpr size_t pages = size;
   constexpr size_t pages_b = size * 0x400;  // In bytes
 
   for (size_t i = 0; i < size; ++i) {
@@ -61,14 +57,12 @@ template <size_t size> void BaseMapper::set_chr_map(size_t slot, int page)
 void BaseMapper::scanline_counter() {}
 
 // TODO
-void BaseMapper::save(std::ofstream& /*out*/) const
-{
+void BaseMapper::save(std::ofstream& /*out*/) const {
   // dump_snapshot(out, prg_ram);
   // dump_snapshot(out, chr);
 }
 
-void BaseMapper::load(std::ifstream& /*in*/)
-{
+void BaseMapper::load(std::ifstream& /*in*/) {
   // get_snapshot(in, prg_ram);
   // get_snapshot(in, chr);
 }

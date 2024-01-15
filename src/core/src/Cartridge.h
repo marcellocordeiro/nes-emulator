@@ -10,7 +10,7 @@ namespace nes {
 class Cartridge final {
 public:
   Cartridge(const Cartridge&) = delete;
-  Cartridge(Cartridge&&)      = delete;
+  Cartridge(Cartridge&&) = delete;
   auto operator=(const Cartridge&) -> Cartridge& = delete;
   auto operator=(Cartridge&&) -> Cartridge& = delete;
 
@@ -32,16 +32,16 @@ public:
 
   void dump_prg_ram() const;
 
-  std::shared_ptr<bool>           irq_conn;
+  std::shared_ptr<bool> irq_conn;
   std::shared_ptr<mirroring_type> mirroring_conn;
 
 private:
   Cartridge() = default;
 
-  int    mapper_num   = -1;
-  size_t prg_size     = 0;
-  size_t chr_size     = 0;
-  bool   has_chr_ram  = false;
+  int mapper_num = -1;
+  size_t prg_size = 0;
+  size_t chr_size = 0;
+  bool has_chr_ram = false;
   size_t prg_ram_size = 0;
 
   mirroring_type mirroring = mirroring_type::Unknown;

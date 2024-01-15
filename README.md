@@ -2,6 +2,8 @@
 
 Experimental NES emulator written in C++20 and OpenGL with support for GLFW, Qt5 and SDL2 frontends.
 
+**_Disclaimer_**: this emulator is an experimental project for educational purposes. The development and use of emulators is legal, as long as no copyrighted content is illegally obtained. This means you are responsible for dumping your and games. However, there exists free and open-source content in case you'd like to test this project and/or contribute :blush:
+
 ## Features
 
 - [x] CPU
@@ -19,7 +21,7 @@ Experimental NES emulator written in C++20 and OpenGL with support for GLFW, Qt5
 - [x] Colour emphasis
 - [x] Custom palettes (.pal)
   - [x] 64 colours
-  - [ ] 64 * 8 colours
+  - [ ] 64 \* 8 colours
   - [x] Auto generation of colour emphasis palettes
 
 ## Screenshots

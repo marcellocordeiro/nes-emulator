@@ -19,13 +19,13 @@ private:
   auto read_record() -> bool;
 
   struct record_entry {
-    uint32_t             addr   = 0;
-    uint16_t             length = 0;
+    uint32_t addr = 0;
+    uint16_t length = 0;
     std::vector<uint8_t> data;
   };
 
   std::vector<record_entry> records;
-  std::ifstream             ips_file;
-  size_t                    min_size = 0;
+  std::ifstream ips_file;
+  size_t min_size = 0;
 };
 }  // namespace nes::Utility

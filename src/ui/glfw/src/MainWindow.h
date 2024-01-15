@@ -16,7 +16,7 @@ public:
   ~MainWindow();
 
   MainWindow(const MainWindow&) = delete;
-  MainWindow(MainWindow&&)      = delete;
+  MainWindow(MainWindow&&) = delete;
   auto operator=(const MainWindow&) -> MainWindow& = delete;
   auto operator=(MainWindow&&) -> MainWindow& = delete;
 
@@ -29,7 +29,7 @@ private:
   std::vector<std::string_view> args;
 
   GLFWwindow* window = nullptr;
-  Renderer    renderer;
+  Renderer renderer;
 
   std::array<std::uint8_t, 2> controllerState = {};
 };

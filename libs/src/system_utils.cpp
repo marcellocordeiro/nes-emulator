@@ -9,13 +9,12 @@
 #elif defined(__APPLE__)
 #include <array>
 
-#include <sys/syslimits.h>
 #include <mach-o/dyld.h>
+#include <sys/syslimits.h>
 #endif
 
 namespace lib {
-auto get_base_path() -> std::filesystem::path
-{
+auto get_base_path() -> std::filesystem::path {
   std::string path;
   path.resize(300);
 

@@ -18,15 +18,15 @@ public:
   void resize(int, int);
 
 private:
-  int bufferWidth  = 0;
+  int bufferWidth = 0;
   int bufferHeight = 0;
 
   ShaderProgram shaderProgram;
 
   GLuint texture = 0;
-  GLuint VBO     = 0;
-  GLuint VAO     = 0;
-  GLuint EBO     = 0;
+  GLuint VBO = 0;
+  GLuint VAO = 0;
+  GLuint EBO = 0;
 
   const uint32_t* buffer = nullptr;
 };

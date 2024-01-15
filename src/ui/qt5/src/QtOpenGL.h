@@ -17,7 +17,7 @@ private:
   void resizeGL(int w, int h) override;
   void paintGL() override;
 
-  int width  = 0;
+  int width = 0;
   int height = 0;
 
   GLuint texture = 0;

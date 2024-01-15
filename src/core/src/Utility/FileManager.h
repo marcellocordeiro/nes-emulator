@@ -7,7 +7,7 @@ namespace nes::Utility {
 class FileManager final {
 public:
   FileManager(const FileManager&) = delete;
-  FileManager(FileManager&&)      = delete;
+  FileManager(FileManager&&) = delete;
   auto operator=(const FileManager&) -> FileManager& = delete;
   auto operator=(FileManager&&) -> FileManager& = delete;
 

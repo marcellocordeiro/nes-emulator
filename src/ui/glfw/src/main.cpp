@@ -1,7 +1,6 @@
 #include "MainWindow.h"
 
-auto main(int argc, char* argv[]) -> int
-{
+auto main(int argc, char* argv[]) -> int {
   MainWindow w(argc, argv);
 
   w.show();

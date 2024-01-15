@@ -12,7 +12,7 @@ public:
   MainWindow(int, char*[]);
 
   MainWindow(const MainWindow&) = delete;
-  MainWindow(MainWindow&&)      = delete;
+  MainWindow(MainWindow&&) = delete;
   MainWindow& operator=(const MainWindow&) = delete;
   MainWindow& operator=(MainWindow&&) = delete;
 
@@ -41,8 +41,7 @@ private:
   auto updateEmulatedControllers() -> void;
   auto processInput(SDL_KeyboardEvent&) -> void;
 
-  enum class Button
-  {
+  enum class Button {
     A,
     B,
     Select,
@@ -50,17 +49,17 @@ private:
     Up,
     Down,
     Left,
-    Right
+    Right,
   };
-  enum class Action
-  {
+
+  enum class Action {
     Pause,
     Reset,
     SaveSnapshot,
     LoadSnapshot,
     ToggleLimiter,
     VolumeUp,
-    VolumeDown
+    VolumeDown,
   };
 
   std::map<Action, SDL_Scancode> actionKeyBindings;
@@ -75,7 +74,7 @@ private:
   auto render() -> void;
 
   SDL2Helper::Renderer renderer;
-  SDL2Helper::Texture  texture;
+  SDL2Helper::Texture texture;
 
   const uint32_t* buffer = nullptr;
 };

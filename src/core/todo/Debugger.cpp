@@ -1,12 +1,12 @@
 #include "Debugger.h"
 
 #include <array>
+#include <format>
 #include <sstream>
 #include <string_view>
 
-#include <fmt/format.h>
-
 #include <common.h>
+
 #include "CPU.h"
 #include "PPU.h"
 #include "Types/CPU_Types.h"
@@ -18,8 +18,7 @@ using namespace types::cpu;
 
 // debugger::debugger(emulator& emu_ref) : emu(emu_ref) {}
 
-void Debugger::cpu_log()
-{
+void Debugger::cpu_log() {
   // clang-format off
   constexpr std::array<std::string_view, 0x100> instruction = {
       // 0     1      2      3       4       5      6      7       8      9      A       B       C       D      E      F
@@ -66,50 +65,52 @@ void Debugger::cpu_log()
 
   auto* cpu_ptr = &CPU::get();
 
-  auto peek      = [&](uint16_t addr) { return cpu_ptr->peek(addr); };
-  auto peek_imm  = [&]() { return cpu_ptr->peek_imm(); };
-  auto peek_rel  = [&]() { return cpu_ptr->peek_rel(); };
-  auto peek_zp   = [&]() { return cpu_ptr->peek_zp(); };
-  auto peek_zpx  = [&]() { return cpu_ptr->peek_zpx(); };
-  auto peek_zpy  = [&]() { return cpu_ptr->peek_zpy(); };
-  auto peek_ab   = [&]() { return cpu_ptr->peek_ab(); };
-  auto peek_abx  = [&]() { return cpu_ptr->peek_abx(); };
-  auto peek_aby  = [&]() { return cpu_ptr->peek_aby(); };
-  auto peek_ind  = [&]() { return cpu_ptr->peek_ind(); };
+  auto peek = [&](uint16_t addr) { return cpu_ptr->peek(addr); };
+  auto peek_imm = [&]() { return cpu_ptr->peek_imm(); };
+  auto peek_rel = [&]() { return cpu_ptr->peek_rel(); };
+  auto peek_zp = [&]() { return cpu_ptr->peek_zp(); };
+  auto peek_zpx = [&]() { return cpu_ptr->peek_zpx(); };
+  auto peek_zpy = [&]() { return cpu_ptr->peek_zpy(); };
+  auto peek_ab = [&]() { return cpu_ptr->peek_ab(); };
+  auto peek_abx = [&]() { return cpu_ptr->peek_abx(); };
+  auto peek_aby = [&]() { return cpu_ptr->peek_aby(); };
+  auto peek_ind = [&]() { return cpu_ptr->peek_ind(); };
   auto peek_indx = [&]() { return cpu_ptr->peek_indx(); };
   auto peek_indy = [&]() { return cpu_ptr->peek_indy(); };
 
-  auto read_word_zp = [&](uint16_t addr) -> uint16_t { return peek((addr + 1) & 0xFF) << 8 | peek(addr); };
+  auto read_word_zp = [&](uint16_t addr) -> uint16_t {
+    return peek((addr + 1) & 0xFF) << 8 | peek(addr);
+  };
 
   auto state = cpu_ptr->get_state();
 
   std::stringstream ss;
 
-  const auto inst   = instruction[peek(state.pc)];
+  const auto inst = instruction[peek(state.pc)];
   const auto addr_m = addr_mode[peek(state.pc)];
 
-  ss << fmt::format("{:04X}  {:02X} ", state.pc, peek(state.pc));
+  ss << std::format("{:04X}  {:02X} ", state.pc, peek(state.pc));
 
-  uint8_t  arg8   = peek(state.pc + 1);
-  uint8_t  arg8_2 = peek(state.pc + 2);
-  uint16_t arg16  = (arg8_2 << 8) | arg8;
+  uint8_t arg8 = peek(state.pc + 1);
+  uint8_t arg8_2 = peek(state.pc + 2);
+  uint16_t arg16 = (arg8_2 << 8) | arg8;
 
   switch (addr_m) {
     case Absolute:
     case AbsoluteX:
     case AbsoluteY:
-    case Indirect: ss << fmt::format("{:02X} {:02X} ", arg8, arg8_2); break;
+    case Indirect: ss << std::format("{:02X} {:02X} ", arg8, arg8_2); break;
     case IndirectY:
     case IndirectX:
     case ZeroPage:
     case ZeroPageX:
     case ZeroPageY:
     case Relative:
-    case Immediate: ss << fmt::format("{:02X}    ", arg8); break;
+    case Immediate: ss << std::format("{:02X}    ", arg8); break;
     default: ss << "      "; break;
   }
 
-  ss << fmt::format("{:>4s} ", inst);
+  ss << std::format("{:>4s} ", inst);
 
   ss << std::left << std::setw(28) << std::setfill(' ');
 
@@ -126,64 +127,91 @@ void Debugger::cpu_log()
       }
       break;
     case Immediate: {
-      ss << fmt::format("#${:02X}", peek(peek_imm()));
+      ss << std::format("#${:02X}", peek(peek_imm()));
       break;
     }
     case Relative: {
-      ss << fmt::format("${:04X}", peek_rel());
+      ss << std::format("${:04X}", peek_rel());
       break;
     }
     case ZeroPage: {
-      ss << fmt::format("${:02X} = {:02X}", peek_zp(), peek(peek_zp()));
+      ss << std::format("${:02X} = {:02X}", peek_zp(), peek(peek_zp()));
       break;
     }
     case ZeroPageX: {
-      ss << fmt::format("${:02X},X @ {:02X} = {:02X}", peek_zp(), peek_zpx(), peek(peek_zpx()));
+      ss << std::format(
+        "${:02X},X @ {:02X} = {:02X}", peek_zp(), peek_zpx(), peek(peek_zpx())
+      );
       break;
     }
     case ZeroPageY: {
-      ss << fmt::format("${:02X},Y @ {:02X} = {:02X}", peek_zp(), peek_zpy(), peek(peek_zpy()));
+      ss << std::format(
+        "${:02X},Y @ {:02X} = {:02X}", peek_zp(), peek_zpy(), peek(peek_zpy())
+      );
       break;
     }
     case Absolute: {
       if (inst == "JMP" || inst == "JSR") {
-        ss << fmt::format("${:04X}", peek_ab());
+        ss << std::format("${:04X}", peek_ab());
       } else {
-        ss << fmt::format("${:04X} = {:02X}", peek_ab(), peek(peek_ab()));
+        ss << std::format("${:04X} = {:02X}", peek_ab(), peek(peek_ab()));
       }
       break;
     }
     case AbsoluteX: {
-      ss << fmt::format("${:04X},X @ {:04X} = {:02X}", arg16, peek_abx(), peek(peek_abx()));
+      ss << std::format(
+        "${:04X},X @ {:04X} = {:02X}", arg16, peek_abx(), peek(peek_abx())
+      );
       break;
     }
     case AbsoluteY: {
-      ss << fmt::format("${:04X},Y @ {:04X} = {:02X}", arg16, peek_aby(), peek(peek_aby()));
+      ss << std::format(
+        "${:04X},Y @ {:04X} = {:02X}", arg16, peek_aby(), peek(peek_aby())
+      );
       break;
     }
     case Indirect: {
-      ss << fmt::format("(${:04X}) = {:04X}", peek_ab(), peek_ind());
+      ss << std::format("(${:04X}) = {:04X}", peek_ab(), peek_ind());
       break;
     }
     case IndirectX: {
-      ss << fmt::format("(${:02X},X) @ {:02X} = {:04X} = {:02X}", arg8, peek_zpx(), peek_indx(), peek(peek_indx()));
+      ss << std::format(
+        "(${:02X},X) @ {:02X} = {:04X} = {:02X}",
+        arg8,
+        peek_zpx(),
+        peek_indx(),
+        peek(peek_indx())
+      );
       break;
     }
     case IndirectY: {
-      ss << fmt::format("(${:02X}),Y = {:04X} @ {:04X} = {:02X}", arg8, read_word_zp(arg8), peek_indy(),
-                        peek(peek_indy()));
+      ss << std::format(
+        "(${:02X}),Y = {:04X} @ {:04X} = {:02X}",
+        arg8,
+        read_word_zp(arg8),
+        peek_indy(),
+        peek(peek_indy())
+      );
       break;
     }
     default: ss << " "; break;
   }
 
-  auto ppu_cycle    = PPU::get().cycle_count();
+  auto ppu_cycle = PPU::get().cycle_count();
   auto ppu_scanline = PPU::get().scanline_count();
 
-  ss << fmt::format(
-      "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} PPU:{:3d},{:3d} "
-      "CYC:{:d}\n",
-      state.a, state.x, state.y, (state.ps | 0x20), state.sp, ppu_cycle, ppu_scanline, state.cycle_count);
+  ss << std::format(
+    "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} PPU:{:3d},{:3d} "
+    "CYC:{:d}\n",
+    state.a,
+    state.x,
+    state.y,
+    (state.ps | 0x20),
+    state.sp,
+    ppu_cycle,
+    ppu_scanline,
+    state.cycle_count
+  );
 
   nestest_log << ss.str();
 
