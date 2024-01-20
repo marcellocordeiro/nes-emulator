@@ -1,4 +1,4 @@
-#include "PPU_Types.h"
+#include "ppu_types.h"
 
 namespace nes::types::ppu {
 auto get_memory_map(uint16_t addr) -> MemoryMap {

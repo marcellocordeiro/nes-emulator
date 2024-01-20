@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
-#include "Cartridge.h"
-#include "Utility/FileManager.h"
+#include "cartridge.h"
+#include "utility/file_manager.h"
 
 namespace nes {
 auto Ppu::get() -> Ppu& {
@@ -51,7 +51,7 @@ auto Ppu::get_back_buffer() const -> const uint32_t* {
 }
 
 void Ppu::set_palette() {
-  auto palette = Utility::FileManager::get().get_palette();
+  auto palette = utility::FileManager::get().get_palette();
 
   if (palette.size() != 64 * 3) {
     throw std::invalid_argument("Invalid palette file");

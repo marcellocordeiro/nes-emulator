@@ -4,12 +4,12 @@
 #include <filesystem>
 #include <string_view>
 
-class Emulator {
+class Nes {
 public:
-  Emulator(const Emulator&) = delete;
-  Emulator(Emulator&&) = delete;
-  auto operator=(const Emulator&) -> Emulator& = delete;
-  auto operator=(Emulator&&) -> Emulator& = delete;
+  Nes(const Nes&) = delete;
+  Nes(Nes&&) = delete;
+  auto operator=(const Nes&) -> Nes& = delete;
+  auto operator=(Nes&&) -> Nes& = delete;
 
   static void set_app_path(const std::filesystem::path&);
   static void load(const std::filesystem::path&);
@@ -39,5 +39,5 @@ public:
   static constexpr auto title = std::string_view("nes-emulator");
 
 private:
-  Emulator() = default;
+  Nes() = default;
 };

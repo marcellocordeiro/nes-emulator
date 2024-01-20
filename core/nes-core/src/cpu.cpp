@@ -2,8 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
-#include "Cartridge.h"
-#include "Controller.h"
+#include "cartridge.h"
+#include "controller.h"
 #include "ppu.h"
 
 namespace nes {

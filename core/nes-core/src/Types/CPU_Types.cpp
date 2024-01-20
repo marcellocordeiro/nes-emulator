@@ -1,4 +1,4 @@
-#include "CPU_Types.h"
+#include "cpu_types.h"
 
 namespace nes::types::cpu {
 auto State::check_flags(uint8_t flags) const -> bool {

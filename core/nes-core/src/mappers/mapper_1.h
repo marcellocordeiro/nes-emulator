@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../BaseMapper.h"
+#include "../base_mapper.h"
 
 namespace nes {
 class Mapper1 final : public BaseMapper {

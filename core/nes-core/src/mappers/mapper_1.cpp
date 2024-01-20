@@ -1,4 +1,4 @@
-#include "Mapper1.h"
+#include "mapper_1.h"
 
 namespace nes {
 void Mapper1::reset() {

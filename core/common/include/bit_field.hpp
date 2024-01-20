@@ -1,30 +1,29 @@
 #pragma once
 
+#include <concepts>
 #include <limits>
-#include <type_traits>
 
 namespace lib {
-template <typename T, std::size_t position, std::size_t bits>
+template <typename ValueType, size_t position, size_t bits>
+  requires std::unsigned_integral<ValueType>
 class BitField {
 public:
-  using value_type = T;
-
   constexpr BitField() = default;
 
-  constexpr operator value_type() const noexcept { return get(); }
+  constexpr operator ValueType() const noexcept { return get(); }
   constexpr auto operator=(const BitField&) -> BitField& = delete;
 
-  constexpr auto operator=(value_type val) noexcept -> BitField& {
+  constexpr auto operator=(ValueType val) noexcept -> BitField& {
     this->set(val);
     return *this;
   }
 
-  constexpr auto operator+=(value_type rhs) noexcept -> BitField& {
+  constexpr auto operator+=(ValueType rhs) noexcept -> BitField& {
     *this = *this + rhs;
     return *this;
   }
 
-  constexpr auto operator-=(value_type rhs) noexcept -> BitField& {
+  constexpr auto operator-=(ValueType rhs) noexcept -> BitField& {
     *this = *this + rhs;
     return *this;
   }
@@ -39,30 +38,26 @@ public:
     return *this;
   }
 
-  constexpr auto operator^=(value_type rhs) noexcept -> BitField& {
+  constexpr auto operator^=(ValueType rhs) noexcept -> BitField& {
     *this = *this ^ rhs;
     return *this;
   }
 
 private:
-  constexpr auto get() const noexcept -> value_type {
+  constexpr auto get() const noexcept -> ValueType {
     return (data & get_mask()) >> position;
   }
 
-  constexpr void set(value_type value) noexcept {
+  constexpr void set(ValueType value) noexcept {
     data = (data & ~get_mask()) | ((value << position) & get_mask());
   }
 
-  constexpr auto get_mask() const noexcept -> value_type {
-    return (std::numeric_limits<value_type>::max()
-            >> (8 * sizeof(value_type) - bits))
+  constexpr auto get_mask() const noexcept -> ValueType {
+    return (std::numeric_limits<ValueType>::max()
+            >> (8 * sizeof(ValueType) - bits))
            << position;
   }
 
-  value_type data;
-
-  static_assert(
-    std::is_unsigned_v<value_type>, "Value type is not an unsigned integer"
-  );
+  ValueType data;
 };
 }  // namespace lib

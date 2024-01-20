@@ -4,11 +4,11 @@
 #include <memory>
 
 #include <common.h>
-#include "Types/PPU_Types.h"
-#include "Utility/Snapshotable.hpp"
+#include "types/ppu_types.h"
+#include "utility/snapshotable.hpp"
 
 namespace nes {
-class Ppu final : public Utility::Snapshotable {
+class Ppu final : public utility::Snapshotable {
 public:
   Ppu(const Ppu&) = delete;
   Ppu(Ppu&&) = delete;

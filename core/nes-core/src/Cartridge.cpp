@@ -1,15 +1,15 @@
-#include "Cartridge.h"
+#include "cartridge.h"
 
 #include <format>
 
 #include <spdlog/spdlog.h>
 
-#include "Mappers/Mapper0.h"
-#include "Mappers/Mapper1.h"
-#include "Mappers/Mapper2.h"
-#include "Mappers/Mapper4.h"
-#include "Mappers/Mapper7.h"
-#include "Utility/FileManager.h"
+#include "mappers/mapper_0.h"
+#include "mappers/mapper_1.h"
+#include "mappers/mapper_2.h"
+#include "mappers/mapper_4.h"
+#include "mappers/mapper_7.h"
+#include "utility/file_manager.h"
 
 namespace nes {
 auto Cartridge::get() -> Cartridge& {
@@ -20,7 +20,7 @@ auto Cartridge::get() -> Cartridge& {
 auto Cartridge::get_mapper() -> BaseMapper* { return mapper.get(); }
 
 void Cartridge::load() {
-  rom = Utility::FileManager::get().get_rom();
+  rom = utility::FileManager::get().get_rom();
 
   std::span header(rom.begin(), rom.begin() + 16);
 
@@ -60,8 +60,8 @@ void Cartridge::load() {
     chr = chr_ram;
   }
 
-  if (Utility::FileManager::get().has_prg_ram()) {
-    prg_ram = Utility::FileManager::get().get_prg_ram();
+  if (utility::FileManager::get().has_prg_ram()) {
+    prg_ram = utility::FileManager::get().get_prg_ram();
   } else {
     prg_ram.resize(0x2000, 0);
   }
@@ -108,6 +108,6 @@ void Cartridge::chr_write(uint16_t addr, uint8_t value) { chr[addr] = value; }
 void Cartridge::scanline_counter() { mapper->scanline_counter(); }
 
 void Cartridge::dump_prg_ram() const {
-  Utility::FileManager::get().save_prg_ram(prg_ram);
+  utility::FileManager::get().save_prg_ram(prg_ram);
 }
 }  // namespace nes

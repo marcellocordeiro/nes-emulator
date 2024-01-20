@@ -6,10 +6,10 @@
 
 #include <common.h>
 
-namespace nes::Utility {
-class ips_patch final {
+namespace nes::utility {
+class IpsPatch final {
 public:
-  ips_patch(const std::filesystem::path&);
+  IpsPatch(const std::filesystem::path&);
 
   auto patch(const std::vector<uint8_t>&) -> std::vector<uint8_t>;
 
@@ -28,4 +28,4 @@ private:
   std::ifstream ips_file;
   size_t min_size = 0;
 };
-}  // namespace nes::Utility
+}  // namespace nes::utility

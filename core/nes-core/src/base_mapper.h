@@ -4,11 +4,11 @@
 #include <memory>
 
 #include <common.h>
-#include "Types/PPU_Types.h"
-#include "Utility/Snapshotable.hpp"
+#include "types/ppu_types.h"
+#include "utility/snapshotable.hpp"
 
 namespace nes {
-class BaseMapper : public Utility::Snapshotable {
+class BaseMapper : public utility::Snapshotable {
 public:
   BaseMapper() = default;
   ~BaseMapper() override = default;

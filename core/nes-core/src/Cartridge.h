@@ -4,7 +4,7 @@
 #include <span>
 
 #include <common.h>
-#include "BaseMapper.h"
+#include "base_mapper.h"
 
 namespace nes {
 class Cartridge final {

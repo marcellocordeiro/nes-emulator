@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <vector>
 
-namespace nes::Utility {
+namespace nes::utility {
 class FileManager final {
 public:
   FileManager(const FileManager&) = delete;
@@ -17,11 +17,11 @@ public:
   void set_rom(const std::filesystem::path&);
   void set_palette(const std::filesystem::path&);
 
-  auto get_rom() -> std::vector<std::uint8_t>;
-  auto get_prg_ram() -> std::vector<std::uint8_t>;
-  auto get_palette() -> std::vector<std::uint8_t>;
+  auto get_rom() -> std::vector<uint8_t>;
+  auto get_prg_ram() -> std::vector<uint8_t>;
+  auto get_palette() -> std::vector<uint8_t>;
 
-  void save_prg_ram(const std::vector<std::uint8_t>&);
+  void save_prg_ram(const std::vector<uint8_t>&);
 
   auto get_app_path() const -> std::filesystem::path;
   auto get_rom_path() const -> std::filesystem::path;
@@ -44,4 +44,4 @@ private:
   std::filesystem::path palette_path;
   std::filesystem::path snapshot_path;
 };
-}  // namespace nes::Utility
+}  // namespace nes::utility

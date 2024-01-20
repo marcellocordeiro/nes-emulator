@@ -30,7 +30,7 @@ auto get_base_path() -> std::filesystem::path {
   constexpr auto path_separator = "/";
 
   std::array<char, PATH_MAX> buf;
-  std::uint32_t bufsize = PATH_MAX;
+  uint32_t bufsize = PATH_MAX;
   _NSGetExecutablePath(buf.data(), &bufsize);
 
   path = std::string(buf.data(), bufsize);

@@ -4,11 +4,11 @@
 #include <memory>
 
 #include <common.h>
-#include "Types/CPU_Types.h"
-#include "Utility/Snapshotable.hpp"
+#include "types/cpu_types.h"
+#include "utility/snapshotable.hpp"
 
 namespace nes {
-class Cpu final : public Utility::Snapshotable {
+class Cpu final : public utility::Snapshotable {
 public:
   Cpu(const Cpu&) = delete;
   Cpu(Cpu&&) = delete;

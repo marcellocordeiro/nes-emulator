@@ -1,16 +1,16 @@
-#include "APU.h"
+#include "apu.h"
 
 namespace nes {
-auto APU::get() -> APU& {
-  static APU instance;
+auto Apu::get() -> Apu& {
+  static Apu instance;
   return instance;
 }
 
-void APU::power_on() {}
+void Apu::power_on() {}
 
-auto APU::read() -> uint8_t { return 0; }
+auto Apu::read() -> uint8_t { return 0; }
 
-void APU::write(uint16_t addr, uint8_t value) {
+void Apu::write(uint16_t addr, uint8_t value) {
   UNUSED(addr);
   UNUSED(value);
 }

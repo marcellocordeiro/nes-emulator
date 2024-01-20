@@ -1,4 +1,4 @@
-#include "Debugger.h"
+#include "debugger.h"
 
 #include <array>
 #include <format>
@@ -7,9 +7,9 @@
 
 #include <common.h>
 
-#include "Types/CPU_Types.h"
 #include "cpu.h"
 #include "ppu.h"
+#include "types/cpu_types.h"
 
 #include <iomanip>  // TODO: remove this
 

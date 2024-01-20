@@ -1,4 +1,4 @@
-#include "Mapper7.h"
+#include "mapper_7.h"
 
 namespace nes {
 void Mapper7::reset() {

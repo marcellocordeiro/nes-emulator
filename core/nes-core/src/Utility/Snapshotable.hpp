@@ -7,7 +7,7 @@
 
 #include <common.h>
 
-namespace nes::Utility {
+namespace nes::utility {
 class Snapshotable {
 public:
   virtual ~Snapshotable() = default;
@@ -35,7 +35,7 @@ private:
     out.write(reinterpret_cast<char*>(&value), sizeof(value));
   }
 
-  template <typename T, std::size_t size>
+  template <typename T, size_t size>
   void dump(std::ofstream& out, const std::array<T, size>& arr) const {
     for (auto value : arr) dump(out, value);
   }
@@ -54,7 +54,7 @@ private:
     in.read(reinterpret_cast<char*>(&value), sizeof(value));
   }
 
-  template <typename T, std::size_t size>
+  template <typename T, size_t size>
   void get(std::ifstream& in, std::array<T, size>& arr) {
     for (auto& ref : arr) get(in, ref);
   }
@@ -62,7 +62,7 @@ private:
   template <typename T>
   void get(std::ifstream& in, std::vector<T>& vec) {
     {
-      std::size_t size = 0;
+      size_t size = 0;
       get(in, size);
       vec.resize(size);
     }
@@ -70,4 +70,4 @@ private:
     for (auto& ref : vec) get(in, ref);
   }
 };
-}  // namespace nes::Utility
+}  // namespace nes::utility

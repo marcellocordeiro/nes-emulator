@@ -1,4 +1,4 @@
-#include "BaseMapper.h"
+#include "base_mapper.h"
 
 namespace nes {
 void BaseMapper::set_mirroring(MirroringType value) {

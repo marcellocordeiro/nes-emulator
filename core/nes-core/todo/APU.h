@@ -3,14 +3,14 @@
 #include <common.h>
 
 namespace nes {
-class APU final {
+class Apu final {
 public:
-  APU(const APU&) = delete;
-  APU(APU&&) = delete;
-  auto operator=(const APU&) -> APU& = delete;
-  auto operator=(APU&&) -> APU& = delete;
+  Apu(const Apu&) = delete;
+  Apu(Apu&&) = delete;
+  auto operator=(const Apu&) -> Apu& = delete;
+  auto operator=(Apu&&) -> Apu& = delete;
 
-  static auto get() -> APU&;
+  static auto get() -> Apu&;
 
   void power_on();
 
@@ -18,6 +18,6 @@ public:
   void write(uint16_t, uint8_t);
 
 private:
-  APU() = default;
+  Apu() = default;
 };
 }  // namespace nes

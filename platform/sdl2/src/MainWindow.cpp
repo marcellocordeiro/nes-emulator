@@ -3,7 +3,7 @@
 #include <format>
 #include <numeric>
 
-#include <nes/Emulator.h>
+#include <nes/nes.h>
 
 MainWindow::MainWindow(int argc, char* argv[]) : args(argv, argv + argc) {
   if (args.size() == 1) {
@@ -16,11 +16,11 @@ auto MainWindow::show() -> void {
   // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
   window.reset(SDL_CreateWindow(
-    Emulator::title.data(),
+    Nes::title.data(),
     SDL_WINDOWPOS_CENTERED,
     SDL_WINDOWPOS_CENTERED,
-    Emulator::width * 3,
-    Emulator::height * 3,
+    Nes::width * 3,
+    Nes::height * 3,
     0
   ));
 
@@ -28,14 +28,14 @@ auto MainWindow::show() -> void {
     window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
   ));
 
-  SDL_RenderSetLogicalSize(renderer.get(), Emulator::width, Emulator::height);
+  SDL_RenderSetLogicalSize(renderer.get(), Nes::width, Nes::height);
 
   texture.reset(SDL_CreateTexture(
     renderer.get(),
     SDL_PIXELFORMAT_ARGB8888,
     SDL_TEXTUREACCESS_STREAMING,
-    Emulator::width,
-    Emulator::height
+    Nes::width,
+    Nes::height
   ));
 
   keys = SDL_GetKeyboardState(nullptr);
@@ -44,11 +44,11 @@ auto MainWindow::show() -> void {
 }
 
 auto MainWindow::run() -> void {
-  buffer = Emulator::get_back_buffer();
+  buffer = Nes::get_back_buffer();
 
-  Emulator::set_app_path(SDL_GetBasePath());
-  Emulator::load(args[1]);
-  Emulator::power_on();
+  Nes::set_app_path(SDL_GetBasePath());
+  Nes::load(args[1]);
+  Nes::power_on();
 
   auto fpsTimer = std::chrono::steady_clock::now();
   int elapsedFrames = 0;
@@ -60,7 +60,7 @@ auto MainWindow::run() -> void {
 
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
-        case SDL_QUIT: Emulator::power_off(); return;
+        case SDL_QUIT: Nes::power_off(); return;
         case SDL_KEYDOWN: processInput(e.key); break;
       }
     }
@@ -73,7 +73,7 @@ auto MainWindow::run() -> void {
       if (elapsedTime > 1s) {
         auto fps =
           elapsedFrames / std::chrono::duration<double>(elapsedTime).count();
-        auto title = std::format("{} | {:5.2f}fps", Emulator::title, fps);
+        auto title = std::format("{} | {:5.2f}fps", Nes::title, fps);
         SDL_SetWindowTitle(window.get(), title.c_str());
 
         fpsTimer = std::chrono::steady_clock::now();
@@ -83,7 +83,7 @@ auto MainWindow::run() -> void {
 
     if (running) {
       updateEmulatedControllers();
-      Emulator::run_frame();
+      Nes::run_frame();
     }
 
     render();
@@ -122,7 +122,7 @@ auto MainWindow::updateEmulatedControllers() -> void {
   state |= (keys[controllerKeyBindings[Button::Left]]) << 6;
   state |= (keys[controllerKeyBindings[Button::Right]]) << 7;
 
-  Emulator::update_controller_state(0, state);
+  Nes::update_controller_state(0, state);
 }
 
 auto MainWindow::processInput(SDL_KeyboardEvent& key_event) -> void {
@@ -133,9 +133,9 @@ auto MainWindow::processInput(SDL_KeyboardEvent& key_event) -> void {
 
     switch (action) {
       case Action::Pause: running = !running; return;
-      case Action::Reset: Emulator::reset(); return;
-      case Action::SaveSnapshot: Emulator::save_snapshot(); return;
-      case Action::LoadSnapshot: Emulator::load_snapshot(); return;
+      case Action::Reset: Nes::reset(); return;
+      case Action::SaveSnapshot: Nes::save_snapshot(); return;
+      case Action::LoadSnapshot: Nes::load_snapshot(); return;
       case Action::ToggleLimiter: return;
       case Action::VolumeUp: return;
       case Action::VolumeDown: return;
@@ -145,7 +145,7 @@ auto MainWindow::processInput(SDL_KeyboardEvent& key_event) -> void {
 
 auto MainWindow::render() -> void {
   SDL_UpdateTexture(
-    texture.get(), nullptr, buffer, Emulator::width * sizeof(uint32_t)
+    texture.get(), nullptr, buffer, Nes::width * sizeof(uint32_t)
   );
 
   SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);

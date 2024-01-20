@@ -7,7 +7,7 @@
 #include <QCoreApplication>
 #include <QKeyEvent>
 
-#include <nes/Emulator.h>
+#include <nes/nes.h>
 
 MainWindow::MainWindow(QWidget* parent)
   : QMainWindow(parent),

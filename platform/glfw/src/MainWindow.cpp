@@ -2,7 +2,7 @@
 
 #include <format>
 
-#include <nes/Emulator.h>
+#include <nes/nes.h>
 #include <system_utils.h>
 
 MainWindow::MainWindow(int argc, char* argv[]) {

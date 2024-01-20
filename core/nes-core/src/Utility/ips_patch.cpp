@@ -1,15 +1,15 @@
-#include "Patch.h"
+#include "ips_patch.h"
 
 #include <algorithm>
 #include <string>
 
-namespace nes::Utility {
-ips_patch::ips_patch(const std::filesystem::path& path)
+namespace nes::utility {
+IpsPatch::IpsPatch(const std::filesystem::path& path)
   : ips_file(path, std::ios::binary) {
   build();
 }
 
-void ips_patch::build() {
+void IpsPatch::build() {
   if (!check()) {
     throw std::runtime_error("Invalid IPS patch");
   }
@@ -21,7 +21,7 @@ void ips_patch::build() {
   }
 }
 
-auto ips_patch::patch(const std::vector<uint8_t>& rom) -> std::vector<uint8_t> {
+auto IpsPatch::patch(const std::vector<uint8_t>& rom) -> std::vector<uint8_t> {
   std::vector<uint8_t> output(std::max(min_size, rom.size()));
 
   std::copy(rom.begin(), rom.end(), output.begin());
@@ -51,7 +51,7 @@ auto ips_patch::patch(const std::vector<uint8_t>& rom) -> std::vector<uint8_t> {
   return output;
 }
 
-auto ips_patch::check() -> bool {
+auto IpsPatch::check() -> bool {
   std::string header;
   header.resize(5);
   ips_file.read(header.data(), 5);
@@ -59,7 +59,7 @@ auto ips_patch::check() -> bool {
   return header == "PATCH";
 }
 
-auto ips_patch::read_record() -> bool {
+auto IpsPatch::read_record() -> bool {
   constexpr auto magic_eof = (('E') << 16) | ('O' << 8) | ('F');
 
   record_entry record;
@@ -91,4 +91,4 @@ auto ips_patch::read_record() -> bool {
 
   return true;
 }
-}  // namespace nes::Utility
+}  // namespace nes::utility

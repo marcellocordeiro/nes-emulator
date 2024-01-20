@@ -3,10 +3,10 @@
 #include <array>
 
 #include <common.h>
-#include "Utility/Snapshotable.hpp"
+#include "utility/snapshotable.hpp"
 
 namespace nes {
-class Controller final : public Utility::Snapshotable {
+class Controller final : public utility::Snapshotable {
 public:
   Controller(const Controller&) = delete;
   Controller(Controller&&) = delete;
