@@ -1,9 +1,9 @@
 project(nes-core)
 
 file(GLOB SOURCE_FILES
-  "src/Mappers/*.cpp"
-  "src/Types/*.cpp"
-  "src/Utility/*.cpp"
+  "src/mappers/*.cpp"
+  "src/types/*.cpp"
+  "src/utility/*.cpp"
   "src/*.cpp"
 )
 
