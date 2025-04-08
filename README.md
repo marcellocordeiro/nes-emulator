@@ -1,6 +1,6 @@
 # nes-emulator
 
-Experimental NES emulator written in C++20 and OpenGL with support for GLFW, Qt5 and SDL2 frontends.
+Experimental NES emulator written in C++20 using SDL2.
 
 **_Disclaimer_**: this emulator is an experimental project for educational purposes. The development and use of emulators is legal, as long as no copyrighted content is illegally obtained. This means you are responsible for dumping your and games. However, there exists free and open-source content in case you'd like to test this project and/or contribute :blush:
 
@@ -34,33 +34,29 @@ Experimental NES emulator written in C++20 and OpenGL with support for GLFW, Qt5
 
 ## Dependencies
 
-This project requires an updated compiler with C++20 support to be built. It has been tested with GCC 11.1.0 and MSVC 19.28.29915.0 (VS 16.9). `qt5-base`, `sdl2` and `glfw` are optional dependencies but at least one is required to build the full project and generate the executable.
+This project requires an updated compiler with C++20 support to be built. It has been tested with GCC 11.1.0 and MSVC 19.28.29915.0 (VS 16.9).
 
 ### Arch Linux
 
 ```bash
 pacman -S fmt spdlog
-pacman -S qt5-base
 pacman -S sdl2
-pacman -S glfw-x11
 ```
 
 ### Windows
 
 ```cmd
 vcpkg install fmt:x64-windows spdlog:x64-windows
-vcpkg install qt5-base:x64-windows
 vcpkg install sdl2:x64-windows
-vcpkg install glfw:x64-windows
 ```
 
 ## Building
 
-Generate the solution files using CMake and build it. You can choose the frontend by editing your `CMakeCache.txt`.
+Generate the solution files using CMake and build it.
 
 ## Running
 
-Run the `nes-emulator-[frontend]{,.exe}` executable generated in the `bin` folder passing the ROM path as an argument (e.g. `./nes-emulator-[frontend]{,.exe} rom.nes`).
+Run the `nes-emulator-sdl2{,.exe}` executable generated in the `bin` folder passing the ROM path as an argument (e.g. `./nes-emulator-sdl2{,.exe} rom.nes`).
 
 ## todo
 

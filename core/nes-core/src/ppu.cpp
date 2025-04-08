@@ -425,7 +425,7 @@ void Ppu::background_shift() {
 }
 
 auto Ppu::get_background_pixel() const -> uint8_t {
-  uint8_t pixel = tick - 2;
+  auto pixel = static_cast<uint8_t>(tick - 2);
 
   if (mask.show_bg && !(!mask.bg_left && pixel < 8)) {
     uint8_t bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
@@ -442,8 +442,8 @@ auto Ppu::get_background_pixel() const -> uint8_t {
 }
 
 auto Ppu::get_sprite_pixel() -> uint8_t {
-  uint8_t pixel = tick - 2;
-  uint8_t bg_palette = get_background_pixel();
+  auto pixel = static_cast<uint8_t>(tick - 2);
+  auto bg_palette = get_background_pixel();
 
   if (!(mask.show_spr && !(!mask.spr_left && pixel < 8))) return bg_palette;
 
