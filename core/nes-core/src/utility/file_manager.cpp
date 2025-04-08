@@ -2,7 +2,6 @@
 
 #include <fstream>
 
-#include <file_utils.h>
 #include <spdlog/spdlog.h>
 
 #include "ips_patch.h"
@@ -50,7 +49,10 @@ auto FileManager::get_rom() -> std::vector<uint8_t> {
     throw std::invalid_argument("The ROM path needs to be set first");
   }
 
-  auto rom = lib::load_bytes_from_file(rom_path);
+  std::ifstream rom_stream(rom_path, std::ios::binary);
+
+  std::vector rom(std::filesystem::file_size(rom_path), uint8_t{});
+  rom_stream.read(reinterpret_cast<char*>(rom.data()), rom.size());
 
   if (has_patch()) {
     rom = IpsPatch(patch_path).patch(rom);
@@ -60,17 +62,24 @@ auto FileManager::get_rom() -> std::vector<uint8_t> {
 }
 
 auto FileManager::get_prg_ram() -> std::vector<uint8_t> {
-  if (!has_prg_ram()) {
-    return {};
-  }
+  std::vector prg_ram(std::filesystem::file_size(prg_ram_path), uint8_t{});
 
-  auto prg_ram = lib::load_bytes_from_file(prg_ram_path);
+  if (has_prg_ram()) {
+    std::ifstream prg_ram_file(prg_ram_path, std::ios::binary);
+    prg_ram_file.read(reinterpret_cast<char*>(prg_ram.data()), prg_ram.size());
+  }
 
   return prg_ram;
 }
 
 auto FileManager::get_palette() -> std::vector<uint8_t> {
-  auto palette = lib::load_bytes_from_file(prg_ram_path);
+  std::ifstream file(palette_path, std::ios::binary);
+
+  std::vector<uint8_t> palette(
+    std::filesystem::file_size(palette_path), uint8_t{}
+  );
+
+  file.read(reinterpret_cast<char*>(palette.data()), palette.size());
 
   return palette;
 }

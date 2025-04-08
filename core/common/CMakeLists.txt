@@ -1,7 +1,6 @@
 project(common)
 
 add_library(common STATIC 
-  "src/file_utils.cpp"
   "src/system_utils.cpp"
 )
 
