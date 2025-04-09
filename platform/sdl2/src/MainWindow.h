@@ -5,7 +5,7 @@
 #include <string_view>
 #include <vector>
 
-#include "SDL2Helper.hpp"
+#include "SDLHelper.hpp"
 
 class MainWindow {
 public:
@@ -16,7 +16,7 @@ public:
   MainWindow& operator=(const MainWindow&) = delete;
   MainWindow& operator=(MainWindow&&) = delete;
 
-  auto show() -> void;
+  auto show() -> int;
   auto run() -> void;
 
 private:
@@ -26,9 +26,9 @@ private:
 
   std::vector<std::string_view> args;
 
-  SDL2Helper instance{SDL_INIT_VIDEO};
+  SDLHelper instance{SDL_INIT_VIDEO};
 
-  SDL2Helper::Window window;
+  SDLHelper::Window window;
 
   // double volume = 0.1;
   bool running = false;
@@ -73,8 +73,8 @@ private:
 
   auto render() -> void;
 
-  SDL2Helper::Renderer renderer;
-  SDL2Helper::Texture texture;
+  SDLHelper::Renderer renderer;
+  SDLHelper::Texture texture;
 
   const uint32_t* buffer = nullptr;
 };

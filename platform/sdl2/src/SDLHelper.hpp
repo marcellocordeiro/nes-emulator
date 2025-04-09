@@ -3,14 +3,14 @@
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
 
-class SDL2Helper {
+class SDLHelper {
 public:
-  explicit SDL2Helper(Uint32 flags) {
+  explicit SDLHelper(Uint32 flags) {
     SDL_Init(flags);
     ++counter;
   }
 
-  ~SDL2Helper() {
+  ~SDLHelper() {
     --counter;
     if (!counter) SDL_Quit();
   }

@@ -33,8 +33,12 @@ public:
   static void save_snapshot();
   static void load_snapshot();
 
-  static constexpr int width = 256;
-  static constexpr int height = 240;
+  static constexpr int SCREEN_WIDTH = 256;
+  static constexpr int SCREEN_HEIGHT = 240;
+  static constexpr int FRAMEBUFFER_SIZE = (SCREEN_WIDTH * SCREEN_HEIGHT) * sizeof(uint32_t);
+
+  static constexpr int width = SCREEN_WIDTH;
+  static constexpr int height = SCREEN_HEIGHT;
 
   static constexpr auto title = std::string_view("nes-emulator");
 

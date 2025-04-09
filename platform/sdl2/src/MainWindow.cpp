@@ -11,36 +11,62 @@ MainWindow::MainWindow(int argc, char* argv[]) : args(argv, argv + argc) {
   }
 }
 
-auto MainWindow::show() -> void {
-  // Bilinear filter
-  // SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+auto MainWindow::show() -> int {
+  {
+    auto raw_window = SDL_CreateWindow(
+      Nes::title.data(),
+      SDL_WINDOWPOS_CENTERED,
+      SDL_WINDOWPOS_CENTERED,
+      Nes::width * 3,
+      Nes::height * 3,
+      0
+    );
 
-  window.reset(SDL_CreateWindow(
-    Nes::title.data(),
-    SDL_WINDOWPOS_CENTERED,
-    SDL_WINDOWPOS_CENTERED,
-    Nes::width * 3,
-    Nes::height * 3,
-    0
-  ));
+    if (raw_window == nullptr) {
+      printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
+      return -1;
+    }
 
-  renderer.reset(SDL_CreateRenderer(
-    window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
-  ));
+    window.reset(raw_window);
+  }
+
+  {  
+    auto raw_renderer = SDL_CreateRenderer(
+      window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
+    );
+
+    if (raw_renderer == nullptr) {
+      printf("Error: SDL_CreateRenderer(): %s\n", SDL_GetError());
+      return -1;
+    }
+
+    renderer.reset(raw_renderer);
+  }
 
   SDL_RenderSetLogicalSize(renderer.get(), Nes::width, Nes::height);
 
-  texture.reset(SDL_CreateTexture(
-    renderer.get(),
-    SDL_PIXELFORMAT_ARGB8888,
-    SDL_TEXTUREACCESS_STREAMING,
-    Nes::width,
-    Nes::height
-  ));
+  {
+    auto raw_texture = SDL_CreateTexture(
+      renderer.get(),
+      SDL_PIXELFORMAT_ARGB8888,
+      SDL_TEXTUREACCESS_STREAMING,
+      Nes::width,
+      Nes::height
+    );
+
+    if (raw_texture == nullptr) {
+      printf("Error: SDL_CreateTexture(): %s\n", SDL_GetError());
+      return -1;
+    }
+
+    texture.reset(raw_texture);
+  }
 
   keys = SDL_GetKeyboardState(nullptr);
 
   setupDefaultBindings();
+
+  return 0;
 }
 
 auto MainWindow::run() -> void {
