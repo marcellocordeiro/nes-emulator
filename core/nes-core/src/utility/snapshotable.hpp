@@ -37,13 +37,17 @@ private:
 
   template <typename T, size_t size>
   void dump(std::ofstream& out, const std::array<T, size>& arr) const {
-    for (auto value : arr) dump(out, value);
+    for (auto value : arr) {
+      dump(out, value);
+    }
   }
 
   template <typename T>
   void dump(std::ofstream& out, const std::vector<T>& vec) const {
     dump(out, vec.size());
-    for (auto value : vec) dump(out, value);
+    for (auto value : vec) {
+      dump(out, value);
+    }
   }
 
   //
@@ -56,7 +60,9 @@ private:
 
   template <typename T, size_t size>
   void get(std::ifstream& in, std::array<T, size>& arr) {
-    for (auto& ref : arr) get(in, ref);
+    for (auto& ref : arr) {
+      get(in, ref);
+    }
   }
 
   template <typename T>
@@ -67,7 +73,9 @@ private:
       vec.resize(size);
     }
 
-    for (auto& ref : vec) get(in, ref);
+    for (auto& ref : vec) {
+      get(in, ref);
+    }
   }
 };
 }  // namespace nes::utility

@@ -17,7 +17,9 @@ auto Cartridge::get() -> Cartridge& {
   return instance;
 }
 
-auto Cartridge::get_mapper() -> BaseMapper* { return mapper.get(); }
+auto Cartridge::get_mapper() -> BaseMapper* {
+  return mapper.get();
+}
 
 void Cartridge::load() {
   rom = utility::FileManager::get().get_rom();
@@ -29,19 +31,15 @@ void Cartridge::load() {
   chr_size = header[5] * 0x2000;
   has_chr_ram = chr_size == 0;
   prg_ram_size = header[8] ? header[8] * 0x2000 : 0x2000;
-  mirroring =
-    (header[6] & 1) ? MirroringType::Vertical : MirroringType::Horizontal;
+  mirroring = (header[6] & 1) ? MirroringType::Vertical : MirroringType::Horizontal;
 
   switch (mapper_num) {
-    case 0: mapper = std::make_unique<Mapper0>(); break;
-    case 1: mapper = std::make_unique<Mapper1>(); break;
-    case 2: mapper = std::make_unique<Mapper2>(); break;
-    case 4: mapper = std::make_unique<Mapper4>(); break;
-    case 7: mapper = std::make_unique<Mapper7>(); break;
-    default:
-      throw std::runtime_error(
-        std::format("Mapper #{} not implemented", mapper_num)
-      );
+  case 0: mapper = std::make_unique<Mapper0>(); break;
+  case 1: mapper = std::make_unique<Mapper1>(); break;
+  case 2: mapper = std::make_unique<Mapper2>(); break;
+  case 4: mapper = std::make_unique<Mapper4>(); break;
+  case 7: mapper = std::make_unique<Mapper7>(); break;
+  default: throw std::runtime_error(std::format("Mapper #{} not implemented", mapper_num));
   }
 
   auto prg_start = rom.begin() + 16;
@@ -103,9 +101,13 @@ auto Cartridge::chr_read(uint16_t addr) const -> uint8_t {
   return chr[mapped_addr];
 }
 
-void Cartridge::chr_write(uint16_t addr, uint8_t value) { chr[addr] = value; }
+void Cartridge::chr_write(uint16_t addr, uint8_t value) {
+  chr[addr] = value;
+}
 
-void Cartridge::scanline_counter() { mapper->scanline_counter(); }
+void Cartridge::scanline_counter() {
+  mapper->scanline_counter();
+}
 
 void Cartridge::dump_prg_ram() const {
   utility::FileManager::get().save_prg_ram(prg_ram);

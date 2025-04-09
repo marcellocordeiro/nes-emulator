@@ -36,9 +36,13 @@ public:
   // Read without side effects
   //
 
-  auto cycle_count() const -> int { return tick; }
+  auto cycle_count() const -> int {
+    return tick;
+  }
 
-  auto scanline_count() const -> int { return scanline; }
+  auto scanline_count() const -> int {
+    return scanline;
+  }
 
   auto peek_reg(uint16_t) const -> uint8_t;
   auto peek_vram(uint16_t) const -> uint8_t;
@@ -102,17 +106,21 @@ private:
   // Addresses
   //
 
-  auto nt_addr() const -> uint16_t;               // Nametable address
-  auto at_addr() const -> uint16_t;               // Attribute address
-  auto bg_addr() const -> uint16_t;               // Background address
-  auto palette_addr(uint16_t) const -> uint16_t;  // Palette address
-  auto nt_mirror_addr(uint16_t) const
-    -> uint16_t;  // Relative nametable address
+  auto nt_addr() const -> uint16_t;                 // Nametable address
+  auto at_addr() const -> uint16_t;                 // Attribute address
+  auto bg_addr() const -> uint16_t;                 // Background address
+  auto palette_addr(uint16_t) const -> uint16_t;    // Palette address
+  auto nt_mirror_addr(uint16_t) const -> uint16_t;  // Relative nametable address
 
   template <typename T>
   auto get_palette(T, T, int) const -> uint8_t;  // Get palette
 
-  enum timing { Idle, Visible, VBlank, PreRender };
+  enum timing {
+    Idle,
+    Visible,
+    VBlank,
+    PreRender
+  };
 
   int ppu_state = Visible;
   uint16_t ppu_addr = 0;

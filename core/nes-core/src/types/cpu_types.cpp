@@ -5,9 +5,13 @@ auto State::check_flags(uint8_t flags) const -> bool {
   return (this->ps & flags) == flags;
 }
 
-void State::set_flags(uint8_t flags) { this->ps |= flags; }
+void State::set_flags(uint8_t flags) {
+  this->ps |= flags;
+}
 
-void State::clear_flags(uint8_t flags) { this->ps &= ~flags; }
+void State::clear_flags(uint8_t flags) {
+  this->ps &= ~flags;
+}
 
 void State::update_nz(uint8_t value) {
   clear_flags(flags::Zero | flags::Negative);
@@ -34,9 +38,13 @@ void State::set_y(uint8_t value) {
   this->update_nz(this->y);
 }
 
-void State::set_pc(uint16_t addr) { this->pc = addr; }
+void State::set_pc(uint16_t addr) {
+  this->pc = addr;
+}
 
-void State::set_ps(uint8_t value) { this->ps = value & 0xCF; }
+void State::set_ps(uint8_t value) {
+  this->ps = value & 0xCF;
+}
 
 //
 // CPU (memory)
@@ -45,9 +53,7 @@ void State::set_ps(uint8_t value) { this->ps = value & 0xCF; }
 namespace memory {
 template <auto Operation>
 auto get_map(uint16_t addr) -> MemoryMap {
-  auto in_range = [addr](const auto lower, const auto upper) {
-    return (addr >= lower) && (addr <= upper);
-  };
+  auto in_range = [addr](const auto lower, const auto upper) { return (addr >= lower) && (addr <= upper); };
 
   if constexpr (Operation == Operation::Read) {
     if (addr <= 0x1FFF) {

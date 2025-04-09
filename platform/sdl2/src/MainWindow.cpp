@@ -30,10 +30,8 @@ auto MainWindow::show() -> int {
     window.reset(raw_window);
   }
 
-  {  
-    auto raw_renderer = SDL_CreateRenderer(
-      window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC
-    );
+  {
+    auto raw_renderer = SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     if (raw_renderer == nullptr) {
       printf("Error: SDL_CreateRenderer(): %s\n", SDL_GetError());
@@ -46,13 +44,8 @@ auto MainWindow::show() -> int {
   SDL_RenderSetLogicalSize(renderer.get(), Nes::width, Nes::height);
 
   {
-    auto raw_texture = SDL_CreateTexture(
-      renderer.get(),
-      SDL_PIXELFORMAT_ARGB8888,
-      SDL_TEXTUREACCESS_STREAMING,
-      Nes::width,
-      Nes::height
-    );
+    auto raw_texture =
+      SDL_CreateTexture(renderer.get(), SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, Nes::width, Nes::height);
 
     if (raw_texture == nullptr) {
       printf("Error: SDL_CreateTexture(): %s\n", SDL_GetError());
@@ -86,8 +79,8 @@ auto MainWindow::run() -> void {
 
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
-        case SDL_QUIT: Nes::power_off(); return;
-        case SDL_KEYDOWN: processInput(e.key); break;
+      case SDL_QUIT: Nes::power_off(); return;
+      case SDL_KEYDOWN: processInput(e.key); break;
       }
     }
 
@@ -97,8 +90,7 @@ auto MainWindow::run() -> void {
       auto elapsedTime = std::chrono::steady_clock::now() - fpsTimer;
 
       if (elapsedTime > 1s) {
-        auto fps =
-          elapsedFrames / std::chrono::duration<double>(elapsedTime).count();
+        auto fps = elapsedFrames / std::chrono::duration<double>(elapsedTime).count();
         auto title = std::format("{} | {:5.2f}fps", Nes::title, fps);
         SDL_SetWindowTitle(window.get(), title.c_str());
 
@@ -155,24 +147,24 @@ auto MainWindow::processInput(SDL_KeyboardEvent& key_event) -> void {
   auto key = key_event.keysym.scancode;
 
   for (const auto& [action, mappedKey] : actionKeyBindings) {
-    if (mappedKey != key) continue;
+    if (mappedKey != key) {
+      continue;
+    }
 
     switch (action) {
-      case Action::Pause: running = !running; return;
-      case Action::Reset: Nes::reset(); return;
-      case Action::SaveSnapshot: Nes::save_snapshot(); return;
-      case Action::LoadSnapshot: Nes::load_snapshot(); return;
-      case Action::ToggleLimiter: return;
-      case Action::VolumeUp: return;
-      case Action::VolumeDown: return;
+    case Action::Pause: running = !running; return;
+    case Action::Reset: Nes::reset(); return;
+    case Action::SaveSnapshot: Nes::save_snapshot(); return;
+    case Action::LoadSnapshot: Nes::load_snapshot(); return;
+    case Action::ToggleLimiter: return;
+    case Action::VolumeUp: return;
+    case Action::VolumeDown: return;
     }
   }
 }
 
 auto MainWindow::render() -> void {
-  SDL_UpdateTexture(
-    texture.get(), nullptr, buffer, Nes::width * sizeof(uint32_t)
-  );
+  SDL_UpdateTexture(texture.get(), nullptr, buffer, Nes::width * sizeof(uint32_t));
 
   SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
   SDL_RenderPresent(renderer.get());

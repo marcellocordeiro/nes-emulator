@@ -32,9 +32,7 @@ void Nes::power_on() {
   Cpu::get().nmi_conn = nmi;
   Ppu::get().nmi_conn = nmi;
 
-  auto mirroring = std::make_shared<types::ppu::MirroringType>(
-    types::ppu::MirroringType::Unknown
-  );
+  auto mirroring = std::make_shared<types::ppu::MirroringType>(types::ppu::MirroringType::Unknown);
   Ppu::get().mirroring_conn = mirroring;
   Cartridge::get().mirroring_conn = mirroring;
 
@@ -44,9 +42,13 @@ void Nes::power_on() {
   Ppu::get().power_on();
 }
 
-void Nes::power_off() { Cartridge::get().dump_prg_ram(); }
+void Nes::power_off() {
+  Cartridge::get().dump_prg_ram();
+}
 
-void Nes::run_frame() { Cpu::get().run_frame(); }
+void Nes::run_frame() {
+  Cpu::get().run_frame();
+}
 
 auto Nes::get_back_buffer() -> const uint32_t* {
   return Ppu::get().get_back_buffer();
@@ -61,28 +63,26 @@ void Nes::update_controller_state(size_t port, uint8_t state) {
 //
 
 void Nes::save_snapshot() {
-  std::array<utility::Snapshotable*, 4> snapshotable = {
-    &Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()
-  };
+  std::array<utility::Snapshotable*, 4> snapshotable =
+    {&Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()};
 
-  std::ofstream out{
-    utility::FileManager::get().get_snapshot_path(), std::ios::binary
-  };
-  for (const auto& component : snapshotable) component->save(out);
+  std::ofstream out{utility::FileManager::get().get_snapshot_path(), std::ios::binary};
+  for (const auto& component : snapshotable) {
+    component->save(out);
+  }
 }
 
 void Nes::load_snapshot() {
-  std::array<utility::Snapshotable*, 4> snapshotable = {
-    &Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()
-  };
+  std::array<utility::Snapshotable*, 4> snapshotable =
+    {&Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()};
 
   if (!utility::FileManager::get().has_snapshot()) {
     spdlog::info("Attempting to load a non-existent snapshot file");
     return;
   }
 
-  std::ifstream in{
-    utility::FileManager::get().get_snapshot_path(), std::ios::binary
-  };
-  for (auto& component : snapshotable) component->load(in);
+  std::ifstream in{utility::FileManager::get().get_snapshot_path(), std::ios::binary};
+  for (auto& component : snapshotable) {
+    component->load(in);
+  }
 }

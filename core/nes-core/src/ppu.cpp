@@ -108,10 +108,10 @@ void Ppu::set_palette() {
 
 void Ppu::step() {
   switch (ppu_state) {
-    case Visible: scanline_cycle_visible(); break;
-    case VBlank: scanline_cycle_nmi(); break;
-    case PreRender: scanline_cycle_pre(); break;
-    case Idle: break;
+  case Visible: scanline_cycle_visible(); break;
+  case VBlank: scanline_cycle_nmi(); break;
+  case PreRender: scanline_cycle_pre(); break;
+  case Idle: break;
   }
 
   ++tick;
@@ -121,12 +121,9 @@ void Ppu::step() {
 
     if (scanline == 240) {
       back_buffer = frame_buffer;
-      std::transform(
-        back_buffer.begin(),
-        back_buffer.end(),
-        back_buffer.begin(),
-        [this](uint32_t p) { return full_nes_palette[mask.rgb][p]; }
-      );
+      std::transform(back_buffer.begin(), back_buffer.end(), back_buffer.begin(), [this](uint32_t p) {
+        return full_nes_palette[mask.rgb][p];
+      });
       ppu_state = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
@@ -152,15 +149,16 @@ auto Ppu::peek_reg(uint16_t addr) const -> uint8_t {
   using enum types::ppu::PpuMap;
 
   switch (addr % 8) {
-    case PpuStatus: return (bus_latch & 0x1F) | status.raw;
-    case OamData: return oam_mem[oam_addr];
-    case PpuData:
-      if (vram_addr.addr <= 0x3EFF) {
-        return ppudata_buffer;
-      } else {
-        return peek_vram(vram_addr.addr);
-      }
-    default: break;
+  case PpuStatus: return (bus_latch & 0x1F) | status.raw;
+  case OamData: return oam_mem[oam_addr];
+  case PpuData:
+    if (vram_addr.addr <= 0x3EFF) {
+      return ppudata_buffer;
+    } else {
+      return peek_vram(vram_addr.addr);
+    }
+
+  default: break;
   }
 
   return bus_latch;
@@ -170,31 +168,31 @@ auto Ppu::read(uint16_t addr) -> uint8_t {
   using enum types::ppu::PpuMap;
 
   switch (addr % 8) {
-    case PpuStatus: {
-      bus_latch = (bus_latch & 0x1F) | status.raw;
-      status.vblank = 0;
-      addr_latch = false;
-      break;
+  case PpuStatus: {
+    bus_latch = (bus_latch & 0x1F) | status.raw;
+    status.vblank = 0;
+    addr_latch = false;
+    break;
+  }
+
+  case OamData: {
+    bus_latch = oam_mem[oam_addr];
+    break;
+  }
+
+  case PpuData: {
+    if (vram_addr.addr <= 0x3EFF) {
+      bus_latch = ppudata_buffer;
+      ppudata_buffer = vram_read(vram_addr.addr);
+    } else {
+      ppudata_buffer = vram_read(vram_addr.addr);
+      bus_latch = ppudata_buffer;
     }
 
-    case OamData: {
-      bus_latch = oam_mem[oam_addr];
-      break;
-    }
+    vram_addr.addr += addr_increment;
+  }
 
-    case PpuData: {
-      if (vram_addr.addr <= 0x3EFF) {
-        bus_latch = ppudata_buffer;
-        ppudata_buffer = vram_read(vram_addr.addr);
-      } else {
-        ppudata_buffer = vram_read(vram_addr.addr);
-        bus_latch = ppudata_buffer;
-      }
-
-      vram_addr.addr += addr_increment;
-    }
-
-    default: break;
+  default: break;
   }
 
   return bus_latch;
@@ -206,78 +204,80 @@ void Ppu::write(uint16_t addr, uint8_t value) {
   bus_latch = value;
 
   switch (addr % 8) {
-    case PpuCtrl: {
-      ctrl.raw = value;
-      temp_addr.nt = ctrl.nt;
+  case PpuCtrl: {
+    ctrl.raw = value;
+    temp_addr.nt = ctrl.nt;
 
-      sprite_height = ctrl.spr_size ? 16 : 8;
-      addr_increment = ctrl.addr_inc ? 32 : 1;
-      break;
+    sprite_height = ctrl.spr_size ? 16 : 8;
+    addr_increment = ctrl.addr_inc ? 32 : 1;
+    break;
+  }
+
+  case PpuMask: {
+    mask.raw = value;
+
+    is_rendering = mask.show_bg || mask.show_spr;
+    grayscale_mask = mask.grayscale ? 0x30 : 0x3F;
+    selected_palette = mask.rgb;
+    break;
+  }
+
+  case OamAddr: {
+    oam_addr = value;
+    break;
+  }
+
+  case OamData: {
+    oam_mem[oam_addr] = value;
+    ++oam_addr;
+    break;
+  }
+
+  case PpuScroll: {
+    if (!addr_latch) {  // First write
+      fine_x = value & 7;
+      temp_addr.coarse_x = value >> 3;
+    } else {  // Second write
+      temp_addr.fine_y = value & 7;
+      temp_addr.coarse_y = value >> 3;
     }
 
-    case PpuMask: {
-      mask.raw = value;
+    addr_latch = !addr_latch;
+    break;
+  }
 
-      is_rendering = mask.show_bg || mask.show_spr;
-      grayscale_mask = mask.grayscale ? 0x30 : 0x3F;
-      selected_palette = mask.rgb;
-      break;
+  case PpuAddr: {
+    if (!addr_latch) {  // First write
+      temp_addr.h = value & 0x3F;
+    } else {  // Second write
+      temp_addr.l = value;
+      vram_addr.raw = temp_addr.raw;
     }
 
-    case OamAddr: {
-      oam_addr = value;
-      break;
-    }
+    addr_latch = !addr_latch;
+    break;
+  }
 
-    case OamData: {
-      oam_mem[oam_addr] = value;
-      ++oam_addr;
-      break;
-    }
-
-    case PpuScroll: {
-      if (!addr_latch) {  // First write
-        fine_x = value & 7;
-        temp_addr.coarse_x = value >> 3;
-      } else {  // Second write
-        temp_addr.fine_y = value & 7;
-        temp_addr.coarse_y = value >> 3;
-      }
-
-      addr_latch = !addr_latch;
-      break;
-    }
-
-    case PpuAddr: {
-      if (!addr_latch) {  // First write
-        temp_addr.h = value & 0x3F;
-      } else {  // Second write
-        temp_addr.l = value;
-        vram_addr.raw = temp_addr.raw;
-      }
-
-      addr_latch = !addr_latch;
-      break;
-    }
-
-    case PpuData: {
-      vram_write(vram_addr.addr, value);
-      vram_addr.addr += addr_increment;
-      break;
-    }
+  case PpuData: {
+    vram_write(vram_addr.addr, value);
+    vram_addr.addr += addr_increment;
+    break;
+  }
   }
 }
 
-auto Ppu::peek_vram(uint16_t addr) const -> uint8_t { return vram_read(addr); }
+auto Ppu::peek_vram(uint16_t addr) const -> uint8_t {
+  return vram_read(addr);
+}
 
 auto Ppu::vram_read(uint16_t addr) const -> uint8_t {
   using enum types::ppu::MemoryMap;
 
   switch (types::ppu::get_memory_map(addr)) {
-    case Chr: return Cartridge::get().chr_read(addr);
-    case Nametables: return ci_ram[nt_mirror_addr(addr)];
-    case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
-    default: return 0;
+  case Chr: return Cartridge::get().chr_read(addr);
+  case Nametables: return ci_ram[nt_mirror_addr(addr)];
+  case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
+  default: return 0;
   }
 }
 
@@ -285,14 +285,16 @@ void Ppu::vram_write(uint16_t addr, uint8_t value) {
   using enum types::ppu::MemoryMap;
 
   switch (types::ppu::get_memory_map(addr)) {
-    case Chr: Cartridge::get().chr_write(addr, value); break;
-    case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
-    case Palettes: cg_ram[palette_addr(addr)] = value; break;
-    default: throw;
+  case Chr: Cartridge::get().chr_write(addr, value); break;
+  case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
+  case Palettes: cg_ram[palette_addr(addr)] = value; break;
+  default: throw;
   }
 }
 
-void Ppu::clear_sec_oam() { sec_oam.fill({}); }
+void Ppu::clear_sec_oam() {
+  sec_oam.fill({});
+}
 
 void Ppu::sprite_evaluation() {
   size_t size = 0;
@@ -386,12 +388,12 @@ void Ppu::vertical_scroll() {
   } else {
     vram_addr.fine_y = 0;
     switch (vram_addr.coarse_y) {
-      case 29:
-        vram_addr.nt ^= 0b10;
-        vram_addr.coarse_y = 0;
-        break;
-      case 31: vram_addr.coarse_y = 0; break;
-      default: ++vram_addr.coarse_y; break;
+    case 29:
+      vram_addr.nt ^= 0b10;
+      vram_addr.coarse_y = 0;
+      break;
+    case 31: vram_addr.coarse_y = 0; break;
+    default: ++vram_addr.coarse_y; break;
     }
   }
 }
@@ -415,9 +417,7 @@ void Ppu::background_shift() {
     bg_shift_l = (bg_shift_l & 0xFF00) | bg_latch_l;
     bg_shift_h = (bg_shift_h & 0xFF00) | bg_latch_h;
 
-    at_latch >>=
-      2
-      * ((vram_addr.coarse_y & 0x02) | (((vram_addr.coarse_x - 1) & 0x02) >> 1));
+    at_latch >>= 2 * ((vram_addr.coarse_y & 0x02) | (((vram_addr.coarse_x - 1) & 0x02) >> 1));
 
     at_latch_l = at_latch & 1;
     at_latch_h = (at_latch >> 1) & 1;
@@ -445,14 +445,20 @@ auto Ppu::get_sprite_pixel() -> uint8_t {
   auto pixel = static_cast<uint8_t>(tick - 2);
   auto bg_palette = get_background_pixel();
 
-  if (!(mask.show_spr && !(!mask.spr_left && pixel < 8))) return bg_palette;
+  if (!(mask.show_spr && !(!mask.spr_left && pixel < 8))) {
+    return bg_palette;
+  }
 
   for (const auto& sprite : oam) {
-    if (sprite.id == 0xFF) break;
+    if (sprite.id == 0xFF) {
+      break;
+    }
 
     int offset = pixel - sprite.x;
 
-    if (offset < 0 || offset >= 8) continue;  // Not in range
+    if (offset < 0 || offset >= 8) {
+      continue;  // Not in range
+    }
 
     uint8_t spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
 
@@ -467,7 +473,9 @@ auto Ppu::get_sprite_pixel() -> uint8_t {
       }
 
       // Evaluate priority
-      if (spr_palette && (spr_priority || bg_palette == 0)) return spr_palette;
+      if (spr_palette && (spr_priority || bg_palette == 0)) {
+        return spr_palette;
+      }
 
       return bg_palette;
     }
@@ -489,9 +497,7 @@ void Ppu::render_pixel() {
 }
 
 void Ppu::background_fetch() {
-  auto in_range = [this](int lower, int upper) {
-    return (tick >= lower) && (tick <= upper);
-  };
+  auto in_range = [this](int lower, int upper) { return (tick >= lower) && (tick <= upper); };
 
   if (in_range(2, 257) || in_range(322, 337)) {
     background_shift();
@@ -499,42 +505,40 @@ void Ppu::background_fetch() {
 
   if (in_range(1, 255) || in_range(321, 338)) {
     switch (tick % 8) {
-      case 1: ppu_addr = nt_addr(); break;
-      case 2: nt_latch = vram_read(ppu_addr); break;
+    case 1: ppu_addr = nt_addr(); break;
+    case 2: nt_latch = vram_read(ppu_addr); break;
 
-      case 3: ppu_addr = at_addr(); break;
-      case 4: at_latch = vram_read(ppu_addr); break;
+    case 3: ppu_addr = at_addr(); break;
+    case 4: at_latch = vram_read(ppu_addr); break;
 
-      case 5: ppu_addr = bg_addr(); break;
-      case 6: bg_latch_l = vram_read(ppu_addr); break;
+    case 5: ppu_addr = bg_addr(); break;
+    case 6: bg_latch_l = vram_read(ppu_addr); break;
 
-      case 7: ppu_addr += 8; break;
-      case 0:
-        bg_latch_h = vram_read(ppu_addr);
-        horizontal_scroll();
-        break;
+    case 7: ppu_addr += 8; break;
+    case 0:
+      bg_latch_h = vram_read(ppu_addr);
+      horizontal_scroll();
+      break;
     }
   } else {
     switch (tick) {
-      case 256:
-        bg_latch_h = vram_read(ppu_addr);
-        vertical_scroll();
-        break;
+    case 256:
+      bg_latch_h = vram_read(ppu_addr);
+      vertical_scroll();
+      break;
 
-      case 257: horizontal_update(); break;
+    case 257: horizontal_update(); break;
 
-      case 339: ppu_addr = nt_addr(); break;
-      case 340: nt_latch = vram_read(ppu_addr); break;
+    case 339: ppu_addr = nt_addr(); break;
+    case 340: nt_latch = vram_read(ppu_addr); break;
 
-      default: break;
+    default: break;
     }
   }
 }
 
 void Ppu::scanline_cycle_pre() {
-  auto in_range = [this](int lower, int upper) {
-    return (tick >= lower) && (tick <= upper);
-  };
+  auto in_range = [this](int lower, int upper) { return (tick >= lower) && (tick <= upper); };
 
   if (tick == 1) {
     status.vblank = false;
@@ -545,9 +549,15 @@ void Ppu::scanline_cycle_pre() {
   if (is_rendering) {
     background_fetch();
 
-    if (in_range(280, 304)) vertical_update();
-    if (tick == 321) load_sprites();
-    if (tick == 260) Cartridge::get().scanline_counter();
+    if (in_range(280, 304)) {
+      vertical_update();
+    }
+    if (tick == 321) {
+      load_sprites();
+    }
+    if (tick == 260) {
+      Cartridge::get().scanline_counter();
+    }
   }
 }
 
@@ -560,13 +570,15 @@ void Ppu::scanline_cycle_visible() {
     background_fetch();
 
     switch (tick) {
-      case 1: clear_sec_oam(); break;
-      case 257: sprite_evaluation(); break;
-      case 321: load_sprites(); break;
-      default: break;
+    case 1: clear_sec_oam(); break;
+    case 257: sprite_evaluation(); break;
+    case 321: load_sprites(); break;
+    default: break;
     }
 
-    if (tick == 260) Cartridge::get().scanline_counter();
+    if (tick == 260) {
+      Cartridge::get().scanline_counter();
+    }
   }
 }
 
@@ -589,8 +601,7 @@ auto Ppu::nt_addr() const -> uint16_t {
 }
 
 auto Ppu::at_addr() const -> uint16_t {
-  return 0x23C0 | (vram_addr.nt << 10) | ((vram_addr.coarse_y / 4) << 3)
-         | (vram_addr.coarse_x / 4);
+  return 0x23C0 | (vram_addr.nt << 10) | ((vram_addr.coarse_y / 4) << 3) | (vram_addr.coarse_x / 4);
 }
 
 auto Ppu::bg_addr() const -> uint16_t {
@@ -601,12 +612,12 @@ auto Ppu::nt_mirror_addr(uint16_t addr) const -> uint16_t {
   using enum types::ppu::MirroringType;
 
   switch (*mirroring_conn) {
-    case Vertical: return addr & 0x07FF;
-    case Horizontal: return ((addr >> 1) & 0x400) + (addr & 0x03FF);
-    case OneScreenLow: return addr & 0x03FF;
-    case OneScreenHigh: return 0x0400 + (addr & 0x03FF);
-    case FourScreen: return addr & 0x0FFF;
-    default: throw std::runtime_error("Invalid mirroring type");
+  case Vertical: return addr & 0x07FF;
+  case Horizontal: return ((addr >> 1) & 0x400) + (addr & 0x03FF);
+  case OneScreenLow: return addr & 0x03FF;
+  case OneScreenHigh: return 0x0400 + (addr & 0x03FF);
+  case FourScreen: return addr & 0x0FFF;
+  default: throw std::runtime_error("Invalid mirroring type");
   }
 }
 
@@ -616,9 +627,7 @@ auto Ppu::palette_addr(uint16_t addr) const -> uint16_t {
 
 template <typename T>
 auto Ppu::get_palette(T low, T high, int offset) const -> uint8_t {
-  constexpr auto nth_bit = [](auto x, auto n) -> uint8_t {
-    return ((x >> n) & 1);
-  };
+  constexpr auto nth_bit = [](auto x, auto n) -> uint8_t { return ((x >> n) & 1); };
 
   return nth_bit(high, offset) << 1 | nth_bit(low, offset);
 }

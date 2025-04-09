@@ -12,20 +12,29 @@ public:
 
   ~SDLHelper() {
     --counter;
-    if (!counter) SDL_Quit();
+
+    if (!counter) {
+      SDL_Quit();
+    }
   }
 
   struct Deleter {
     void operator()(SDL_Window* ptr) {
-      if (ptr) SDL_DestroyWindow(ptr);
+      if (ptr) {
+        SDL_DestroyWindow(ptr);
+      }
     }
 
     void operator()(SDL_Renderer* ptr) {
-      if (ptr) SDL_DestroyRenderer(ptr);
+      if (ptr) {
+        SDL_DestroyRenderer(ptr);
+      }
     }
 
     void operator()(SDL_Texture* ptr) {
-      if (ptr) SDL_DestroyTexture(ptr);
+      if (ptr) {
+        SDL_DestroyTexture(ptr);
+      }
     }
   };
 

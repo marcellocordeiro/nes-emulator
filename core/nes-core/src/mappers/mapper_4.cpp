@@ -32,10 +32,14 @@ void Mapper4::apply() {
     set_chr_map<2>(0, regs[0] >> 1);
     set_chr_map<2>(1, regs[1] >> 1);
 
-    for (size_t i = 0; i < 4; ++i) set_chr_map<1>(4 + i, regs[2 + i]);
+    for (size_t i = 0; i < 4; ++i) {
+      set_chr_map<1>(4 + i, regs[2 + i]);
+    }
   } else {
     // CHR Mode 1
-    for (size_t i = 0; i < 4; ++i) set_chr_map<1>(i, regs[2 + i]);
+    for (size_t i = 0; i < 4; ++i) {
+      set_chr_map<1>(i, regs[2 + i]);
+    }
 
     set_chr_map<2>(2, regs[0] >> 1);
     set_chr_map<2>(3, regs[1] >> 1);
@@ -47,20 +51,16 @@ void Mapper4::write(uint16_t addr, uint8_t value) {
     // prg_ram[addr - 0x6000] = value;
   } else if (addr & 0x8000) {
     switch (addr & 0xE001) {
-      case 0x8000: reg_8000 = value; break;
-      case 0x8001: regs[reg_8000 & 7] = value; break;
-      case 0xA000:
-        set_mirroring(
-          (value & 1) ? MirroringType::Horizontal : MirroringType::Vertical
-        );
-        break;
-      case 0xC000: irq_period = value; break;
-      case 0xC001: irq_counter = 0; break;
-      case 0xE000:
-        set_irq(false);
-        irq_enabled = false;
-        break;
-      case 0xE001: irq_enabled = true; break;
+    case 0x8000: reg_8000 = value; break;
+    case 0x8001: regs[reg_8000 & 7] = value; break;
+    case 0xA000: set_mirroring((value & 1) ? MirroringType::Horizontal : MirroringType::Vertical); break;
+    case 0xC000: irq_period = value; break;
+    case 0xC001: irq_counter = 0; break;
+    case 0xE000:
+      set_irq(false);
+      irq_enabled = false;
+      break;
+    case 0xE001: irq_enabled = true; break;
     }
 
     apply();

@@ -7,7 +7,9 @@ void Mapper2::reset() {
   set_chr_map<8>(0, 0);
 }
 
-void Mapper2::apply() { set_prg_map<16>(0, mode); }
+void Mapper2::apply() {
+  set_prg_map<16>(0, mode);
+}
 
 void Mapper2::write(uint16_t addr, uint8_t value) {
   if (addr < 0x8000) {

@@ -10,7 +10,9 @@ class BitField {
 public:
   constexpr BitField() = default;
 
-  constexpr operator ValueType() const noexcept { return get(); }
+  constexpr operator ValueType() const noexcept {
+    return get();
+  }
   constexpr auto operator=(const BitField&) -> BitField& = delete;
 
   constexpr auto operator=(ValueType val) noexcept -> BitField& {
@@ -53,9 +55,7 @@ private:
   }
 
   constexpr auto get_mask() const noexcept -> ValueType {
-    return (std::numeric_limits<ValueType>::max()
-            >> (8 * sizeof(ValueType) - bits))
-           << position;
+    return (std::numeric_limits<ValueType>::max() >> (8 * sizeof(ValueType) - bits)) << position;
   }
 
   ValueType data;

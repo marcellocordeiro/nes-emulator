@@ -7,7 +7,9 @@ void BaseMapper::set_mirroring(MirroringType value) {
   *mirroring_conn = value;
 }
 
-void BaseMapper::set_irq(bool value) { *irq_conn = value; }
+void BaseMapper::set_irq(bool value) {
+  *irq_conn = value;
+}
 
 auto BaseMapper::get_prg_addr(uint16_t addr) const -> size_t {
   size_t slot = (addr - 0x8000) / 0x2000;

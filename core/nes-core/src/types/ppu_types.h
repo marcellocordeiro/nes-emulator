@@ -16,7 +16,7 @@ using BitFieldU16 = lib::BitField<uint16_t, position, bits>;
 union ppuctrl {
   uint8_t raw = 0;
 
-  BitFieldU8<0, 2> nt;  // Base nametable addr [$2000, $2400, $2800, $2C00]
+  BitFieldU8<0, 2> nt;         // Base nametable addr [$2000, $2400, $2800, $2C00]
   BitFieldU8<2, 1> addr_inc;   // Address increment [1, 32]
   BitFieldU8<3, 1> spr_table;  // Sprite pattern table [$0000, $1000]
   BitFieldU8<4, 1> bg_table;   // Background pattern table [$0000, $1000]
