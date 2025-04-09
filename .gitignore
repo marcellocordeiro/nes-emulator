@@ -4,7 +4,6 @@
 **/.vscode/
 **/build/ 
 **/bin/
-**/roms/
 CMakeSettings.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/c++,cmake,clion,visualstudio,visualstudiocode,macos

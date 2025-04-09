@@ -1,0 +1,10 @@
+# ROMs
+*.gb
+*.gbc
+*.nes
+
+# Save files
+*.srm
+*.state*
+*.sav
+*.rtc
