@@ -7,6 +7,7 @@ public:
   void set(T value) {
     status = value;
   }
+
   auto get() const -> T {
     return status;
   }
@@ -14,4 +15,4 @@ public:
 private:
   T status;
 };
-}  // namespace nes
+} // namespace nes

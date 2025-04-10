@@ -13,12 +13,12 @@ auto FileManager::get() -> FileManager& {
 }
 
 void FileManager::set_app_path(const std::filesystem::path& value) {
-  app_path = std::filesystem::canonical(value);  // May throw
+  app_path = std::filesystem::canonical(value); // May throw
   set_palette(app_path / "palette.pal");
 }
 
 void FileManager::set_rom(const std::filesystem::path& value) {
-  rom_path = std::filesystem::canonical(value);  // May throw
+  rom_path = std::filesystem::canonical(value); // May throw
   prg_ram_path = rom_path;
   patch_path = rom_path;
   snapshot_path = rom_path;
@@ -41,7 +41,7 @@ void FileManager::set_rom(const std::filesystem::path& value) {
 }
 
 void FileManager::set_palette(const std::filesystem::path& value) {
-  palette_path = std::filesystem::canonical(value);  // May throw
+  palette_path = std::filesystem::canonical(value); // May throw
 }
 
 auto FileManager::get_rom() -> std::vector<uint8_t> {
@@ -122,4 +122,4 @@ auto FileManager::has_prg_ram() const -> bool {
 auto FileManager::has_snapshot() const -> bool {
   return std::filesystem::exists(snapshot_path);
 }
-}  // namespace nes::utility
+} // namespace nes::utility

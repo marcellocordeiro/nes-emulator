@@ -40,4 +40,4 @@ auto get_base_path() -> std::filesystem::path {
 
   return std::filesystem::canonical(path);
 }
-}  // namespace lib
+} // namespace lib

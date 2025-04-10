@@ -56,4 +56,4 @@ private:
   std::vector<uint8_t> prg_ram;
   std::vector<uint8_t> chr_ram;
 };
-}  // namespace nes
+} // namespace nes

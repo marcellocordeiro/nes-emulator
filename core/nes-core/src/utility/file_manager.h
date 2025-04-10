@@ -44,4 +44,4 @@ private:
   std::filesystem::path palette_path;
   std::filesystem::path snapshot_path;
 };
-}  // namespace nes::utility
+} // namespace nes::utility

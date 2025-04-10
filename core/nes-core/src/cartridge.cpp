@@ -112,4 +112,4 @@ void Cartridge::scanline_counter() {
 void Cartridge::dump_prg_ram() const {
   utility::FileManager::get().save_prg_ram(prg_ram);
 }
-}  // namespace nes
+} // namespace nes

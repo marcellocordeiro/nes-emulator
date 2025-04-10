@@ -11,7 +11,7 @@
 #include "ppu.h"
 #include "types/cpu_types.h"
 
-#include <iomanip>  // TODO: remove this
+#include <iomanip> // TODO: remove this
 
 namespace nes {
 using namespace types::cpu;
@@ -78,7 +78,9 @@ void Debugger::cpu_log() {
   auto peek_indx = [&]() { return cpu_ptr->peek_indx(); };
   auto peek_indy = [&]() { return cpu_ptr->peek_indy(); };
 
-  auto read_word_zp = [&](uint16_t addr) -> uint16_t { return peek((addr + 1) & 0xFF) << 8 | peek(addr); };
+  auto read_word_zp = [&](uint16_t addr) -> uint16_t {
+    return peek((addr + 1) & 0xFF) << 8 | peek(addr);
+  };
 
   auto state = cpu_ptr->get_state();
 
@@ -165,7 +167,13 @@ void Debugger::cpu_log() {
     break;
   }
   case IndirectX: {
-    ss << std::format("(${:02X},X) @ {:02X} = {:04X} = {:02X}", arg8, peek_zpx(), peek_indx(), peek(peek_indx()));
+    ss << std::format(
+      "(${:02X},X) @ {:02X} = {:04X} = {:02X}",
+      arg8,
+      peek_zpx(),
+      peek_indx(),
+      peek(peek_indx())
+    );
     break;
   }
   case IndirectY: {
@@ -204,4 +212,4 @@ void Debugger::cpu_log() {
     exit(0);
   }
 }
-}  // namespace nes
+} // namespace nes

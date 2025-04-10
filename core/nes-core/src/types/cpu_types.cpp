@@ -53,7 +53,9 @@ void State::set_ps(uint8_t value) {
 namespace memory {
 template <auto Operation>
 auto get_map(uint16_t addr) -> MemoryMap {
-  auto in_range = [addr](const auto lower, const auto upper) { return (addr >= lower) && (addr <= upper); };
+  auto in_range = [addr](const auto lower, const auto upper) {
+    return (addr >= lower) && (addr <= upper);
+  };
 
   if constexpr (Operation == Operation::Read) {
     if (addr <= 0x1FFF) {
@@ -126,5 +128,5 @@ auto get_map(uint16_t addr) -> MemoryMap {
 
 template MemoryMap get_map<Operation::Read>(uint16_t);
 template MemoryMap get_map<Operation::Write>(uint16_t);
-}  // namespace memory
-}  // namespace nes::types::cpu
+} // namespace memory
+} // namespace nes::types::cpu

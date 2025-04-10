@@ -26,4 +26,4 @@ private:
   uint8_t irq_period = 0;
   uint8_t irq_counter = 0;
 };
-}  // namespace nes
+} // namespace nes

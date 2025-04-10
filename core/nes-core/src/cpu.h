@@ -84,8 +84,8 @@ private:
   //
 
   void add(uint8_t);
-  auto shift_left(uint8_t) -> uint8_t;   // Arithmetic left shift
-  auto shift_right(uint8_t) -> uint8_t;  // Logical right shift
+  auto shift_left(uint8_t) -> uint8_t;  // Arithmetic left shift
+  auto shift_right(uint8_t) -> uint8_t; // Logical right shift
   auto rotate_left(uint8_t) -> uint8_t;
   auto rotate_right(uint8_t) -> uint8_t;
 
@@ -292,4 +292,4 @@ private:
   template <auto Mode>
   void SXA();
 };
-}  // namespace nes
+} // namespace nes

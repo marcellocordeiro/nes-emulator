@@ -121,9 +121,12 @@ void Ppu::step() {
 
     if (scanline == 240) {
       back_buffer = frame_buffer;
-      std::transform(back_buffer.begin(), back_buffer.end(), back_buffer.begin(), [this](uint32_t p) {
-        return full_nes_palette[mask.rgb][p];
-      });
+      std::transform(
+        back_buffer.begin(),
+        back_buffer.end(),
+        back_buffer.begin(),
+        [this](uint32_t p) { return full_nes_palette[mask.rgb][p]; }
+      );
       ppu_state = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
@@ -135,7 +138,7 @@ void Ppu::step() {
 
     if (scanline > 261) {
       if (is_odd_frame && is_rendering) {
-        tick = 1;  // Skip the first cycle of the visible scanline
+        tick = 1; // Skip the first cycle of the visible scanline
       }
 
       ppu_state = Visible;
@@ -234,10 +237,10 @@ void Ppu::write(uint16_t addr, uint8_t value) {
   }
 
   case PpuScroll: {
-    if (!addr_latch) {  // First write
+    if (!addr_latch) { // First write
       fine_x = value & 7;
       temp_addr.coarse_x = value >> 3;
-    } else {  // Second write
+    } else { // Second write
       temp_addr.fine_y = value & 7;
       temp_addr.coarse_y = value >> 3;
     }
@@ -247,9 +250,9 @@ void Ppu::write(uint16_t addr, uint8_t value) {
   }
 
   case PpuAddr: {
-    if (!addr_latch) {  // First write
+    if (!addr_latch) { // First write
       temp_addr.h = value & 0x3F;
-    } else {  // Second write
+    } else { // Second write
       temp_addr.l = value;
       vram_addr.raw = temp_addr.raw;
     }
@@ -457,7 +460,7 @@ auto Ppu::get_sprite_pixel() -> uint8_t {
     int offset = pixel - sprite.x;
 
     if (offset < 0 || offset >= 8) {
-      continue;  // Not in range
+      continue; // Not in range
     }
 
     uint8_t spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
@@ -701,4 +704,4 @@ void Ppu::load(std::ifstream& in) {
   sprite_evaluation();
   load_sprites();
 }
-}  // namespace nes
+} // namespace nes

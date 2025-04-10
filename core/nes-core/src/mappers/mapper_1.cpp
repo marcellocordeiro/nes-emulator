@@ -51,7 +51,7 @@ void Mapper1::write(uint16_t addr, uint8_t value) {
   if (addr < 0x8000) {
     // prg_ram[addr - 0x6000] = value;
   } else if (addr & 0x8000) {
-    if (value & 0x80) {  // Reset
+    if (value & 0x80) { // Reset
       control |= 0x0C;
       write_delay = 5;
       shift_reg = 0;
@@ -91,4 +91,4 @@ void Mapper1::load(std::ifstream& in) {
 
   apply();
 }
-}  // namespace nes
+} // namespace nes

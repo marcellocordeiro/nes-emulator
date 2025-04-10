@@ -66,7 +66,7 @@ AlignConsecutiveTableGenDefinitionColons:
   AlignFunctionPointers: false
   PadOperators:    false
 AlignEscapedNewlines: Left
-AlignOperands:   Align
+AlignOperands:   DontAlign
 AlignTrailingComments:
   Kind:            Always
   OverEmptyLines:  0
@@ -93,7 +93,7 @@ BitFieldColonSpacing: Both
 BraceWrapping:
   AfterCaseLabel:  false
   AfterClass:      false
-  AfterControlStatement: Never
+  AfterControlStatement: MultiLine
   AfterEnum:       false
   AfterExternBlock: false
   AfterFunction:   false
@@ -114,18 +114,18 @@ BreakAfterAttributes: Leave
 BreakAfterJavaFieldAnnotations: false
 BreakAfterReturnType: None
 BreakArrays:     true
-BreakBeforeBinaryOperators: None
+BreakBeforeBinaryOperators: NonAssignment
 BreakBeforeConceptDeclarations: Always
-BreakBeforeBraces: Attach
+BreakBeforeBraces: Custom
 BreakBeforeInlineASMColon: OnlyMultiline
 BreakBeforeTernaryOperators: true
-BreakBinaryOperations: Never
-BreakConstructorInitializers: BeforeColon
+BreakBinaryOperations: RespectPrecedence
+BreakConstructorInitializers: AfterColon
 BreakFunctionDefinitionParameters: false
-BreakInheritanceList: BeforeColon
-BreakStringLiterals: true
+BreakInheritanceList: AfterColon
+BreakStringLiterals: false
 BreakTemplateDeclarations: Yes
-ColumnLimit:     120
+ColumnLimit:     100
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 2
@@ -173,9 +173,9 @@ IndentPPDirectives: None
 IndentRequiresClause: true
 IndentWidth:     2
 IndentWrappedFunctionNames: false
-InsertBraces:    true
+InsertBraces:    false
 InsertNewlineAtEOF: true
-InsertTrailingCommas: None
+InsertTrailingCommas: Wrapped
 IntegerLiteralSeparator:
   Binary:          0
   BinaryMinDigits: 0
@@ -188,7 +188,7 @@ JavaScriptWrapImports: true
 KeepEmptyLines:
   AtEndOfFile:     false
   AtStartOfBlock:  false
-  AtStartOfFile:   true
+  AtStartOfFile:   false
 KeepFormFeed:    false
 LambdaBodyIndentation: Signature
 LineEnding:      DeriveLF
@@ -251,12 +251,12 @@ RawStringFormats:
 ReferenceAlignment: Pointer
 ReflowComments:  Never
 RemoveBracesLLVM: false
-RemoveEmptyLinesInUnwrappedLines: false
+RemoveEmptyLinesInUnwrappedLines: true
 RemoveParentheses: Leave
 RemoveSemicolon: true
 RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
-SeparateDefinitionBlocks: Leave
+SeparateDefinitionBlocks: Always
 ShortNamespaceLines: 1
 SkipMacroDefinitionBody: false
 SortIncludes:    CaseSensitive
@@ -287,9 +287,9 @@ SpaceBeforeParensOptions:
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceBeforeSquareBrackets: false
 SpaceInEmptyBlock: false
-SpacesBeforeTrailingComments: 2
+SpacesBeforeTrailingComments: 1
 SpacesInAngles:  Never
-SpacesInContainerLiterals: true
+SpacesInContainerLiterals: false
 SpacesInLineCommentPrefix:
   Minimum:         1
   Maximum:         -1
@@ -301,14 +301,14 @@ SpacesInParensOptions:
   InEmptyParentheses: false
   Other:           false
 SpacesInSquareBrackets: false
-Standard:        Auto
+Standard:        Latest
 StatementAttributeLikeMacros:
   - Q_EMIT
 StatementMacros:
   - Q_UNUSED
   - QT_REQUIRE_VERSION
 TableGenBreakInsideDAGArg: DontBreak
-TabWidth:        8
+TabWidth:        4
 UseTab:          Never
 VerilogBreakBetweenInstancePorts: true
 WhitespaceSensitiveMacros:

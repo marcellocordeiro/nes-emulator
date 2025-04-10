@@ -78,4 +78,4 @@ private:
     }
   }
 };
-}  // namespace nes::utility
+} // namespace nes::utility

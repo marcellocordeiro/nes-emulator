@@ -73,7 +73,7 @@ auto Cpu::peek(uint16_t addr) const -> uint8_t {
   switch (get_map<Read>(addr)) {
   case CpuRam: return ram[addr & 0x07FF];
   case PpuAccess: return Ppu::get().peek_reg(addr);
-  case ApuAccess: return 0xFF;  // Avoids APU side effects and satisfies nestest
+  case ApuAccess: return 0xFF; // Avoids APU side effects and satisfies nestest
   case Controller1: return Controller::get().peek(0);
   case Controller2: return Controller::get().peek(1);
   case CartridgeAccess: return Cartridge::get().prg_read(addr);
@@ -219,4 +219,4 @@ void Cpu::load(std::ifstream& in) {
     state.cycle_count
   );
 }
-}  // namespace nes
+} // namespace nes

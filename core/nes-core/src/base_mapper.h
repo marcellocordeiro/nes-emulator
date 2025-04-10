@@ -53,4 +53,4 @@ private:
   std::array<size_t, 4> prg_map = {};
   std::array<size_t, 8> chr_map = {};
 };
-}  // namespace nes
+} // namespace nes

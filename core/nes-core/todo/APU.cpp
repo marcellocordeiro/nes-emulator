@@ -16,4 +16,4 @@ void Apu::write(uint16_t addr, uint8_t value) {
   UNUSED(addr);
   UNUSED(value);
 }
-}  // namespace nes
+} // namespace nes

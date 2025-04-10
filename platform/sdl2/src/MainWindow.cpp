@@ -31,7 +31,8 @@ auto MainWindow::show() -> int {
   }
 
   {
-    auto raw_renderer = SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    auto raw_renderer =
+      SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     if (raw_renderer == nullptr) {
       printf("Error: SDL_CreateRenderer(): %s\n", SDL_GetError());
@@ -44,8 +45,13 @@ auto MainWindow::show() -> int {
   SDL_RenderSetLogicalSize(renderer.get(), Nes::width, Nes::height);
 
   {
-    auto raw_texture =
-      SDL_CreateTexture(renderer.get(), SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, Nes::width, Nes::height);
+    auto raw_texture = SDL_CreateTexture(
+      renderer.get(),
+      SDL_PIXELFORMAT_ARGB8888,
+      SDL_TEXTUREACCESS_STREAMING,
+      Nes::width,
+      Nes::height
+    );
 
     if (raw_texture == nullptr) {
       printf("Error: SDL_CreateTexture(): %s\n", SDL_GetError());

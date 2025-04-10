@@ -36,4 +36,4 @@ auto get_mirroring_name(MirroringType type) -> std::string_view {
   default: return unknown;
   }
 }
-}  // namespace nes::types::ppu
+} // namespace nes::types::ppu

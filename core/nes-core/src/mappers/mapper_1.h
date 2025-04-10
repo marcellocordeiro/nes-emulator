@@ -23,4 +23,4 @@ private:
   uint8_t chr_bank_1 = 0;
   uint8_t prg_bank = 0;
 };
-}  // namespace nes
+} // namespace nes

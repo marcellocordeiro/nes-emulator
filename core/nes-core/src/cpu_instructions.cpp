@@ -484,7 +484,10 @@ template <auto Mode>
 void Cpu::STA() {
   uint16_t addr = get_operand<Mode>();
 
-  if constexpr (Mode == AbsoluteX_Exception || Mode == AbsoluteY_Exception || Mode == IndirectY_Exception) {
+  if constexpr (Mode == AbsoluteX_Exception
+                || Mode == AbsoluteY_Exception
+                || Mode == IndirectY_Exception)
+  {
     tick();
   }
 
@@ -952,7 +955,7 @@ void Cpu::NOP() {
 template <auto Mode>
 void Cpu::NOP() {
   tick();
-  get_operand<Mode>();  // Discard it
+  get_operand<Mode>(); // Discard it
 }
 
 template <auto Mode>
@@ -1222,7 +1225,8 @@ auto Cpu::get_operand<AbsoluteY_Exception>() -> uint16_t {
 template <>
 auto Cpu::get_operand<Indirect>() -> uint16_t {
   uint16_t base_addr = get_operand<Absolute>();
-  return memory_read(base_addr) | (memory_read((base_addr & 0xFF00) | ((base_addr + 1) & 0xFF)) << 8);
+  return memory_read(base_addr)
+    | (memory_read((base_addr & 0xFF00) | ((base_addr + 1) & 0xFF)) << 8);
 }
 
 template <>
@@ -1251,4 +1255,4 @@ auto Cpu::get_operand<IndirectY_Exception>() -> uint16_t {
 
   return base_addr + state.y;
 }
-}  // namespace nes
+} // namespace nes

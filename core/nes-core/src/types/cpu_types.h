@@ -89,5 +89,5 @@ enum class MemoryMap {
 
 template <auto Operation>
 auto get_map(uint16_t) -> MemoryMap;
-}  // namespace memory
-}  // namespace nes::types::cpu
+} // namespace memory
+} // namespace nes::types::cpu

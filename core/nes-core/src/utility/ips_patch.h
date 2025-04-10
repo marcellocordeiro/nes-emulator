@@ -28,4 +28,4 @@ private:
   std::ifstream ips_file;
   size_t min_size = 0;
 };
-}  // namespace nes::utility
+} // namespace nes::utility

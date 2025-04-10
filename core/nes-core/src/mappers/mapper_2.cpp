@@ -33,4 +33,4 @@ void Mapper2::load(std::ifstream& in) {
 
   apply();
 }
-}  // namespace nes
+} // namespace nes

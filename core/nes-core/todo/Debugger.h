@@ -17,4 +17,4 @@ public:
 private:
   std::ofstream nestest_log;
 };
-}  // namespace nes
+} // namespace nes

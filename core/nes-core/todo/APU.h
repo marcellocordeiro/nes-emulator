@@ -20,4 +20,4 @@ public:
 private:
   Apu() = default;
 };
-}  // namespace nes
+} // namespace nes

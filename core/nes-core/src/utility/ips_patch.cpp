@@ -73,7 +73,7 @@ auto IpsPatch::read_record() -> bool {
   if (record.length > 0) {
     record.data.resize(record.length);
     ips_file.read(reinterpret_cast<char*>(record.data.data()), record.length);
-  } else {  // RLE
+  } else { // RLE
     ips_file.read(reinterpret_cast<char*>(buffer), 3);
     record.length = (buffer[0] << 8) | (buffer[1]);
     uint8_t value = buffer[2];
@@ -86,4 +86,4 @@ auto IpsPatch::read_record() -> bool {
 
   return true;
 }
-}  // namespace nes::utility
+} // namespace nes::utility

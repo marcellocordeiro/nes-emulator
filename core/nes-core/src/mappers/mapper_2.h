@@ -17,4 +17,4 @@ private:
 
   int mode = 0;
 };
-}  // namespace nes
+} // namespace nes

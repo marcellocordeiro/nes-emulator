@@ -34,7 +34,7 @@ void BaseMapper::write(uint16_t addr, uint8_t value) {
 template <size_t size>
 void BaseMapper::set_prg_map(size_t slot, int page) {
   constexpr size_t pages = size / 8;
-  constexpr size_t pages_b = size * 0x400;  // In bytes
+  constexpr size_t pages_b = size * 0x400; // In bytes
 
   if (page < 0) {
     page = (static_cast<int>(prg_size) / pages_b) + page;
@@ -49,7 +49,7 @@ void BaseMapper::set_prg_map(size_t slot, int page) {
 template <size_t size>
 void BaseMapper::set_chr_map(size_t slot, int page) {
   constexpr size_t pages = size;
-  constexpr size_t pages_b = size * 0x400;  // In bytes
+  constexpr size_t pages_b = size * 0x400; // In bytes
 
   for (size_t i = 0; i < size; ++i) {
     chr_map[pages * slot + i] = ((pages_b * page) + 0x400 * i) % chr_size;
@@ -78,4 +78,4 @@ template void BaseMapper::set_chr_map<8>(size_t, int);
 template void BaseMapper::set_chr_map<4>(size_t, int);
 template void BaseMapper::set_chr_map<2>(size_t, int);
 template void BaseMapper::set_chr_map<1>(size_t, int);
-}  // namespace nes
+} // namespace nes

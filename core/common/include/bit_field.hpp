@@ -13,6 +13,7 @@ public:
   constexpr operator ValueType() const noexcept {
     return get();
   }
+
   constexpr auto operator=(const BitField&) -> BitField& = delete;
 
   constexpr auto operator=(ValueType val) noexcept -> BitField& {
@@ -60,4 +61,4 @@ private:
 
   ValueType data;
 };
-}  // namespace lib
+} // namespace lib
