@@ -193,6 +193,8 @@ auto Ppu::read(uint16_t addr) -> uint8_t {
     }
 
     vram_addr.addr += addr_increment;
+
+    break;
   }
 
   default: break;
