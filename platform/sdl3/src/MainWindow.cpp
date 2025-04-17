@@ -11,61 +11,28 @@ MainWindow::MainWindow(int argc, char* argv[]) : args(argv, argv + argc) {
   }
 }
 
-auto MainWindow::show() -> int {
-  {
-    auto raw_window = SDL_CreateWindow(
-      Nes::title.data(),
-      SDL_WINDOWPOS_CENTERED,
-      SDL_WINDOWPOS_CENTERED,
-      Nes::width * 3,
-      Nes::height * 3,
-      0
-    );
+auto MainWindow::show() -> void {
+  SDL_WindowFlags window_flags = 0;
 
-    if (raw_window == nullptr) {
-      printf("Error: SDL_CreateWindow(): %s\n", SDL_GetError());
-      return -1;
-    }
+  window = SDLHelpers::Window(Nes::title.data(), Nes::width * 3, Nes::height * 3, window_flags);
+  renderer = SDLHelpers::Renderer(window);
+  renderer.enableVsync();
 
-    window.reset(raw_window);
-  }
+  //SDL_SetRenderLogicalPresentation(renderer.get(), Nes::width, Nes::height, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
 
-  {
-    auto raw_renderer =
-      SDL_CreateRenderer(window.get(), -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  texture = SDLHelpers::Texture(
+    renderer,
+    SDL_PIXELFORMAT_XRGB8888,
+    SDL_TEXTUREACCESS_STREAMING,
+    Nes::width,
+    Nes::height
+  );
 
-    if (raw_renderer == nullptr) {
-      printf("Error: SDL_CreateRenderer(): %s\n", SDL_GetError());
-      return -1;
-    }
-
-    renderer.reset(raw_renderer);
-  }
-
-  SDL_RenderSetLogicalSize(renderer.get(), Nes::width, Nes::height);
-
-  {
-    auto raw_texture = SDL_CreateTexture(
-      renderer.get(),
-      SDL_PIXELFORMAT_ARGB8888,
-      SDL_TEXTUREACCESS_STREAMING,
-      Nes::width,
-      Nes::height
-    );
-
-    if (raw_texture == nullptr) {
-      printf("Error: SDL_CreateTexture(): %s\n", SDL_GetError());
-      return -1;
-    }
-
-    texture.reset(raw_texture);
-  }
+  texture.setScaleMode(SDL_SCALEMODE_NEAREST);
 
   keys = SDL_GetKeyboardState(nullptr);
 
   setupDefaultBindings();
-
-  return 0;
 }
 
 auto MainWindow::run() -> void {
@@ -85,8 +52,8 @@ auto MainWindow::run() -> void {
 
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
-      case SDL_QUIT: Nes::power_off(); return;
-      case SDL_KEYDOWN: processInput(e.key); break;
+      case SDL_EVENT_QUIT: Nes::power_off(); return;
+      case SDL_EVENT_KEY_DOWN: processInput(e.key); break;
       }
     }
 
@@ -150,7 +117,7 @@ auto MainWindow::updateEmulatedControllers() -> void {
 }
 
 auto MainWindow::processInput(SDL_KeyboardEvent& key_event) -> void {
-  auto key = key_event.keysym.scancode;
+  auto key = key_event.scancode;
 
   for (const auto& [action, mappedKey] : actionKeyBindings) {
     if (mappedKey != key) {
@@ -172,6 +139,7 @@ auto MainWindow::processInput(SDL_KeyboardEvent& key_event) -> void {
 auto MainWindow::render() -> void {
   SDL_UpdateTexture(texture.get(), nullptr, buffer, Nes::width * sizeof(uint32_t));
 
-  SDL_RenderCopy(renderer.get(), texture.get(), nullptr, nullptr);
+  SDL_RenderClear(renderer.get());
+  SDL_RenderTexture(renderer.get(), texture.get(), nullptr, nullptr);
   SDL_RenderPresent(renderer.get());
 }
