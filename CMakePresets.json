@@ -1,0 +1,168 @@
+{
+    "version": 9,
+    "configurePresets": [
+        {
+            "name": "common",
+            "description": "",
+            "hidden": true,
+            "generator": "Ninja Multi-Config",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}"
+        },
+        {
+            "name": "windows-common",
+            "description": "",
+            "hidden": true,
+            "inherits": "common",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "macos-common",
+            "description": "",
+            "hidden": true,
+            "inherits": "common",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Darwin"
+            }
+        },
+        {
+            "name": "linux-common",
+            "description": "",
+            "hidden": true,
+            "inherits": "common",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "windows-msvc",
+            "displayName": "Windows (msvc)",
+            "description": "",
+            "inherits": "windows-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl",
+                "CMAKE_CXX_COMPILER": "cl"
+            }
+        },
+        {
+            "name": "windows-clang-cl",
+            "displayName": "Windows (clang-cl)",
+            "description": "",
+            "inherits": "windows-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang-cl",
+                "CMAKE_CXX_COMPILER": "clang-cl"
+            }
+        },
+        {
+            "name": "macos-clang",
+            "displayName": "macOS (clang)",
+            "description": "",
+            "inherits": "macos-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
+            }
+        },
+        {
+            "name": "macos-gcc",
+            "displayName": "macOS (gcc)",
+            "description": "",
+            "inherits": "macos-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "gcc++"
+            }
+        },
+        {
+            "name": "linux-gcc",
+            "displayName": "Linux (gcc)",
+            "description": "",
+            "inherits": "linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "gcc++"
+            }
+        },
+        {
+            "name": "linux-clang",
+            "displayName": "Linux (clang)",
+            "description": "",
+            "inherits": "linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "windows-msvc-debug",
+            "configurePreset": "windows-msvc",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-msvc-release",
+            "configurePreset": "windows-msvc",
+            "configuration": "Release"
+        },
+        {
+            "name": "windows-clang-cl-debug",
+            "configurePreset": "windows-clang-cl",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-clang-cl-release",
+            "configurePreset": "windows-clang-cl",
+            "configuration": "Release"
+        },
+        {
+            "name": "macos-clang-debug",
+            "configurePreset": "macos-clang",
+            "configuration": "Debug"
+        },
+        {
+            "name": "macos-clang-release",
+            "configurePreset": "macos-clang",
+            "configuration": "Release"
+        },
+        {
+            "name": "macos-gcc-debug",
+            "configurePreset": "macos-gcc",
+            "configuration": "Debug"
+        },
+        {
+            "name": "macos-gcc-release",
+            "configurePreset": "macos-gcc",
+            "configuration": "Release"
+        },
+        {
+            "name": "linux-gcc-debug",
+            "configurePreset": "linux-gcc",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-gcc-release",
+            "configurePreset": "linux-gcc",
+            "configuration": "Release"
+        },
+        {
+            "name": "linux-clang-debug",
+            "configurePreset": "linux-clang",
+            "configuration": "Debug"
+        },
+        {
+            "name": "linux-clang-release",
+            "configurePreset": "linux-clang",
+            "configuration": "Release"
+        }
+    ]
+}
