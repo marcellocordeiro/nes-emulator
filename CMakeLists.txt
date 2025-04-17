@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0.1)
+cmake_minimum_required(VERSION 3.30.5)
 
 project(nes-emulator)
 
@@ -10,7 +10,6 @@ include(FetchContent)
 include("cmake/AddFmt.cmake")
 include("cmake/AddSdl3.cmake")
 include("cmake/AddSpdlog.cmake")
-include("cmake/Cache.cmake")
 include("cmake/CompilerWarnings.cmake")
 include("cmake/StandardProjectSettings.cmake")
 
