@@ -5,14 +5,14 @@ add_executable(nes-emulator-sdl3
   "src/MainWindow.cpp"
 )
 
-find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
+find_package(SDL3 CONFIG REQUIRED COMPONENTS SDL3-shared)
 target_link_libraries(nes-emulator-sdl3 PRIVATE SDL3::SDL3)
 
-find_package(fmt REQUIRED)
-target_link_libraries(nes-emulator-sdl3 PRIVATE fmt::fmt-header-only)
+find_package(fmt CONFIG REQUIRED)
+target_link_libraries(nes-emulator-sdl3 PRIVATE fmt::fmt)
 
-find_package(spdlog REQUIRED)
-target_link_libraries(nes-emulator-sdl3 PRIVATE spdlog::spdlog_header_only)
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(nes-emulator-sdl3 PRIVATE spdlog::spdlog)
 
 target_link_libraries(nes-emulator-sdl3 PRIVATE nes-core)
 

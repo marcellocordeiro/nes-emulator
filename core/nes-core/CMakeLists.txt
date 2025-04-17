@@ -1,23 +1,23 @@
 project(nes-core)
 
-file(GLOB SOURCE_FILES
+file(GLOB SOURCES CONFIGURE_DEPENDS
   "src/mappers/*.cpp"
   "src/types/*.cpp"
   "src/utility/*.cpp"
   "src/*.cpp"
 )
 
-add_library(nes-core STATIC ${SOURCE_FILES})
+add_library(nes-core STATIC ${SOURCES})
 
 target_include_directories(nes-core PUBLIC "include")
 
 target_link_libraries(nes-core PRIVATE common)
 
-find_package(fmt REQUIRED)
-target_link_libraries(nes-core PRIVATE fmt::fmt-header-only)
+find_package(fmt CONFIG REQUIRED)
+target_link_libraries(nes-core PRIVATE fmt::fmt)
 
-find_package(spdlog REQUIRED)
-target_link_libraries(nes-core PRIVATE spdlog::spdlog_header_only)
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(nes-core PRIVATE spdlog::spdlog)
 
 set_target_properties(nes-core
   PROPERTIES
