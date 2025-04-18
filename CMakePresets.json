@@ -63,8 +63,8 @@
             }
         },
         {
-            "name": "macos-clang",
-            "displayName": "macOS (clang)",
+            "name": "macos-appleclang",
+            "displayName": "macOS (appleclang)",
             "description": "",
             "inherits": "macos-common",
             "cacheVariables": {
@@ -125,13 +125,13 @@
             "configuration": "Release"
         },
         {
-            "name": "macos-clang-debug",
-            "configurePreset": "macos-clang",
+            "name": "macos-appleclang-debug",
+            "configurePreset": "macos-appleclang",
             "configuration": "Debug"
         },
         {
-            "name": "macos-clang-release",
-            "configurePreset": "macos-clang",
+            "name": "macos-appleclang-release",
+            "configurePreset": "macos-appleclang",
             "configuration": "Release"
         },
         {

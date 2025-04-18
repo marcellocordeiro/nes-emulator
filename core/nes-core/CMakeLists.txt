@@ -1,6 +1,9 @@
 project(nes-core)
 
-file(GLOB SOURCES CONFIGURE_DEPENDS
+file(
+  GLOB
+  SOURCES
+  CONFIGURE_DEPENDS
   "src/mappers/*.cpp"
   "src/types/*.cpp"
   "src/utility/*.cpp"
@@ -19,7 +22,8 @@ target_link_libraries(nes-core PRIVATE fmt::fmt)
 find_package(spdlog CONFIG REQUIRED)
 target_link_libraries(nes-core PRIVATE spdlog::spdlog)
 
-set_target_properties(nes-core
+set_target_properties(
+  nes-core
   PROPERTIES
     CXX_STANDARD 23
     CXX_STANDARD_REQUIRED YES

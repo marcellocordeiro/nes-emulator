@@ -22,4 +22,4 @@ set_project_warnings(project-warnings)
 
 add_subdirectory("core/common")
 add_subdirectory("core/nes-core")
-add_subdirectory("platform")
+add_subdirectory("platform/sdl3")

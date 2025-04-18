@@ -11,7 +11,7 @@ namespace SDLHelpers {
 class Error final : public std::exception {
 public:
   [[nodiscard]]
-  auto what() const noexcept -> const char* {
+  auto what() const noexcept -> const char* override {
     return message.c_str();
   }
 
