@@ -1,4 +1,8 @@
 function(add_spdlog)
+    if (LINUX)
+        return()
+    endif()
+
     FetchContent_Declare(
         spdlog
         GIT_REPOSITORY "https://github.com/gabime/spdlog.git"
@@ -6,6 +10,6 @@ function(add_spdlog)
         SYSTEM
         OVERRIDE_FIND_PACKAGE
     )
-    
+
     FetchContent_MakeAvailable(spdlog)
 endfunction()

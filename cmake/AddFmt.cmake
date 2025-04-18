@@ -1,4 +1,8 @@
 function(add_fmt)
+    if (LINUX)
+        return()
+    endif()
+
     FetchContent_Declare(
         fmt
         GIT_REPOSITORY "https://github.com/fmtlib/fmt.git"

@@ -1,4 +1,8 @@
 function(add_sdl3)
+    if (LINUX)
+        return()
+    endif()
+
     FetchContent_Declare(
         SDL3
         GIT_REPOSITORY "https://github.com/libsdl-org/SDL.git"
