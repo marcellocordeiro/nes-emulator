@@ -1,10 +1,9 @@
 #pragma once
 
-#include <SDL3/SDL.h>
+#include "sdl_error.hpp"
+#include "sdl_include.hpp"
 
-#include "SDLError.hpp"
-
-namespace SDLHelpers {
+namespace SDL {
 class Context {
 public:
   explicit Context(SDL_InitFlags flags) {
@@ -28,4 +27,4 @@ public:
 private:
   static inline int counter = 0;
 };
-}
+} // namespace SDL

@@ -3,12 +3,11 @@
 #include <memory>
 #include <string_view>
 
-#include <SDL3/SDL.h>
+#include "sdl_context.hpp"
+#include "sdl_error.hpp"
+#include "sdl_include.hpp"
 
-#include "SDLContext.hpp"
-#include "SDLError.hpp"
-
-namespace SDLHelpers {
+namespace SDL {
 class Window {
 public:
   [[nodiscard]]
@@ -131,4 +130,4 @@ private:
 
   Pointer pointer;
 };
-} // namespace SDLHelpers
+} // namespace SDL

@@ -1,6 +1,6 @@
 # nes-emulator
 
-Experimental NES emulator written in C++20 using SDL2.
+Experimental NES emulator written in C++23 using SDL3.
 
 **_Disclaimer_**: this emulator is an experimental project for educational purposes. The development and use of emulators is legal, as long as no copyrighted content is illegally obtained. This means you are responsible for dumping your and games. However, there exists free and open-source content in case you'd like to test this project and/or contribute :blush:
 
@@ -32,23 +32,38 @@ Experimental NES emulator written in C++20 using SDL2.
 
 ![Alt text](/doc/screenshots/Final_Fantasy_III.png?raw=true "Final Fantasy III")
 
-## Dependencies
+## Supported tools
 
-This project requires an updated compiler with C++20 support to be built. It has been tested with GCC 11.1.0 and MSVC 19.28.29915.0 (VS 16.9).
+This project requires a recent compiler with C++23 support to be built.
+
+- GCC 15.0.1
+  - Tested on Fedora 42
+- Clang 20.1.2
+  - Tested on Fedora 42
+- MSVC 19.43.34810 (Visual Studio 17.13.6)
+  - Tested on Windows 11
+- Apple Clang 17.0.0 (Xcode 16.3)
+  - Tested on macOS 15.4.1 (Intel)
+
+## Dependencies
 
 ### Arch Linux
 
 ```bash
-pacman -S fmt spdlog
-pacman -S sdl2
+sudo pacman -S fmt spdlog sdl3
+```
+
+### Fedora
+
+```bash
+sudo dnf install fmt-devel spdlog-devel SDL3-devel
 ```
 
 ### Windows
 
-```cmd
-vcpkg install fmt:x64-windows spdlog:x64-windows
-vcpkg install sdl2:x64-windows
-```
+1. Install [vcpkg](https://vcpkg.io/)
+2. Add `VCPKG_ROOT` to the environment variables, containing the path to vcpkg (e.g. `C:\vcpkg`)
+3. vcpkg will install the dependencies during the configuration step (manifest mode)
 
 ## Building
 
@@ -56,7 +71,7 @@ Generate the solution files using CMake and build it.
 
 ## Running
 
-Run the `nes-emulator-sdl2{,.exe}` executable generated in the `bin` folder passing the ROM path as an argument (e.g. `./nes-emulator-sdl2{,.exe} rom.nes`).
+Run the `nes-emulator-sdl3{,.exe}` executable generated in the `bin` folder passing the ROM path as an argument (e.g. `./nes-emulator-sdl3{,.exe} rom.nes`).
 
 ## todo
 

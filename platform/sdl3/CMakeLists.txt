@@ -1,6 +1,6 @@
 project(nes-emulator-sdl3)
 
-add_executable(nes-emulator-sdl3 "src/main.cpp" "src/MainWindow.cpp")
+add_executable(nes-emulator-sdl3 "src/app.cpp" "src/main.cpp")
 
 find_package(SDL3 CONFIG REQUIRED COMPONENTS SDL3-shared)
 target_link_libraries(nes-emulator-sdl3 PRIVATE SDL3::SDL3)

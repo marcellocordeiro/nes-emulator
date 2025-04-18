@@ -1,8 +1,4 @@
 function(add_spdlog)
-  if(LINUX)
-    return()
-  endif()
-
   FetchContent_Declare(
     spdlog
     GIT_REPOSITORY "https://github.com/gabime/spdlog.git"

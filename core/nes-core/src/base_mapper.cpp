@@ -41,7 +41,7 @@ void BaseMapper::set_prg_map(size_t slot, int page) {
   }
 
   for (size_t i = 0; i < pages; ++i) {
-    prg_map[pages * slot + i] = ((pages_b * page) + 0x2000 * i) % prg_size;
+    prg_map[(pages * slot) + i] = ((pages_b * page) + 0x2000 * i) % prg_size;
   }
 }
 
@@ -52,7 +52,7 @@ void BaseMapper::set_chr_map(size_t slot, int page) {
   constexpr size_t pages_b = size * 0x400; // In bytes
 
   for (size_t i = 0; i < size; ++i) {
-    chr_map[pages * slot + i] = ((pages_b * page) + 0x400 * i) % chr_size;
+    chr_map[(pages * slot) + i] = ((pages_b * page) + 0x400 * i) % chr_size;
   }
 }
 

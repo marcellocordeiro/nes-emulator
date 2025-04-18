@@ -3,20 +3,19 @@
 #include <cstdint>
 #include <map>
 #include <string_view>
-#include <vector>
+#include <span>
 
-#include "SDLHelpers/SDLHelpers.hpp"
+#include "sdl/sdl.hpp"
 
-class MainWindow {
+class App {
 public:
-  MainWindow(int, char*[]);
+  App(std::span<std::string_view> args);
 
-  MainWindow(const MainWindow&) = delete;
-  MainWindow(MainWindow&&) = delete;
-  MainWindow& operator=(const MainWindow&) = delete;
-  MainWindow& operator=(MainWindow&&) = delete;
+  App(const App&) = delete;
+  App(App&&) = delete;
+  App& operator=(const App&) = delete;
+  App& operator=(App&&) = delete;
 
-  auto show() -> void;
   auto run() -> void;
 
 private:
@@ -24,11 +23,11 @@ private:
   // Settings
   //
 
-  std::vector<std::string_view> args;
+  std::span<std::string_view> args;
 
-  SDLHelpers::Context context{SDL_INIT_VIDEO};
+  SDL::Context context{SDL_INIT_VIDEO};
 
-  SDLHelpers::Window window;
+  SDL::Window window;
 
   // double volume = 0.1;
   bool running = false;
@@ -73,8 +72,8 @@ private:
 
   auto render() -> void;
 
-  SDLHelpers::Renderer renderer;
-  SDLHelpers::Texture texture;
+  SDL::Renderer renderer;
+  SDL::Texture texture;
 
   const uint32_t* buffer = nullptr;
 };

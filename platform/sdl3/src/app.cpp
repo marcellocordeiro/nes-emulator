@@ -1,26 +1,26 @@
-#include "MainWindow.h"
+#include "app.h"
 
 #include <format>
 #include <numeric>
 
 #include <nes/nes.h>
 
-MainWindow::MainWindow(int argc, char* argv[]) : args(argv, argv + argc) {
+App::App(std::span<std::string_view> args) : args(args) {
   if (args.size() == 1) {
     throw std::invalid_argument("Too few arguments");
   }
 }
 
-auto MainWindow::show() -> void {
+auto App::run() -> void {
   SDL_WindowFlags window_flags = 0;
 
-  window = SDLHelpers::Window(Nes::title.data(), Nes::width * 3, Nes::height * 3, window_flags);
-  renderer = SDLHelpers::Renderer(window);
+  window = SDL::Window(std::string(Nes::title), Nes::width * 3, Nes::height * 3, window_flags);
+  renderer = SDL::Renderer(window);
   renderer.enableVsync();
 
   //SDL_SetRenderLogicalPresentation(renderer.get(), Nes::width, Nes::height, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
 
-  texture = SDLHelpers::Texture(
+  texture = SDL::Texture(
     renderer,
     SDL_PIXELFORMAT_XRGB8888,
     SDL_TEXTUREACCESS_STREAMING,
@@ -33,9 +33,7 @@ auto MainWindow::show() -> void {
   keys = SDL_GetKeyboardState(nullptr);
 
   setupDefaultBindings();
-}
 
-auto MainWindow::run() -> void {
   buffer = Nes::get_back_buffer();
 
   Nes::set_app_path(SDL_GetBasePath());
@@ -54,6 +52,8 @@ auto MainWindow::run() -> void {
       switch (e.type) {
       case SDL_EVENT_QUIT: Nes::power_off(); return;
       case SDL_EVENT_KEY_DOWN: processInput(e.key); break;
+
+      default: break;
       }
     }
 
@@ -82,7 +82,7 @@ auto MainWindow::run() -> void {
   }
 }
 
-auto MainWindow::setupDefaultBindings() -> void {
+auto App::setupDefaultBindings() -> void {
   actionKeyBindings[Action::Pause] = SDL_SCANCODE_ESCAPE;
   actionKeyBindings[Action::Reset] = SDL_SCANCODE_R;
   actionKeyBindings[Action::SaveSnapshot] = SDL_SCANCODE_F1;
@@ -101,7 +101,7 @@ auto MainWindow::setupDefaultBindings() -> void {
   controllerKeyBindings[Button::Right] = SDL_SCANCODE_RIGHT;
 }
 
-auto MainWindow::updateEmulatedControllers() -> void {
+auto App::updateEmulatedControllers() -> void {
   uint8_t state = 0;
 
   state |= (keys[controllerKeyBindings[Button::A]]) << 0;
@@ -116,7 +116,7 @@ auto MainWindow::updateEmulatedControllers() -> void {
   Nes::update_controller_state(0, state);
 }
 
-auto MainWindow::processInput(SDL_KeyboardEvent& key_event) -> void {
+auto App::processInput(SDL_KeyboardEvent& key_event) -> void {
   auto key = key_event.scancode;
 
   for (const auto& [action, mappedKey] : actionKeyBindings) {
@@ -136,7 +136,7 @@ auto MainWindow::processInput(SDL_KeyboardEvent& key_event) -> void {
   }
 }
 
-auto MainWindow::render() -> void {
+auto App::render() -> void {
   SDL_UpdateTexture(texture.get(), nullptr, buffer, Nes::width * sizeof(uint32_t));
 
   SDL_RenderClear(renderer.get());

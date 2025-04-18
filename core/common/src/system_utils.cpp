@@ -29,7 +29,7 @@ auto get_base_path() -> std::filesystem::path {
 #elif defined(__APPLE__)
   constexpr auto path_separator = "/";
 
-  std::array<char, PATH_MAX> buf;
+  std::array<char, PATH_MAX> buf = {};
   uint32_t bufsize = PATH_MAX;
   _NSGetExecutablePath(buf.data(), &bufsize);
 

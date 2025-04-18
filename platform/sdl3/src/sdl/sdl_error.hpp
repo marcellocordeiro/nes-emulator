@@ -1,13 +1,12 @@
 #pragma once
 
+#include <exception>
 #include <format>
-#include <stdexcept>
 #include <string>
-#include <string_view>
 
-#include <SDL3/SDL.h>
+#include "sdl_include.hpp"
 
-namespace SDLHelpers {
+namespace SDL {
 class Error final : public std::exception {
 public:
   [[nodiscard]]
@@ -26,17 +25,17 @@ public:
   }
 
   [[nodiscard]]
-  auto getSource() const -> std::string_view {
+  auto getSource() const -> std::string {
     return source;
   }
 
   [[nodiscard]]
-  auto getError() const -> std::string_view {
+  auto getError() const -> std::string {
     return error;
   }
 
   [[nodiscard]]
-  auto getMessage() const -> std::string_view {
+  auto getMessage() const -> std::string {
     return message;
   }
 
@@ -55,4 +54,4 @@ private:
   std::string error;
   std::string message;
 };
-} // namespace SDLHelpers
+} // namespace SDL

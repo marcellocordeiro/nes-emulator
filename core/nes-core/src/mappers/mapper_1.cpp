@@ -39,7 +39,7 @@ void Mapper1::apply() {
     set_chr_map<8>(0, chr_bank_0 >> 1);
   }
 
-  switch (control & 3) {
+  switch (control & 0b11) {
   case 0: set_mirroring(MirroringType::OneScreenLow); break;
   case 1: set_mirroring(MirroringType::OneScreenHigh); break;
   case 2: set_mirroring(MirroringType::Vertical); break;

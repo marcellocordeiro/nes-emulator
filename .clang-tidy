@@ -7,22 +7,40 @@ Checks: >
   -fuchsia-*,
   -google-*,
   -llvm*,
+  -modernize-use-trailing-return-type,
   -zircon-*,
-  -misc-non-private-member-variables-in-classes,
-  -cppcoreguidelines-avoid-magic-numbers,
-  -cppcoreguidelines-pro-bounds-constant-array-index,
-  -google-build-using-namespace,
-  -hicpp-signed-bitwise,
-  -hicpp-braces-around-statements,
-  -modernize-use-nodiscard,
-  -readability-else-after-return,
-  -readability-static-accessed-through-instance,
-  -readability-avoid-const-params-in-decls,
-  -cppcoreguidelines-non-private-member-variables-in-classes,
+
   -readability-magic-numbers,
-  -readability-convert-member-functions-to-static,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -misc-include-cleaner,
+  
+  -cppcoreguidelines-pro-bounds-constant-array-index,
+  -bugprone-easily-swappable-parameters,
+  -readability-avoid-return-with-void-value,
+  -hicpp-signed-bitwise,
+  -misc-const-correctness,
   -readability-implicit-bool-conversion,
-  -readability-braces-around-statements,
+  -readability-identifier-length,
+  -bugprone-narrowing-conversions,
+  -readability-suspicious-call-argument,
+  -misc-no-recursion,
+
+
+#  -readability-else-after-return,
+#  -readability-static-accessed-through-instance,
+#  -readability-avoid-const-params-in-decls,
+#  -cppcoreguidelines-non-private-member-variables-in-classes,
+#  -misc-non-private-member-variables-in-classes,
+
+#  
+#  -cppcoreguidelines-avoid-magic-numbers,
+#  -cppcoreguidelines-pro-bounds-constant-array-index,
+#  -google-build-using-namespace,
+#  
+#  -hicpp-braces-around-statements,
+#  -readability-convert-member-functions-to-static,
+#  -readability-implicit-bool-conversion,
+#  -readability-braces-around-statements,
 
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
