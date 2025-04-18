@@ -73,7 +73,7 @@
             }
         },
         {
-            "name": "macos-gcc-14",
+            "name": "macos-gcc",
             "displayName": "macOS (gcc-14)",
             "description": "",
             "inherits": "macos-common",
