@@ -73,13 +73,13 @@
             }
         },
         {
-            "name": "macos-gcc",
-            "displayName": "macOS (gcc)",
+            "name": "macos-gcc-14",
+            "displayName": "macOS (gcc-14)",
             "description": "",
             "inherits": "macos-common",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "gcc++"
+                "CMAKE_C_COMPILER": "gcc-14",
+                "CMAKE_CXX_COMPILER": "g++-14"
             }
         },
         {
@@ -89,7 +89,7 @@
             "inherits": "linux-common",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "gcc++"
+                "CMAKE_CXX_COMPILER": "g++"
             }
         },
         {
