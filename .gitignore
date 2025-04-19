@@ -1,13 +1,7 @@
-**/.clangd/
-**/.idea/
-**/.vs/
-**/.vscode/
-**/build/ 
-**/bin/
-CMakeSettings.json
+bin/
 
-# Created by https://www.toptal.com/developers/gitignore/api/c++,cmake,clion,visualstudio,visualstudiocode,macos
-# Edit at https://www.toptal.com/developers/gitignore?templates=c++,cmake,clion,visualstudio,visualstudiocode,macos
+# Created by https://www.toptal.com/developers/gitignore/api/c++,clion,cmake,macos,visualstudio,visualstudiocode
+# Edit at https://www.toptal.com/developers/gitignore?templates=c++,clion,cmake,macos,visualstudio,visualstudiocode
 
 ### C++ ###
 # Prerequisites
@@ -170,6 +164,8 @@ CTestTestfile.cmake
 _deps
 
 ### CMake Patch ###
+CMakeUserPresets.json
+
 # External projects
 *-prefix/
 
@@ -618,4 +614,4 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
-# End of https://www.toptal.com/developers/gitignore/api/c++,cmake,clion,visualstudio,visualstudiocode,macos
+# End of https://www.toptal.com/developers/gitignore/api/c++,clion,cmake,macos,visualstudio,visualstudiocode
