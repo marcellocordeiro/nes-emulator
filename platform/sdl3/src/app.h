@@ -1,9 +1,8 @@
 #pragma once
 
-#include <cstdint>
 #include <map>
-#include <string_view>
 #include <span>
+#include <string_view>
 
 #include "sdl/sdl.hpp"
 
@@ -74,6 +73,4 @@ private:
 
   SDL::Renderer renderer;
   SDL::Texture texture;
-
-  const uint32_t* buffer = nullptr;
 };

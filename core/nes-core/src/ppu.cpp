@@ -46,8 +46,8 @@ void Ppu::reset() {
   is_odd_frame = false;
 }
 
-auto Ppu::get_back_buffer() const -> const uint32_t* {
-  return back_buffer.data();
+auto Ppu::get_frame_buffer() const -> const uint32_t* {
+  return frame_buffer.data();
 }
 
 void Ppu::set_palette() {
@@ -120,11 +120,11 @@ void Ppu::step() {
     ++scanline;
 
     if (scanline == 240) {
-      back_buffer = frame_buffer;
+      frame_buffer = work_frame_buffer;
       std::transform(
-        back_buffer.begin(),
-        back_buffer.end(),
-        back_buffer.begin(),
+        frame_buffer.begin(),
+        frame_buffer.end(),
+        frame_buffer.begin(),
         [this](uint32_t p) { return full_nes_palette[mask.rgb][p]; }
       );
       ppu_state = Idle;
@@ -494,11 +494,11 @@ void Ppu::render_pixel() {
   size_t pixel_pos = (scanline * 256) + row_pixel;
 
   if (!is_rendering) {
-    frame_buffer[pixel_pos] = vram_read(0x3F00);
+    work_frame_buffer[pixel_pos] = vram_read(0x3F00);
     return;
   }
 
-  frame_buffer[pixel_pos] = vram_read(0x3F00 + get_sprite_pixel());
+  work_frame_buffer[pixel_pos] = vram_read(0x3F00 + get_sprite_pixel());
 }
 
 void Ppu::background_fetch() {

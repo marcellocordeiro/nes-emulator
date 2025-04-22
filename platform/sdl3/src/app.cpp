@@ -34,8 +34,6 @@ auto App::run() -> void {
 
   setupDefaultBindings();
 
-  buffer = Nes::get_back_buffer();
-
   Nes::set_app_path(SDL_GetBasePath());
   Nes::load(args[1]);
   Nes::power_on();
@@ -137,7 +135,7 @@ auto App::processInput(SDL_KeyboardEvent& key_event) -> void {
 }
 
 auto App::render() -> void {
-  SDL_UpdateTexture(texture.get(), nullptr, buffer, Nes::width * sizeof(uint32_t));
+  SDL_UpdateTexture(texture.get(), nullptr, Nes::get_frame_buffer(), Nes::width * sizeof(uint32_t));
 
   SDL_RenderClear(renderer.get());
   SDL_RenderTexture(renderer.get(), texture.get(), nullptr, nullptr);

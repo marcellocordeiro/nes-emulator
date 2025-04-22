@@ -22,7 +22,7 @@ public:
   //
 
   static void run_frame();
-  static auto get_back_buffer() -> const uint32_t*;
+  static auto get_frame_buffer() -> const uint32_t*;
 
   static void update_controller_state(size_t, uint8_t);
 

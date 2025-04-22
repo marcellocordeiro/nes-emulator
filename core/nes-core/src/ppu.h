@@ -20,7 +20,7 @@ public:
   void power_on();
   void reset();
 
-  auto get_back_buffer() const -> const uint32_t*;
+  auto get_frame_buffer() const -> const uint32_t*;
 
   void set_palette();
 
@@ -157,8 +157,8 @@ private:
   oam_type oam = {};         // Sprite buffer
   sec_oam_type sec_oam = {}; // Secondary sprite buffer
 
-  frame_buffer_type frame_buffer = {}; // Frame buffer
-  frame_buffer_type back_buffer = {};  // Back buffer
+  frame_buffer_type frame_buffer = {};      // Frame buffer
+  frame_buffer_type work_frame_buffer = {}; // Back buffer
 
   full_nes_palette_type full_nes_palette = {};
   uint8_t selected_palette = 0;

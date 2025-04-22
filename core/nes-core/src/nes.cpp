@@ -50,8 +50,8 @@ void Nes::run_frame() {
   Cpu::get().run_frame();
 }
 
-auto Nes::get_back_buffer() -> const uint32_t* {
-  return Ppu::get().get_back_buffer();
+auto Nes::get_frame_buffer() -> const uint32_t* {
+  return Ppu::get().get_frame_buffer();
 }
 
 void Nes::update_controller_state(size_t port, uint8_t state) {
