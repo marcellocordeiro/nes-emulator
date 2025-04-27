@@ -1,9 +1,17 @@
-cmake_minimum_required(VERSION 3.30.5)
+cmake_minimum_required(VERSION 3.30.5...4.0.1)
 
 project(nes-emulator)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
-configure_file("data/nes_mesen.pal" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/palette.pal" COPYONLY)
+
+function(copy_palette target)
+    add_custom_command(
+        TARGET ${target} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_SOURCE_DIR}/data/nes_mesen.pal"
+            "$<TARGET_FILE_DIR:${target}>/palette.pal"
+    )
+endfunction()
 
 # include(FetchContent)
 
