@@ -1,5 +1,7 @@
 #include "mapper_1.h"
 
+#include <spdlog/spdlog.h>
+
 namespace nes {
 void Mapper1::reset() {
   write_delay = 5;
@@ -44,6 +46,11 @@ void Mapper1::apply() {
   case 1: set_mirroring(MirroringType::OneScreenHigh); break;
   case 2: set_mirroring(MirroringType::Vertical); break;
   case 3: set_mirroring(MirroringType::Horizontal); break;
+
+  default: {
+    SPDLOG_CRITICAL("Unreachable");
+    std::terminate();
+  }
   }
 }
 
@@ -60,11 +67,16 @@ void Mapper1::write(u16 addr, u8 value) {
       --write_delay;
 
       if (write_delay == 0) {
-        switch ((addr >> 13) & 3) {
+        switch ((addr >> 13) & 0b11) {
         case 0: control = shift_reg; break;
         case 1: chr_bank_0 = shift_reg; break;
         case 2: chr_bank_1 = shift_reg; break;
         case 3: prg_bank = shift_reg; break;
+
+        default: {
+          SPDLOG_CRITICAL("Unreachable");
+          std::terminate();
+        }
         }
 
         write_delay = 5;

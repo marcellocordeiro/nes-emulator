@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <spdlog/spdlog.h>
+
 #include "cartridge.h"
 #include "utility/file_manager.h"
 
@@ -112,6 +114,11 @@ void Ppu::step() {
   case VBlank: scanline_cycle_nmi(); break;
   case PreRender: scanline_cycle_pre(); break;
   case Idle: break;
+
+  default: {
+    SPDLOG_CRITICAL("Unreachable");
+    std::terminate();
+  }
   }
 
   ++tick;
@@ -194,7 +201,10 @@ auto Ppu::read(u16 addr) -> u8 {
     break;
   }
 
-  default: break;
+  default: {
+    SPDLOG_CRITICAL("Unreachable");
+    std::terminate();
+  }
   }
 
   return bus_latch;
@@ -264,6 +274,11 @@ void Ppu::write(u16 addr, u8 value) {
     vram_write(vram_addr.addr, value);
     vram_addr.addr += addr_increment;
     break;
+  }
+
+  default: {
+    SPDLOG_CRITICAL("Unreachable");
+    std::terminate();
   }
   }
 }
@@ -521,6 +536,11 @@ void Ppu::background_fetch() {
       bg_latch_h = vram_read(ppu_addr);
       horizontal_scroll();
       break;
+
+    default: {
+      SPDLOG_CRITICAL("Unreachable");
+      std::terminate();
+    }
     }
   } else {
     switch (tick) {

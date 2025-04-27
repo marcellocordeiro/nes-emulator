@@ -1,5 +1,7 @@
 #include "mapper_4.h"
 
+#include <spdlog/spdlog.h>
+
 namespace nes {
 void Mapper4::reset() {
   regs.fill(0);
@@ -63,6 +65,11 @@ void Mapper4::write(u16 addr, u8 value) {
       irq_enabled = false;
       break;
     case 0xE001: irq_enabled = true; break;
+
+    default: {
+      SPDLOG_CRITICAL("Unreachable");
+      std::terminate();
+    }
     }
 
     apply();
