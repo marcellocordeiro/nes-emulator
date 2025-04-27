@@ -39,7 +39,7 @@ auto App::run() -> void {
   Nes::power_on();
 
   auto fpsTimer = std::chrono::steady_clock::now();
-  int elapsedFrames = 0;
+  i32 elapsedFrames = 0;
 
   running = true;
 
@@ -100,7 +100,7 @@ auto App::setupDefaultBindings() -> void {
 }
 
 auto App::updateEmulatedControllers() -> void {
-  uint8_t state = 0;
+  u8 state = 0;
 
   state |= (keys[controllerKeyBindings[Button::A]]) << 0;
   state |= (keys[controllerKeyBindings[Button::B]]) << 1;
@@ -135,7 +135,7 @@ auto App::processInput(const SDL_KeyboardEvent& key_event) -> void {
 }
 
 auto App::render() -> void {
-  SDL_UpdateTexture(texture.get(), nullptr, Nes::get_frame_buffer(), Nes::width * sizeof(uint32_t));
+  SDL_UpdateTexture(texture.get(), nullptr, Nes::get_frame_buffer(), Nes::width * sizeof(u32));
 
   SDL_RenderClear(renderer.get());
   SDL_RenderTexture(renderer.get(), texture.get(), nullptr, nullptr);

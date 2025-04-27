@@ -8,11 +8,11 @@ auto Apu::get() -> Apu& {
 
 void Apu::power_on() {}
 
-auto Apu::read() -> uint8_t {
+auto Apu::read() -> u8 {
   return 0;
 }
 
-void Apu::write(uint16_t addr, uint8_t value) {
+void Apu::write(u16 addr, u8 value) {
   UNUSED(addr);
   UNUSED(value);
 }

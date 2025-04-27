@@ -32,8 +32,8 @@ void Cpu::reset() {
   INT_RST();
 }
 
-void Cpu::dma_oam(uint8_t addr) {
-  for (uint16_t i = 0; i < 256; ++i) {
+void Cpu::dma_oam(u8 addr) {
+  for (u16 i = 0; i < 256; ++i) {
     // 0x2004 == OAMDATA
     memory_write(0x2004, memory_read((addr * 0x100) + i));
   }
@@ -65,7 +65,7 @@ void Cpu::tick() {
   ++state.cycle_count;
 }
 
-auto Cpu::peek(uint16_t addr) const -> uint8_t {
+auto Cpu::peek(u16 addr) const -> u8 {
   using types::cpu::memory::get_map;
   using enum types::cpu::memory::MemoryMap;
   using enum types::cpu::memory::Operation;
@@ -82,7 +82,7 @@ auto Cpu::peek(uint16_t addr) const -> uint8_t {
   }
 }
 
-auto Cpu::read(uint16_t addr) const -> uint8_t {
+auto Cpu::read(u16 addr) const -> u8 {
   using types::cpu::memory::get_map;
   using enum types::cpu::memory::MemoryMap;
   using enum types::cpu::memory::Operation;
@@ -99,7 +99,7 @@ auto Cpu::read(uint16_t addr) const -> uint8_t {
   }
 }
 
-void Cpu::write(uint16_t addr, uint8_t value) {
+void Cpu::write(u16 addr, u8 value) {
   using types::cpu::memory::get_map;
   using enum types::cpu::memory::MemoryMap;
   using enum types::cpu::memory::Operation;
@@ -115,12 +115,12 @@ void Cpu::write(uint16_t addr, uint8_t value) {
   }
 }
 
-auto Cpu::memory_read(uint16_t addr) -> uint8_t {
+auto Cpu::memory_read(u16 addr) -> u8 {
   tick();
   return read(addr);
 }
 
-void Cpu::memory_write(uint16_t addr, uint8_t value) {
+void Cpu::memory_write(u16 addr, u8 value) {
   tick();
   write(addr, value);
 }
@@ -129,55 +129,55 @@ auto Cpu::get_state() const -> types::cpu::State {
   return state;
 }
 
-auto Cpu::peek_imm() const -> uint16_t {
+auto Cpu::peek_imm() const -> u16 {
   return state.pc + 1;
 }
 
-auto Cpu::peek_rel() const -> uint16_t {
+auto Cpu::peek_rel() const -> u16 {
   auto addr = peek_imm();
-  auto offset = static_cast<int8_t>(peek(addr));
+  auto offset = static_cast<i8>(peek(addr));
 
   return (state.pc + 2) + offset;
 }
 
-auto Cpu::peek_zp() const -> uint16_t {
+auto Cpu::peek_zp() const -> u16 {
   return peek(peek_imm());
 }
 
-auto Cpu::peek_zpx() const -> uint16_t {
+auto Cpu::peek_zpx() const -> u16 {
   return (peek_zp() + state.x) & 0xFF;
 }
 
-auto Cpu::peek_zpy() const -> uint16_t {
+auto Cpu::peek_zpy() const -> u16 {
   return (peek_zp() + state.y) & 0xFF;
 }
 
-auto Cpu::peek_ab() const -> uint16_t {
+auto Cpu::peek_ab() const -> u16 {
   const auto base_addr = peek_imm();
   return (peek(base_addr + 1) << 8) | peek(base_addr);
 }
 
-auto Cpu::peek_abx() const -> uint16_t {
+auto Cpu::peek_abx() const -> u16 {
   const auto base_addr = peek_ab();
   return base_addr + state.x;
 }
 
-auto Cpu::peek_aby() const -> uint16_t {
+auto Cpu::peek_aby() const -> u16 {
   const auto base_addr = peek_ab();
   return base_addr + state.y;
 }
 
-auto Cpu::peek_ind() const -> uint16_t {
+auto Cpu::peek_ind() const -> u16 {
   const auto base_addr = peek_ab();
   return peek(base_addr) | (peek((base_addr & 0xFF00) | ((base_addr + 1) % 0x100)) << 8);
 }
 
-auto Cpu::peek_indx() const -> uint16_t {
+auto Cpu::peek_indx() const -> u16 {
   const auto base_addr = peek_zpx();
   return (peek((base_addr + 1) & 0xFF) << 8) | peek(base_addr);
 }
 
-auto Cpu::peek_indy() const -> uint16_t {
+auto Cpu::peek_indy() const -> u16 {
   const auto base_addr = peek_zp();
   return ((peek((base_addr + 1) & 0xFF) << 8) | peek(base_addr)) + state.y;
 }

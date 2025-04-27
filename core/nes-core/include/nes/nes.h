@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <string_view>
 
+#include <lib/common.h>
+
 class Nes {
 public:
   Nes(const Nes&) = delete;
@@ -21,9 +23,9 @@ public:
   //
 
   static void run_frame();
-  static auto get_frame_buffer() -> const uint32_t*;
+  static auto get_frame_buffer() -> const u32*;
 
-  static void update_controller_state(size_t, uint8_t);
+  static void update_controller_state(usize, u8);
 
   //
   // Snapshot
@@ -32,12 +34,12 @@ public:
   static void save_snapshot();
   static void load_snapshot();
 
-  static constexpr int SCREEN_WIDTH = 256;
-  static constexpr int SCREEN_HEIGHT = 240;
-  static constexpr int FRAMEBUFFER_SIZE = (SCREEN_WIDTH * SCREEN_HEIGHT) * sizeof(uint32_t);
+  static constexpr i32 SCREEN_WIDTH = 256;
+  static constexpr i32 SCREEN_HEIGHT = 240;
+  static constexpr i32 FRAMEBUFFER_SIZE = (SCREEN_WIDTH * SCREEN_HEIGHT) * sizeof(u32);
 
-  static constexpr int width = SCREEN_WIDTH;
-  static constexpr int height = SCREEN_HEIGHT;
+  static constexpr i32 width = SCREEN_WIDTH;
+  static constexpr i32 height = SCREEN_HEIGHT;
 
   static constexpr auto title = std::string_view("nes-emulator");
 

@@ -15,14 +15,14 @@ public:
   auto operator=(const Cpu&) -> Cpu& = delete;
   auto operator=(Cpu&&) -> Cpu& = delete;
 
-  using ram_type = std::array<uint8_t, 0x800>;
+  using ram_type = std::array<u8, 0x800>;
 
   static auto get() -> Cpu&;
 
   void power_on();
   void reset();
 
-  void dma_oam(uint8_t);
+  void dma_oam(u8);
 
   void run_frame();
 
@@ -35,19 +35,19 @@ public:
 
   auto get_state() const -> types::cpu::State;
 
-  auto peek(uint16_t) const -> uint8_t;
+  auto peek(u16) const -> u8;
 
-  auto peek_imm() const -> uint16_t;
-  auto peek_rel() const -> uint16_t;
-  auto peek_zp() const -> uint16_t;
-  auto peek_zpx() const -> uint16_t;
-  auto peek_zpy() const -> uint16_t;
-  auto peek_ab() const -> uint16_t;
-  auto peek_abx() const -> uint16_t;
-  auto peek_aby() const -> uint16_t;
-  auto peek_ind() const -> uint16_t;
-  auto peek_indx() const -> uint16_t;
-  auto peek_indy() const -> uint16_t;
+  auto peek_imm() const -> u16;
+  auto peek_rel() const -> u16;
+  auto peek_zp() const -> u16;
+  auto peek_zpx() const -> u16;
+  auto peek_zpy() const -> u16;
+  auto peek_ab() const -> u16;
+  auto peek_abx() const -> u16;
+  auto peek_aby() const -> u16;
+  auto peek_ind() const -> u16;
+  auto peek_indx() const -> u16;
+  auto peek_indy() const -> u16;
 
   //
   // Snapshot
@@ -64,11 +64,11 @@ private:
 
   void tick();
 
-  auto read(uint16_t) const -> uint8_t;
-  void write(uint16_t, uint8_t);
+  auto read(u16) const -> u8;
+  void write(u16, u8);
 
-  auto memory_read(uint16_t) -> uint8_t;
-  void memory_write(uint16_t, uint8_t);
+  auto memory_read(u16) -> u8;
+  void memory_write(u16, u8);
 
   //
   // All functions defined here are
@@ -83,23 +83,23 @@ private:
   // Auxiliary
   //
 
-  void add(uint8_t);
-  auto shift_left(uint8_t) -> uint8_t;  // Arithmetic left shift
-  auto shift_right(uint8_t) -> uint8_t; // Logical right shift
-  auto rotate_left(uint8_t) -> uint8_t;
-  auto rotate_right(uint8_t) -> uint8_t;
+  void add(u8);
+  auto shift_left(u8) -> u8;  // Arithmetic left shift
+  auto shift_right(u8) -> u8; // Logical right shift
+  auto rotate_left(u8) -> u8;
+  auto rotate_right(u8) -> u8;
 
-  void compare(uint8_t, uint8_t);
+  void compare(u8, u8);
 
-  void push(uint8_t);
-  auto pop() -> uint8_t;
+  void push(u8);
+  auto pop() -> u8;
 
   void branch(bool);
 
-  auto crossed_page(uint16_t, uint16_t) const -> bool;
+  auto crossed_page(u16, u16) const -> bool;
 
   template <auto Mode>
-  auto get_operand() -> uint16_t;
+  auto get_operand() -> u16;
 
   //
   // Storage

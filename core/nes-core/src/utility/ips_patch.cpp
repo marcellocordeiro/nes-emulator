@@ -14,12 +14,12 @@ void IpsPatch::build() {
   }
 
   while (read_record()) {
-    min_size = std::max(min_size, records.back().addr + static_cast<size_t>(records.back().length));
+    min_size = std::max(min_size, records.back().addr + static_cast<usize>(records.back().length));
   }
 }
 
-auto IpsPatch::patch(const std::vector<uint8_t>& rom) -> std::vector<uint8_t> {
-  std::vector<uint8_t> output(std::max(min_size, rom.size()));
+auto IpsPatch::patch(const std::vector<u8>& rom) -> std::vector<u8> {
+  std::vector<u8> output(std::max(min_size, rom.size()));
 
   std::ranges::copy(rom, output.begin());
 
@@ -31,12 +31,12 @@ auto IpsPatch::patch(const std::vector<uint8_t>& rom) -> std::vector<uint8_t> {
   // Truncate (extension)
   //
 
-  uint8_t buffer[] = {0, 0, 0};
-  ips_file.read(reinterpret_cast<char*>(buffer), 3 * sizeof(uint8_t));
+  u8 buffer[] = {0, 0, 0};
+  ips_file.read(reinterpret_cast<char*>(buffer), 3 * sizeof(u8));
 
   // If the stream is still good, there is a 3-byte truncate offset after EOF
   if (ips_file) {
-    size_t truncate_offset = (buffer[0] << 16) | (buffer[1] << 8) | (buffer[2]);
+    usize truncate_offset = (buffer[0] << 16) | (buffer[1] << 8) | (buffer[2]);
 
     if (output.size() > truncate_offset) {
       output.resize(truncate_offset);
@@ -59,8 +59,8 @@ auto IpsPatch::read_record() -> bool {
 
   record_entry record;
 
-  uint8_t buffer[] = {0, 0, 0};
-  ips_file.read(reinterpret_cast<char*>(buffer), 3 * sizeof(uint8_t));
+  u8 buffer[] = {0, 0, 0};
+  ips_file.read(reinterpret_cast<char*>(buffer), 3 * sizeof(u8));
   record.addr = (buffer[0] << 16) | (buffer[1] << 8) | (buffer[2]);
 
   if (record.addr == magic_eof) {
@@ -76,7 +76,7 @@ auto IpsPatch::read_record() -> bool {
   } else { // RLE
     ips_file.read(reinterpret_cast<char*>(buffer), 3);
     record.length = (buffer[0] << 8) | (buffer[1]);
-    uint8_t value = buffer[2];
+    u8 value = buffer[2];
 
     record.data.resize(record.length);
     std::fill_n(record.data.begin(), record.length, value);

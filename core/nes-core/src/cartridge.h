@@ -23,11 +23,11 @@ public:
 
   void load();
 
-  auto prg_read(uint16_t) const -> uint8_t;
-  auto chr_read(uint16_t) const -> uint8_t;
+  auto prg_read(u16) const -> u8;
+  auto chr_read(u16) const -> u8;
 
-  void prg_write(uint16_t, uint8_t);
-  void chr_write(uint16_t, uint8_t);
+  void prg_write(u16, u8);
+  void chr_write(u16, u8);
 
   void scanline_counter();
 
@@ -39,22 +39,22 @@ public:
 private:
   Cartridge() = default;
 
-  int mapper_num = -1;
-  size_t prg_size = 0;
-  size_t chr_size = 0;
+  i32 mapper_num = -1;
+  usize prg_size = 0;
+  usize chr_size = 0;
   bool has_chr_ram = false;
-  size_t prg_ram_size = 0;
+  usize prg_ram_size = 0;
 
   MirroringType mirroring = MirroringType::Unknown;
 
   std::unique_ptr<BaseMapper> mapper;
 
-  std::vector<uint8_t> rom;
+  std::vector<u8> rom;
 
-  std::span<uint8_t> prg;
-  std::span<uint8_t> chr;
+  std::span<u8> prg;
+  std::span<u8> chr;
 
-  std::vector<uint8_t> prg_ram;
-  std::vector<uint8_t> chr_ram;
+  std::vector<u8> prg_ram;
+  std::vector<u8> chr_ram;
 };
 } // namespace nes

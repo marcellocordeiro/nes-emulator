@@ -11,7 +11,7 @@ class IpsPatch final {
 public:
   explicit IpsPatch(const std::filesystem::path&);
 
-  auto patch(const std::vector<uint8_t>&) -> std::vector<uint8_t>;
+  auto patch(const std::vector<u8>&) -> std::vector<u8>;
 
 private:
   auto check() -> bool;
@@ -19,13 +19,13 @@ private:
   auto read_record() -> bool;
 
   struct record_entry {
-    uint32_t addr = 0;
-    uint16_t length = 0;
-    std::vector<uint8_t> data;
+    u32 addr = 0;
+    u16 length = 0;
+    std::vector<u8> data;
   };
 
   std::vector<record_entry> records;
   std::ifstream ips_file;
-  size_t min_size = 0;
+  usize min_size = 0;
 };
 } // namespace nes::utility

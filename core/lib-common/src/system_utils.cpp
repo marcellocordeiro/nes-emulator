@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "lib/common.h"
+
 #ifdef _WIN32
 #include <Windows.h>
 #elif defined(__linux__)
@@ -30,7 +32,7 @@ auto get_base_path() -> std::filesystem::path {
   constexpr auto path_separator = "/";
 
   std::array<char, PATH_MAX> buf = {};
-  uint32_t bufsize = PATH_MAX;
+  u32 bufsize = PATH_MAX;
   _NSGetExecutablePath(buf.data(), &bufsize);
 
   path = std::string(buf.data(), bufsize);

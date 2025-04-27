@@ -7,7 +7,7 @@ class Mapper1 final : public BaseMapper {
 public:
   void reset() override;
 
-  void write(uint16_t, uint8_t) override;
+  void write(u16, u8) override;
 
   void save(std::ofstream&) const override;
   void load(std::ifstream&) override;
@@ -15,12 +15,12 @@ public:
 private:
   void apply();
 
-  int write_delay = 5;
-  uint8_t shift_reg = 0;
+  i32 write_delay = 5;
+  u8 shift_reg = 0;
 
-  uint8_t control = 0x0C;
-  uint8_t chr_bank_0 = 0;
-  uint8_t chr_bank_1 = 0;
-  uint8_t prg_bank = 0;
+  u8 control = 0x0C;
+  u8 chr_bank_0 = 0;
+  u8 chr_bank_1 = 0;
+  u8 prg_bank = 0;
 };
 } // namespace nes

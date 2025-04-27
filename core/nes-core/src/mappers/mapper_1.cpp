@@ -47,7 +47,7 @@ void Mapper1::apply() {
   }
 }
 
-void Mapper1::write(uint16_t addr, uint8_t value) {
+void Mapper1::write(u16 addr, u8 value) {
   if (addr < 0x8000) {
     // prg_ram[addr - 0x6000] = value;
   } else if (addr & 0x8000) {

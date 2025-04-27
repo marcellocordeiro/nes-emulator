@@ -7,7 +7,7 @@ class Mapper2 final : public BaseMapper {
 public:
   void reset() override;
 
-  void write(uint16_t, uint8_t) override;
+  void write(u16, u8) override;
 
   void save(std::ofstream&) const override;
   void load(std::ifstream&) override;
@@ -15,6 +15,6 @@ public:
 private:
   void apply();
 
-  int mode = 0;
+  i32 mode = 0;
 };
 } // namespace nes

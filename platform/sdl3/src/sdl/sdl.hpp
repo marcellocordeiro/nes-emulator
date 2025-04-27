@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 
+#include <lib/common.h>
+
 #include "sdl_context.hpp"
 #include "sdl_error.hpp"
 #include "sdl_include.hpp"
@@ -14,7 +16,7 @@ public:
   Window() = default;
 
   [[nodiscard]]
-  Window(const std::string& title, int width, int height, SDL_WindowFlags flags) {
+  Window(const std::string& title, i32 width, i32 height, SDL_WindowFlags flags) {
     auto* raw = SDL_CreateWindow(title.c_str(), width, height, flags);
 
     if (raw == nullptr) {
@@ -96,8 +98,8 @@ public:
     const Renderer& renderer,
     SDL_PixelFormat format,
     SDL_TextureAccess access,
-    int width,
-    int height
+    i32 width,
+    i32 height
   ) {
     auto* raw = SDL_CreateTexture(renderer.get(), format, access, width, height);
 

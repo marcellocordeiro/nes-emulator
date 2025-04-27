@@ -14,7 +14,7 @@ void Mapper7::apply() {
   set_mirroring((mode & 0x10) ? MirroringType::OneScreenHigh : MirroringType::OneScreenLow);
 }
 
-void Mapper7::write(uint16_t addr, uint8_t value) {
+void Mapper7::write(u16 addr, u8 value) {
   if (addr < 0x8000) {
     throw std::runtime_error("Mapper 7 does not have PRG-RAM");
   }

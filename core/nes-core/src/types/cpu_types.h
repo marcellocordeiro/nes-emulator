@@ -30,7 +30,7 @@ enum class AddressingMode {
   IndirectY_Exception,
 };
 
-enum flags : uint8_t {
+enum flags : u8 {
   Carry = 0x01,
   Zero = 0x02,
   Interrupt = 0x04,
@@ -42,30 +42,30 @@ enum flags : uint8_t {
 };
 
 struct State {
-  uint8_t a = 0;
-  uint8_t x = 0;
-  uint8_t y = 0;
-  uint16_t pc = 0;
-  uint8_t sp = 0;
-  uint8_t sr = 0;
+  u8 a = 0;
+  u8 x = 0;
+  u8 y = 0;
+  u16 pc = 0;
+  u8 sp = 0;
+  u8 sr = 0;
 
-  uint8_t ps = 0;
+  u8 ps = 0;
 
   bool nmi_flag = false;
   bool irq_flag = false;
 
-  int cycle_count = 0;
+  i32 cycle_count = 0;
 
-  auto check_flags(uint8_t) const -> bool;
-  void set_flags(uint8_t);
-  void clear_flags(uint8_t);
-  void update_nz(uint8_t);
+  auto check_flags(u8) const -> bool;
+  void set_flags(u8);
+  void clear_flags(u8);
+  void update_nz(u8);
 
-  void set_a(uint8_t);
-  void set_x(uint8_t);
-  void set_y(uint8_t);
-  void set_pc(uint16_t);
-  void set_ps(uint8_t);
+  void set_a(u8);
+  void set_x(u8);
+  void set_y(u8);
+  void set_pc(u16);
+  void set_ps(u8);
 };
 
 namespace memory {
@@ -88,6 +88,6 @@ enum class MemoryMap {
 };
 
 template <auto Operation>
-auto get_map(uint16_t) -> MemoryMap;
+auto get_map(u16) -> MemoryMap;
 } // namespace memory
 } // namespace nes::types::cpu

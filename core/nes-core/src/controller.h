@@ -15,16 +15,16 @@ public:
 
   static auto get() -> Controller&;
 
-  void update_state(size_t, uint8_t);
+  void update_state(usize, u8);
 
-  auto read(size_t) -> uint8_t;
+  auto read(usize) -> u8;
   void write(bool);
 
   //
   // Read status without side effects
   //
 
-  auto peek(size_t) const -> uint8_t;
+  auto peek(usize) const -> u8;
 
   //
   // Snapshot
@@ -36,8 +36,8 @@ public:
 private:
   Controller() = default;
 
-  bool strobe = false;                          // Controller strobe latch
-  std::array<uint8_t, 2> controller_bits = {};  // Controller shift registers
-  std::array<uint8_t, 2> controller_state = {}; // Controller states
+  bool strobe = false;                     // Controller strobe latch
+  std::array<u8, 2> controller_bits = {};  // Controller shift registers
+  std::array<u8, 2> controller_state = {}; // Controller states
 };
 } // namespace nes

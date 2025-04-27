@@ -42,7 +42,7 @@ void Debugger::cpu_log() {
 
   enum addr_mode2 { impl, acc, imm, zp, zpx, zpy, rel, ab, abx, abx_, aby, aby_, ind, indx, indy, indy_, inv };
 
-  constexpr std::array<int, 0x100> addr_mode = {
+  constexpr std::array<i32, 0x100> addr_mode = {
       // 0  1     2    3     4    5    6    7    8     9    A     B    C    D    E    F
       impl, indx, inv, indx, zp,  zp,  zp,  zp,  impl, imm, acc,  inv, ab,  ab,  ab,  ab,   // 0
       rel,  indy, inv, indy, zpx, zpx, zpx, zpx, impl, aby, impl, aby, abx, abx, abx, abx,  // 1
@@ -65,7 +65,7 @@ void Debugger::cpu_log() {
 
   auto* cpu_ptr = &CPU::get();
 
-  auto peek = [&](uint16_t addr) { return cpu_ptr->peek(addr); };
+  auto peek = [&](u16 addr) { return cpu_ptr->peek(addr); };
   auto peek_imm = [&]() { return cpu_ptr->peek_imm(); };
   auto peek_rel = [&]() { return cpu_ptr->peek_rel(); };
   auto peek_zp = [&]() { return cpu_ptr->peek_zp(); };
@@ -78,9 +78,7 @@ void Debugger::cpu_log() {
   auto peek_indx = [&]() { return cpu_ptr->peek_indx(); };
   auto peek_indy = [&]() { return cpu_ptr->peek_indy(); };
 
-  auto read_word_zp = [&](uint16_t addr) -> uint16_t {
-    return peek((addr + 1) & 0xFF) << 8 | peek(addr);
-  };
+  auto read_word_zp = [&](u16 addr) -> u16 { return peek((addr + 1) & 0xFF) << 8 | peek(addr); };
 
   auto state = cpu_ptr->get_state();
 
@@ -91,9 +89,9 @@ void Debugger::cpu_log() {
 
   ss << std::format("{:04X}  {:02X} ", state.pc, peek(state.pc));
 
-  uint8_t arg8 = peek(state.pc + 1);
-  uint8_t arg8_2 = peek(state.pc + 2);
-  uint16_t arg16 = (arg8_2 << 8) | arg8;
+  u8 arg8 = peek(state.pc + 1);
+  u8 arg8_2 = peek(state.pc + 2);
+  u16 arg16 = (arg8_2 << 8) | arg8;
 
   switch (addr_m) {
   case Absolute:

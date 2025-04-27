@@ -4,7 +4,7 @@
 #include <limits>
 
 namespace lib {
-template <typename ValueType, size_t position, size_t bits>
+template <typename ValueType, usize position, usize bits>
   requires std::unsigned_integral<ValueType>
 class BitField {
 public:

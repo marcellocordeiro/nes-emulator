@@ -78,16 +78,16 @@ void Cartridge::load() {
   spdlog::info("PRG RAM size: {}", prg_ram_size);
 }
 
-auto Cartridge::prg_read(uint16_t addr) const -> uint8_t {
+auto Cartridge::prg_read(u16 addr) const -> u8 {
   if (addr < 0x8000) {
     return prg_ram[addr - 0x6000];
   }
 
-  size_t mapped_addr = mapper->get_prg_addr(addr);
+  usize mapped_addr = mapper->get_prg_addr(addr);
   return prg[mapped_addr];
 }
 
-void Cartridge::prg_write(uint16_t addr, uint8_t value) {
+void Cartridge::prg_write(u16 addr, u8 value) {
   if (addr < 0x8000) {
     prg_ram[addr - 0x6000] = value;
     return;
@@ -96,12 +96,12 @@ void Cartridge::prg_write(uint16_t addr, uint8_t value) {
   mapper->write(addr, value);
 }
 
-auto Cartridge::chr_read(uint16_t addr) const -> uint8_t {
-  size_t mapped_addr = mapper->get_chr_addr(addr);
+auto Cartridge::chr_read(u16 addr) const -> u8 {
+  usize mapped_addr = mapper->get_chr_addr(addr);
   return chr[mapped_addr];
 }
 
-void Cartridge::chr_write(uint16_t addr, uint8_t value) {
+void Cartridge::chr_write(u16 addr, u8 value) {
   chr[addr] = value;
 }
 

@@ -25,16 +25,16 @@ public:
   void set_mirroring(MirroringType);
   void set_irq(bool);
 
-  auto get_prg_addr(uint16_t addr) const -> size_t;
-  auto get_chr_addr(uint16_t addr) const -> size_t;
+  auto get_prg_addr(u16 addr) const -> usize;
+  auto get_chr_addr(u16 addr) const -> usize;
 
-  virtual void write(uint16_t, uint8_t);
+  virtual void write(u16, u8);
 
-  template <size_t>
-  void set_prg_map(size_t, int);
+  template <usize>
+  void set_prg_map(usize, i32);
 
-  template <size_t>
-  void set_chr_map(size_t, int);
+  template <usize>
+  void set_chr_map(usize, i32);
 
   virtual void scanline_counter();
 
@@ -46,11 +46,11 @@ public:
   std::shared_ptr<bool> irq_conn;
   std::shared_ptr<MirroringType> mirroring_conn;
 
-  size_t prg_size = 0;
-  size_t chr_size = 0;
+  usize prg_size = 0;
+  usize chr_size = 0;
 
 private:
-  std::array<size_t, 4> prg_map = {};
-  std::array<size_t, 8> chr_map = {};
+  std::array<usize, 4> prg_map = {};
+  std::array<usize, 8> chr_map = {};
 };
 } // namespace nes

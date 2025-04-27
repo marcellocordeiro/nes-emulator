@@ -6,15 +6,15 @@
 #include <lib/bit_field.hpp>
 
 namespace nes::types::ppu {
-template <size_t position, size_t bits>
-using BitFieldU8 = lib::BitField<uint8_t, position, bits>;
+template <usize position, usize bits>
+using BitFieldU8 = lib::BitField<u8, position, bits>;
 
-template <size_t position, size_t bits>
-using BitFieldU16 = lib::BitField<uint16_t, position, bits>;
+template <usize position, usize bits>
+using BitFieldU16 = lib::BitField<u16, position, bits>;
 
 // PPUCTRL ($2000) register
 union ppuctrl {
-  uint8_t raw = 0;
+  u8 raw = 0;
 
   BitFieldU8<0, 2> nt;        // Base nametable addr [$2000, $2400, $2800, $2C00]
   BitFieldU8<2, 1> addr_inc;  // Address increment [1, 32]
@@ -28,7 +28,7 @@ union ppuctrl {
 
 // PPUMASK ($2001) register
 union ppumask {
-  uint8_t raw = 0;
+  u8 raw = 0;
 
   BitFieldU8<0, 1> grayscale; // Grayscale
   BitFieldU8<1, 1> bg_left;   // Show background in the first column (8 pixels)
@@ -40,7 +40,7 @@ union ppumask {
 
 // PPUSTATUS ($2002) register
 union ppustatus {
-  uint8_t raw = 0;
+  u8 raw = 0;
 
   BitFieldU8<5, 1> spr_overflow; // Sprite overflow
   BitFieldU8<6, 1> spr0_hit;     // Sprite 0 hit
@@ -49,7 +49,7 @@ union ppustatus {
 
 // Loopy's VRAM address
 union loopy_addr {
-  uint16_t raw = 0;
+  u16 raw = 0;
 
   BitFieldU16<0, 5> coarse_x; // Coarse X
   BitFieldU16<5, 5> coarse_y; // Coarse Y
@@ -64,14 +64,14 @@ union loopy_addr {
 
 // Sprite info
 struct sprite_info {
-  uint8_t y = 64;      // Y position
-  uint8_t tile = 0xFF; // Tile index
-  uint8_t attr = 0xFF; // Attributes
-  uint8_t x = 0xFF;    // X position
+  u8 y = 64;      // Y position
+  u8 tile = 0xFF; // Tile index
+  u8 attr = 0xFF; // Attributes
+  u8 x = 0xFF;    // X position
 
-  size_t id = 0xFF;   // Index in OAM
-  uint8_t data_l = 0; // Tile data (low)
-  uint8_t data_h = 0; // Tile data (high)
+  usize id = 0xFF; // Index in OAM
+  u8 data_l = 0;   // Tile data (low)
+  u8 data_h = 0;   // Tile data (high)
 };
 
 enum PpuMap {
@@ -92,7 +92,7 @@ enum class MemoryMap {
   Palettes,
 };
 
-auto get_memory_map(uint16_t) -> MemoryMap;
+auto get_memory_map(u16) -> MemoryMap;
 
 enum class MirroringType {
   Unknown,

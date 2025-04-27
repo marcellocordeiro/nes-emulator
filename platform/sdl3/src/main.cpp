@@ -6,7 +6,7 @@
 
 #include "app.h"
 
-auto main(int argc, char* argv[]) -> int {
+auto main(i32 argc, char* argv[]) -> i32 {
   auto args = std::vector<std::string_view>(argv, argv + argc);
 
   try {

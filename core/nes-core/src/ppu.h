@@ -21,12 +21,12 @@ public:
   void power_on();
   void reset();
 
-  auto get_frame_buffer() const -> const uint32_t*;
+  auto get_frame_buffer() const -> const u32*;
 
   void set_palette();
 
-  auto read(uint16_t) -> uint8_t;
-  void write(uint16_t, uint8_t);
+  auto read(u16) -> u8;
+  void write(u16, u8);
 
   void step();
 
@@ -37,16 +37,16 @@ public:
   // Read without side effects
   //
 
-  auto cycle_count() const -> int {
+  auto cycle_count() const -> i32 {
     return tick;
   }
 
-  auto scanline_count() const -> int {
+  auto scanline_count() const -> i32 {
     return scanline;
   }
 
-  auto peek_reg(uint16_t) const -> uint8_t;
-  auto peek_vram(uint16_t) const -> uint8_t;
+  auto peek_reg(u16) const -> u8;
+  auto peek_vram(u16) const -> u8;
 
   //
   // Snapshot
@@ -62,8 +62,8 @@ private:
   // VRAM access
   //
 
-  auto vram_read(uint16_t) const -> uint8_t;
-  void vram_write(uint16_t, uint8_t);
+  auto vram_read(u16) const -> u8;
+  void vram_write(u16, u8);
 
   //
   // Sprites
@@ -87,8 +87,8 @@ private:
   // Rendering
   //
 
-  auto get_background_pixel() const -> uint8_t;
-  auto get_sprite_pixel() -> uint8_t;
+  auto get_background_pixel() const -> u8;
+  auto get_sprite_pixel() -> u8;
 
   void render_pixel();
 
@@ -107,14 +107,14 @@ private:
   // Addresses
   //
 
-  auto nt_addr() const -> uint16_t;                // Nametable address
-  auto at_addr() const -> uint16_t;                // Attribute address
-  auto bg_addr() const -> uint16_t;                // Background address
-  auto palette_addr(uint16_t) const -> uint16_t;   // Palette address
-  auto nt_mirror_addr(uint16_t) const -> uint16_t; // Relative nametable address
+  auto nt_addr() const -> u16;           // Nametable address
+  auto at_addr() const -> u16;           // Attribute address
+  auto bg_addr() const -> u16;           // Background address
+  auto palette_addr(u16) const -> u16;   // Palette address
+  auto nt_mirror_addr(u16) const -> u16; // Relative nametable address
 
   template <typename T>
-  auto get_palette(T, T, int) const -> uint8_t; // Get palette
+  auto get_palette(T, T, i32) const -> u8; // Get palette
 
   enum timing {
     Idle,
@@ -123,16 +123,16 @@ private:
     PreRender
   };
 
-  int ppu_state = Visible;
-  uint16_t ppu_addr = 0;
+  i32 ppu_state = Visible;
+  u16 ppu_addr = 0;
 
   //
   // Register access
   //
 
-  uint8_t bus_latch = 0;      // Register access buffer
-  uint8_t ppudata_buffer = 0; // PPUDATA read buffer
-  bool addr_latch = false;    // Address latch used by PPUSCROLL and PPUADDR
+  u8 bus_latch = 0;        // Register access buffer
+  u8 ppudata_buffer = 0;   // PPUDATA read buffer
+  bool addr_latch = false; // Address latch used by PPUSCROLL and PPUADDR
 
   using sprite_info = types::ppu::sprite_info;
   using loopy_addr = types::ppu::loopy_addr;
@@ -140,16 +140,16 @@ private:
   using ppumask = types::ppu::ppumask;
   using ppustatus = types::ppu::ppustatus;
 
-  using ci_ram_type = std::array<uint8_t, 0x800>;
-  using cg_ram_type = std::array<uint8_t, 0x20>;
-  using oam_mem_type = std::array<uint8_t, 0x100>;
+  using ci_ram_type = std::array<u8, 0x800>;
+  using cg_ram_type = std::array<u8, 0x20>;
+  using oam_mem_type = std::array<u8, 0x100>;
 
   using oam_type = std::array<sprite_info, 8>;
   using sec_oam_type = oam_type;
 
-  using frame_buffer_type = std::array<uint32_t, 256 * 240>;
+  using frame_buffer_type = std::array<u32, 256 * 240>;
 
-  using full_nes_palette_type = std::array<std::array<uint32_t, 64>, 8>;
+  using full_nes_palette_type = std::array<std::array<u32, 64>, 8>;
 
   ci_ram_type ci_ram = {};   // Console-Internal RAM
   cg_ram_type cg_ram = {};   // Colour generator RAM
@@ -162,13 +162,13 @@ private:
   frame_buffer_type work_frame_buffer = {}; // Back buffer
 
   full_nes_palette_type full_nes_palette = {};
-  uint8_t selected_palette = 0;
-  // const uint32_t* nes_to_rgb = full_nes_palette[0].data();
+  u8 selected_palette = 0;
+  // const u32* nes_to_rgb = full_nes_palette[0].data();
 
   loopy_addr vram_addr;
   loopy_addr temp_addr;
-  uint8_t fine_x = 0;
-  uint8_t oam_addr = 0;
+  u8 fine_x = 0;
+  u8 oam_addr = 0;
 
   ppuctrl ctrl;     // PPUCTRL   ($2000) register
   ppumask mask;     // PPUMASK   ($2001) register
@@ -178,26 +178,26 @@ private:
   // Background latches
   //
 
-  uint8_t nt_latch = 0;   // Nametable latch
-  uint8_t at_latch = 0;   // Attribute latch
-  uint8_t bg_latch_l = 0; // Background latch (low)
-  uint8_t bg_latch_h = 0; // Background latch (high)
+  u8 nt_latch = 0;   // Nametable latch
+  u8 at_latch = 0;   // Attribute latch
+  u8 bg_latch_l = 0; // Background latch (low)
+  u8 bg_latch_h = 0; // Background latch (high)
 
-  uint8_t at_shift_l = 0; // Attribute shift register (low)
-  uint8_t at_shift_h = 0; // Attribute shift register (high)
+  u8 at_shift_l = 0; // Attribute shift register (low)
+  u8 at_shift_h = 0; // Attribute shift register (high)
 
-  uint16_t bg_shift_l = 0; // Background shift register (low)
-  uint16_t bg_shift_h = 0; // Background shift register (high)
+  u16 bg_shift_l = 0; // Background shift register (low)
+  u16 bg_shift_h = 0; // Background shift register (high)
 
-  uint8_t at_latch_l = 0; // Attribute latch (low)
-  uint8_t at_latch_h = 0; // Attribute latch (high)
+  u8 at_latch_l = 0; // Attribute latch (low)
+  u8 at_latch_h = 0; // Attribute latch (high)
 
   //
   // Rendering counters
   //
 
-  int scanline = 0;          // Scanline counter
-  int tick = 0;              // Cycle counter
+  i32 scanline = 0;          // Scanline counter
+  i32 tick = 0;              // Cycle counter
   bool is_odd_frame = false; // Is an odd frame?
 
   //
@@ -205,8 +205,8 @@ private:
   //
 
   bool is_rendering = false;
-  uint8_t sprite_height = 8;
-  uint8_t addr_increment = 1;
-  uint8_t grayscale_mask = 0x3F;
+  u8 sprite_height = 8;
+  u8 addr_increment = 1;
+  u8 grayscale_mask = 0x3F;
 };
 } // namespace nes

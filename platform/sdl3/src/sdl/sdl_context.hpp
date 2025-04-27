@@ -30,6 +30,6 @@ public:
   Context& operator=(Context&&) = delete;
 
 private:
-  static inline int counter = 0;
+  static inline i32 counter = 0;
 };
 } // namespace SDL

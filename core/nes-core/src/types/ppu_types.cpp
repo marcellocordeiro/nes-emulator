@@ -1,8 +1,8 @@
 #include "ppu_types.h"
 
 namespace nes::types::ppu {
-auto get_memory_map(uint16_t addr) -> MemoryMap {
-  auto in_range = [addr](int lower, int upper) { return (addr >= lower) && (addr <= upper); };
+auto get_memory_map(u16 addr) -> MemoryMap {
+  auto in_range = [addr](i32 lower, i32 upper) { return (addr >= lower) && (addr <= upper); };
 
   if (in_range(0x0000, 0x1FFF)) {
     return MemoryMap::Chr;

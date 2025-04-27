@@ -1,19 +1,19 @@
 #include "cpu_types.h"
 
 namespace nes::types::cpu {
-auto State::check_flags(uint8_t flags) const -> bool {
+auto State::check_flags(u8 flags) const -> bool {
   return (this->ps & flags) == flags;
 }
 
-void State::set_flags(uint8_t flags) {
+void State::set_flags(u8 flags) {
   this->ps |= flags;
 }
 
-void State::clear_flags(uint8_t flags) {
+void State::clear_flags(u8 flags) {
   this->ps &= ~flags;
 }
 
-void State::update_nz(uint8_t value) {
+void State::update_nz(u8 value) {
   clear_flags(flags::Zero | flags::Negative);
 
   if (value == 0) {
@@ -23,26 +23,26 @@ void State::update_nz(uint8_t value) {
   }
 }
 
-void State::set_a(uint8_t value) {
+void State::set_a(u8 value) {
   this->a = value;
   this->update_nz(this->a);
 }
 
-void State::set_x(uint8_t value) {
+void State::set_x(u8 value) {
   this->x = value;
   this->update_nz(this->x);
 }
 
-void State::set_y(uint8_t value) {
+void State::set_y(u8 value) {
   this->y = value;
   this->update_nz(this->y);
 }
 
-void State::set_pc(uint16_t addr) {
+void State::set_pc(u16 addr) {
   this->pc = addr;
 }
 
-void State::set_ps(uint8_t value) {
+void State::set_ps(u8 value) {
   this->ps = value & 0xCF;
 }
 
@@ -52,7 +52,7 @@ void State::set_ps(uint8_t value) {
 
 namespace memory {
 template <auto Operation>
-auto get_map(uint16_t addr) -> MemoryMap {
+auto get_map(u16 addr) -> MemoryMap {
   auto in_range = [addr](const auto lower, const auto upper) {
     return (addr >= lower) && (addr <= upper);
   };
@@ -126,7 +126,7 @@ auto get_map(uint16_t addr) -> MemoryMap {
   return MemoryMap::Unknown;
 }
 
-template MemoryMap get_map<Operation::Read>(uint16_t);
-template MemoryMap get_map<Operation::Write>(uint16_t);
+template MemoryMap get_map<Operation::Read>(u16);
+template MemoryMap get_map<Operation::Write>(u16);
 } // namespace memory
 } // namespace nes::types::cpu

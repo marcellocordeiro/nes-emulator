@@ -46,7 +46,7 @@ void Ppu::reset() {
   is_odd_frame = false;
 }
 
-auto Ppu::get_frame_buffer() const -> const uint32_t* {
+auto Ppu::get_frame_buffer() const -> const u32* {
   return frame_buffer.data();
 }
 
@@ -57,20 +57,20 @@ void Ppu::set_palette() {
     throw std::invalid_argument("Invalid palette file");
   }
 
-  for (size_t i = 0; i < 64; ++i) {
-    uint8_t r = palette[(i * 3) + 0];
-    uint8_t g = palette[(i * 3) + 1];
-    uint8_t b = palette[(i * 3) + 2];
+  for (usize i = 0; i < 64; ++i) {
+    u8 r = palette[(i * 3) + 0];
+    u8 g = palette[(i * 3) + 1];
+    u8 b = palette[(i * 3) + 2];
 
     full_nes_palette[0][i] = (r << 16) | (g << 8) | b;
   }
 
   // Generate full colour palette
-  for (size_t i = 1; i < 8; ++i) {
-    for (size_t j = 0; j < 64; ++j) {
-      double red = static_cast<uint8_t>(full_nes_palette[0][j] >> 16);
-      double green = static_cast<uint8_t>(full_nes_palette[0][j] >> 8);
-      double blue = static_cast<uint8_t>(full_nes_palette[0][j] >> 0);
+  for (usize i = 1; i < 8; ++i) {
+    for (usize j = 0; j < 64; ++j) {
+      double red = static_cast<u8>(full_nes_palette[0][j] >> 16);
+      double green = static_cast<u8>(full_nes_palette[0][j] >> 8);
+      double blue = static_cast<u8>(full_nes_palette[0][j] >> 0);
 
       constexpr double factor = 0.3;
 
@@ -95,11 +95,11 @@ void Ppu::set_palette() {
         blue *= 1 + factor;
       }
 
-      auto r = static_cast<uint8_t>(red > 255 ? 255 : red);
-      auto g = static_cast<uint8_t>(green > 255 ? 255 : green);
-      auto b = static_cast<uint8_t>(blue > 255 ? 255 : blue);
+      auto r = static_cast<u8>(red > 255 ? 255 : red);
+      auto g = static_cast<u8>(green > 255 ? 255 : green);
+      auto b = static_cast<u8>(blue > 255 ? 255 : blue);
 
-      uint32_t color = (r << 16) | (g << 8) | (b << 0);
+      u32 color = (r << 16) | (g << 8) | (b << 0);
 
       full_nes_palette[i][j] = color;
     }
@@ -121,11 +121,9 @@ void Ppu::step() {
 
     if (scanline == 240) {
       frame_buffer = work_frame_buffer;
-      std::ranges::transform(
-        frame_buffer,
-        frame_buffer.begin(),
-        [this](uint32_t p) { return full_nes_palette[mask.rgb][p]; }
-      );
+      std::ranges::transform(frame_buffer, frame_buffer.begin(), [this](u32 p) {
+        return full_nes_palette[mask.rgb][p];
+      });
       ppu_state = Idle;
     } else if (scanline == 241) {
       ppu_state = VBlank;
@@ -147,7 +145,7 @@ void Ppu::step() {
   }
 }
 
-auto Ppu::peek_reg(uint16_t addr) const -> uint8_t {
+auto Ppu::peek_reg(u16 addr) const -> u8 {
   using enum types::ppu::PpuMap;
 
   switch (addr % 8) {
@@ -166,7 +164,7 @@ auto Ppu::peek_reg(uint16_t addr) const -> uint8_t {
   return bus_latch;
 }
 
-auto Ppu::read(uint16_t addr) -> uint8_t {
+auto Ppu::read(u16 addr) -> u8 {
   using enum types::ppu::PpuMap;
 
   switch (addr % 8) {
@@ -202,7 +200,7 @@ auto Ppu::read(uint16_t addr) -> uint8_t {
   return bus_latch;
 }
 
-void Ppu::write(uint16_t addr, uint8_t value) {
+void Ppu::write(u16 addr, u8 value) {
   using enum types::ppu::PpuMap;
 
   bus_latch = value;
@@ -270,11 +268,11 @@ void Ppu::write(uint16_t addr, uint8_t value) {
   }
 }
 
-auto Ppu::peek_vram(uint16_t addr) const -> uint8_t {
+auto Ppu::peek_vram(u16 addr) const -> u8 {
   return vram_read(addr);
 }
 
-auto Ppu::vram_read(uint16_t addr) const -> uint8_t {
+auto Ppu::vram_read(u16 addr) const -> u8 {
   using enum types::ppu::MemoryMap;
 
   switch (types::ppu::get_memory_map(addr)) {
@@ -285,7 +283,7 @@ auto Ppu::vram_read(uint16_t addr) const -> uint8_t {
   }
 }
 
-void Ppu::vram_write(uint16_t addr, uint8_t value) {
+void Ppu::vram_write(u16 addr, u8 value) {
   using enum types::ppu::MemoryMap;
 
   switch (types::ppu::get_memory_map(addr)) {
@@ -301,10 +299,10 @@ void Ppu::clear_sec_oam() {
 }
 
 void Ppu::sprite_evaluation() {
-  size_t size = 0;
+  usize size = 0;
 
-  for (size_t i = 0; i < 64; ++i) {
-    int line = scanline - oam_mem[i * 4];
+  for (usize i = 0; i < 64; ++i) {
+    i32 line = scanline - oam_mem[i * 4];
 
     if (line >= 0 && line < sprite_height) {
       sec_oam[size].id = i;
@@ -327,10 +325,10 @@ void Ppu::load_sprites() {
   oam = sec_oam;
 
   for (auto& sprite : oam) {
-    uint16_t addr = 0;
+    u16 addr = 0;
 
     // Sprite offset in the line
-    uint8_t offset = (scanline - sprite.y) % sprite_height;
+    u8 offset = (scanline - sprite.y) % sprite_height;
 
     // Vertical flip
     if (sprite.attr & 0x80) {
@@ -352,7 +350,7 @@ void Ppu::load_sprites() {
     // Horizontal flip
     if (sprite.attr & 0x40) {
       // clang-format off
-      constexpr auto lookup_table = std::to_array<uint8_t>({
+      constexpr auto lookup_table = std::to_array<u8>({
           0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0,
           0x08, 0x88, 0x48, 0xC8, 0x28, 0xA8, 0x68, 0xE8, 0x18, 0x98, 0x58, 0xD8, 0x38, 0xB8, 0x78, 0xF8,
           0x04, 0x84, 0x44, 0xC4, 0x24, 0xA4, 0x64, 0xE4, 0x14, 0x94, 0x54, 0xD4, 0x34, 0xB4, 0x74, 0xF4,
@@ -428,14 +426,14 @@ void Ppu::background_shift() {
   }
 }
 
-auto Ppu::get_background_pixel() const -> uint8_t {
-  auto pixel = static_cast<uint8_t>(tick - 2);
+auto Ppu::get_background_pixel() const -> u8 {
+  auto pixel = static_cast<u8>(tick - 2);
 
   if (mask.show_bg && !(!mask.bg_left && pixel < 8)) {
-    uint8_t bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
+    u8 bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
 
     if (bg_palette) {
-      uint8_t attr_palette = get_palette(at_shift_l, at_shift_h, 7 - fine_x);
+      u8 attr_palette = get_palette(at_shift_l, at_shift_h, 7 - fine_x);
       bg_palette |= attr_palette << 2;
     }
 
@@ -445,8 +443,8 @@ auto Ppu::get_background_pixel() const -> uint8_t {
   return 0;
 }
 
-auto Ppu::get_sprite_pixel() -> uint8_t {
-  auto pixel = static_cast<uint8_t>(tick - 2);
+auto Ppu::get_sprite_pixel() -> u8 {
+  auto pixel = static_cast<u8>(tick - 2);
   auto bg_palette = get_background_pixel();
 
   if (!(mask.show_spr && !(!mask.spr_left && pixel < 8))) {
@@ -458,13 +456,13 @@ auto Ppu::get_sprite_pixel() -> uint8_t {
       break;
     }
 
-    int offset = pixel - sprite.x;
+    i32 offset = pixel - sprite.x;
 
     if (offset < 0 || offset >= 8) {
       continue; // Not in range
     }
 
-    uint8_t spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
+    u8 spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
 
     if (spr_palette != 0) {
       bool is_sprite0 = sprite.id == 0;
@@ -489,8 +487,8 @@ auto Ppu::get_sprite_pixel() -> uint8_t {
 }
 
 void Ppu::render_pixel() {
-  size_t row_pixel = tick - 2;
-  size_t pixel_pos = (scanline * 256) + row_pixel;
+  usize row_pixel = tick - 2;
+  usize pixel_pos = (scanline * 256) + row_pixel;
 
   if (!is_rendering) {
     work_frame_buffer[pixel_pos] = vram_read(0x3F00);
@@ -501,7 +499,7 @@ void Ppu::render_pixel() {
 }
 
 void Ppu::background_fetch() {
-  auto in_range = [this](int lower, int upper) { return (tick >= lower) && (tick <= upper); };
+  auto in_range = [this](i32 lower, i32 upper) { return (tick >= lower) && (tick <= upper); };
 
   if (in_range(2, 257) || in_range(322, 337)) {
     background_shift();
@@ -542,7 +540,7 @@ void Ppu::background_fetch() {
 }
 
 void Ppu::scanline_cycle_pre() {
-  auto in_range = [this](int lower, int upper) { return (tick >= lower) && (tick <= upper); };
+  auto in_range = [this](i32 lower, i32 upper) { return (tick >= lower) && (tick <= upper); };
 
   if (tick == 1) {
     status.vblank = false;
@@ -600,19 +598,19 @@ void Ppu::scanline_cycle_nmi() {
 // Auxiliary
 //
 
-auto Ppu::nt_addr() const -> uint16_t {
+auto Ppu::nt_addr() const -> u16 {
   return 0x2000 | (vram_addr.raw & 0x0FFF);
 }
 
-auto Ppu::at_addr() const -> uint16_t {
+auto Ppu::at_addr() const -> u16 {
   return 0x23C0 | (vram_addr.nt << 10) | ((vram_addr.coarse_y / 4) << 3) | (vram_addr.coarse_x / 4);
 }
 
-auto Ppu::bg_addr() const -> uint16_t {
+auto Ppu::bg_addr() const -> u16 {
   return (ctrl.bg_table * 0x1000) + (nt_latch * 16) + vram_addr.fine_y;
 }
 
-auto Ppu::nt_mirror_addr(uint16_t addr) const -> uint16_t {
+auto Ppu::nt_mirror_addr(u16 addr) const -> u16 {
   using enum types::ppu::MirroringType;
 
   switch (*mirroring_conn) {
@@ -625,13 +623,13 @@ auto Ppu::nt_mirror_addr(uint16_t addr) const -> uint16_t {
   }
 }
 
-auto Ppu::palette_addr(uint16_t addr) const -> uint16_t {
+auto Ppu::palette_addr(u16 addr) const -> u16 {
   return (((addr & 0x13) == 0x10) ? (addr & ~0x10) : addr) & 0x1F;
 }
 
 template <typename T>
-auto Ppu::get_palette(T low, T high, int offset) const -> uint8_t {
-  constexpr auto nth_bit = [](auto x, auto n) -> uint8_t { return ((x >> n) & 1); };
+auto Ppu::get_palette(T low, T high, i32 offset) const -> u8 {
+  constexpr auto nth_bit = [](auto x, auto n) -> u8 { return ((x >> n) & 1); };
 
   return nth_bit(high, offset) << 1 | nth_bit(low, offset);
 }

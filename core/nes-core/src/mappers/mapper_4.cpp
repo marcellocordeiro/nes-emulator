@@ -32,12 +32,12 @@ void Mapper4::apply() {
     set_chr_map<2>(0, regs[0] >> 1);
     set_chr_map<2>(1, regs[1] >> 1);
 
-    for (size_t i = 0; i < 4; ++i) {
+    for (usize i = 0; i < 4; ++i) {
       set_chr_map<1>(4 + i, regs[2 + i]);
     }
   } else {
     // CHR Mode 1
-    for (size_t i = 0; i < 4; ++i) {
+    for (usize i = 0; i < 4; ++i) {
       set_chr_map<1>(i, regs[2 + i]);
     }
 
@@ -46,7 +46,7 @@ void Mapper4::apply() {
   }
 }
 
-void Mapper4::write(uint16_t addr, uint8_t value) {
+void Mapper4::write(u16 addr, u8 value) {
   if (addr < 0x8000) {
     // prg_ram[addr - 0x6000] = value;
   } else if (addr & 0x8000) {
