@@ -1,6 +1,17 @@
 project(nes-emulator-sdl3)
 
-add_executable(nes-emulator-sdl3 "src/app.cpp" "src/main.cpp")
+file(
+  GLOB_RECURSE
+  SOURCES
+  CONFIGURE_DEPENDS
+  "src/*.cpp"
+  "src/*.hpp"
+  "src/*.h"
+)
+
+add_executable(nes-emulator-sdl3)
+target_sources(nes-emulator-sdl3 PRIVATE ${SOURCES})
+
 copy_palette(nes-emulator-sdl3)
 
 find_package(SDL3 CONFIG REQUIRED COMPONENTS SDL3-shared)
@@ -12,6 +23,7 @@ target_link_libraries(nes-emulator-sdl3 PRIVATE fmt::fmt)
 find_package(spdlog CONFIG REQUIRED)
 target_link_libraries(nes-emulator-sdl3 PRIVATE spdlog::spdlog)
 
+target_link_libraries(nes-emulator-sdl3 PRIVATE lib-common)
 target_link_libraries(nes-emulator-sdl3 PRIVATE nes-core)
 
 set_target_properties(

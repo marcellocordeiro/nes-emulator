@@ -1,20 +1,17 @@
-project(nes-core)
-
 file(
-  GLOB
+  GLOB_RECURSE
   SOURCES
   CONFIGURE_DEPENDS
-  "src/mappers/*.cpp"
-  "src/types/*.cpp"
-  "src/utility/*.cpp"
   "src/*.cpp"
+  "src/*.hpp"
+  "src/*.h"
 )
 
 add_library(nes-core STATIC ${SOURCES})
 
 target_include_directories(nes-core PUBLIC "include")
 
-target_link_libraries(nes-core PRIVATE common)
+target_link_libraries(nes-core PRIVATE lib-common)
 
 find_package(fmt CONFIG REQUIRED)
 target_link_libraries(nes-core PRIVATE fmt::fmt)

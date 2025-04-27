@@ -1,8 +1,0 @@
-{
-    "cmake.copyCompileCommands": "${workspaceFolder}/build/compile_commands.json",
-
-    "C_Cpp.intelliSenseEngine": "disabled",
-    "[cpp]": {
-        "editor.defaultFormatter": "xaver.clang-format",
-    },
-}

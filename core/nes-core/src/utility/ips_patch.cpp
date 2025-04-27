@@ -21,10 +21,10 @@ void IpsPatch::build() {
 auto IpsPatch::patch(const std::vector<uint8_t>& rom) -> std::vector<uint8_t> {
   std::vector<uint8_t> output(std::max(min_size, rom.size()));
 
-  std::copy(rom.begin(), rom.end(), output.begin());
+  std::ranges::copy(rom, output.begin());
 
   for (const auto& entry : records) {
-    std::copy(entry.data.begin(), entry.data.end(), output.begin() + entry.addr);
+    std::ranges::copy(entry.data, output.begin() + entry.addr);
   }
 
   //
@@ -79,7 +79,7 @@ auto IpsPatch::read_record() -> bool {
     uint8_t value = buffer[2];
 
     record.data.resize(record.length);
-    std::fill(record.data.begin(), record.data.begin() + record.length, value);
+    std::fill_n(record.data.begin(), record.length, value);
   }
 
   records.push_back(std::move(record));

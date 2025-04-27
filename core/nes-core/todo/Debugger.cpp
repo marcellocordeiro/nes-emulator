@@ -5,7 +5,7 @@
 #include <sstream>
 #include <string_view>
 
-#include <common.h>
+#include <lib/common.h>
 
 #include "cpu.h"
 #include "ppu.h"

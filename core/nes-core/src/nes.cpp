@@ -55,7 +55,7 @@ auto Nes::get_frame_buffer() -> const uint32_t* {
 }
 
 void Nes::update_controller_state(size_t port, uint8_t state) {
-  nes::Controller::get().update_state(port, state);
+  Controller::get().update_state(port, state);
 }
 
 //

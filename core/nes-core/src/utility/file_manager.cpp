@@ -75,7 +75,7 @@ auto FileManager::get_prg_ram() -> std::vector<uint8_t> {
 auto FileManager::get_palette() -> std::vector<uint8_t> {
   std::ifstream file(palette_path, std::ios::binary);
 
-  std::vector<uint8_t> palette(std::filesystem::file_size(palette_path), uint8_t{});
+  std::vector palette(std::filesystem::file_size(palette_path), uint8_t{});
 
   file.read(reinterpret_cast<char*>(palette.data()), palette.size());
 

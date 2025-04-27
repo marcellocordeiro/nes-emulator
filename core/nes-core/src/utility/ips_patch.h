@@ -4,12 +4,12 @@
 #include <fstream>
 #include <vector>
 
-#include <common.h>
+#include <lib/common.h>
 
 namespace nes::utility {
 class IpsPatch final {
 public:
-  IpsPatch(const std::filesystem::path&);
+  explicit IpsPatch(const std::filesystem::path&);
 
   auto patch(const std::vector<uint8_t>&) -> std::vector<uint8_t>;
 

@@ -114,7 +114,7 @@ auto App::updateEmulatedControllers() -> void {
   Nes::update_controller_state(0, state);
 }
 
-auto App::processInput(SDL_KeyboardEvent& key_event) -> void {
+auto App::processInput(const SDL_KeyboardEvent& key_event) -> void {
   auto key = key_event.scancode;
 
   for (const auto& [action, mappedKey] : actionKeyBindings) {

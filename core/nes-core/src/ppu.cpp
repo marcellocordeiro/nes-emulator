@@ -156,9 +156,9 @@ auto Ppu::peek_reg(uint16_t addr) const -> uint8_t {
   case PpuData:
     if (vram_addr.addr <= 0x3EFF) {
       return ppudata_buffer;
-    } else {
-      return peek_vram(vram_addr.addr);
     }
+
+    return peek_vram(vram_addr.addr);
 
   default: break;
   }

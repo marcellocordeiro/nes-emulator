@@ -3,7 +3,7 @@
 #include <array>
 #include <memory>
 
-#include <common.h>
+#include <lib/common.h>
 #include "types/ppu_types.h"
 #include "utility/snapshotable.hpp"
 

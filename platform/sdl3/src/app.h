@@ -38,7 +38,7 @@ private:
 
   auto setupDefaultBindings() -> void;
   auto updateEmulatedControllers() -> void;
-  auto processInput(SDL_KeyboardEvent&) -> void;
+  auto processInput(const SDL_KeyboardEvent& key_event) -> void;
 
   enum class Button {
     A,
