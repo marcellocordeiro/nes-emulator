@@ -8,7 +8,8 @@
 
 class App {
 public:
-  App(std::span<std::string_view> args);
+  explicit App(std::span<std::string_view> args);
+  ~App() = default;
 
   App(const App&) = delete;
   App(App&&) = delete;

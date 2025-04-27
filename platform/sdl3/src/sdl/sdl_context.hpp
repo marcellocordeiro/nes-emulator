@@ -24,6 +24,11 @@ public:
     }
   }
 
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
+  Context(Context&&) = delete;
+  Context& operator=(Context&&) = delete;
+
 private:
   static inline int counter = 0;
 };

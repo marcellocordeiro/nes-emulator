@@ -1,7 +1,7 @@
 #include "app.h"
 
+#include <chrono>
 #include <format>
-#include <numeric>
 
 #include <nes/nes.h>
 

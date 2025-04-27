@@ -4,6 +4,7 @@
 #include <span>
 
 #include <common.h>
+
 #include "base_mapper.h"
 
 namespace nes {

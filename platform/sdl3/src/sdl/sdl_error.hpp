@@ -16,12 +16,12 @@ public:
 
   [[nodiscard]]
   auto static fromContextWithSource(std::string source) -> Error {
-    auto rawError = SDL_GetError();
+    const auto* rawError = SDL_GetError();
     auto wrappedError = std::string(rawError);
 
     clearContextError();
 
-    return Error(source, wrappedError);
+    return {std::move(source), wrappedError};
   }
 
   [[nodiscard]]

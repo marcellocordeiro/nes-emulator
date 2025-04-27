@@ -15,4 +15,4 @@ constexpr auto DEBUG_MODE = true;
 constexpr auto DEBUG_MODE = false;
 #endif
 
-#define UNUSED(x) (void)x;
+#define UNUSED(x) (void)(x)

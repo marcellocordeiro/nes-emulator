@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <string_view>
+#include <string>
 
 #include "sdl_context.hpp"
 #include "sdl_error.hpp"
@@ -11,11 +11,11 @@ namespace SDL {
 class Window {
 public:
   [[nodiscard]]
-  Window() {}
+  Window() = default;
 
   [[nodiscard]]
-  Window(std::string title, int width, int height, SDL_WindowFlags flags) {
-    auto raw = SDL_CreateWindow(title.c_str(), width, height, flags);
+  Window(const std::string& title, int width, int height, SDL_WindowFlags flags) {
+    auto* raw = SDL_CreateWindow(title.c_str(), width, height, flags);
 
     if (raw == nullptr) {
       throw Error::fromContextWithSource("SDL_CreateWindow");
@@ -46,11 +46,11 @@ private:
 class Renderer {
 public:
   [[nodiscard]]
-  Renderer() {}
+  Renderer() = default;
 
   [[nodiscard]]
-  Renderer(const Window& window) {
-    auto raw = SDL_CreateRenderer(window.get(), nullptr);
+  explicit Renderer(const Window& window) {
+    auto* raw = SDL_CreateRenderer(window.get(), nullptr);
 
     if (raw == nullptr) {
       throw Error::fromContextWithSource("SDL_CreateRenderer");
@@ -89,7 +89,7 @@ private:
 class Texture {
 public:
   [[nodiscard]]
-  Texture() {}
+  Texture() = default;
 
   [[nodiscard]]
   Texture(
@@ -99,7 +99,7 @@ public:
     int width,
     int height
   ) {
-    auto raw = SDL_CreateTexture(renderer.get(), format, access, width, height);
+    auto* raw = SDL_CreateTexture(renderer.get(), format, access, width, height);
 
     if (raw == nullptr) {
       throw Error::fromContextWithSource("SDL_CreateTexture");

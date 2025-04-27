@@ -121,9 +121,8 @@ void Ppu::step() {
 
     if (scanline == 240) {
       frame_buffer = work_frame_buffer;
-      std::transform(
-        frame_buffer.begin(),
-        frame_buffer.end(),
+      std::ranges::transform(
+        frame_buffer,
         frame_buffer.begin(),
         [this](uint32_t p) { return full_nes_palette[mask.rgb][p]; }
       );
