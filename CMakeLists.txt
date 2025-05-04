@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.30.5...4.0.1)
 
 project(nes-emulator)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
-
 function(copy_palette target)
     add_custom_command(
         TARGET ${target} POST_BUILD
