@@ -305,7 +305,7 @@ void Ppu::vram_write(u16 addr, u8 value) {
   case Chr: Cartridge::get().chr_write(addr, value); break;
   case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
   case Palettes: cg_ram[palette_addr(addr)] = value; break;
-  default: throw;
+  default: throw; // TODO: fix this
   }
 }
 
