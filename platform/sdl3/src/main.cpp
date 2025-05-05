@@ -4,7 +4,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include "app.h"
+#include "app.hpp"
 
 auto main(i32 argc, char* argv[]) -> i32 {
   auto args = std::vector<std::string_view>(argv, argv + argc);

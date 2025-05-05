@@ -3,6 +3,8 @@
 #include <concepts>
 #include <limits>
 
+#include "common.h"
+
 namespace lib {
 template <typename ValueType, usize position, usize bits>
   requires std::unsigned_integral<ValueType>
