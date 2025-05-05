@@ -3,8 +3,7 @@
 #include <memory>
 #include <string>
 
-#include <lib/common.h>
-
+#include "lib/common.h"
 #include "sdl_context.hpp"
 #include "sdl_error.hpp"
 #include "sdl_include.hpp"

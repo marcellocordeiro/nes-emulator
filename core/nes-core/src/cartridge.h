@@ -3,9 +3,8 @@
 #include <memory>
 #include <span>
 
-#include <lib/common.h>
-
 #include "base_mapper.h"
+#include "lib/common.h"
 
 namespace nes {
 class Cartridge final {

@@ -2,8 +2,8 @@
 
 #include <string_view>
 
-#include <lib/common.h>
-#include <lib/bit_field.hpp>
+#include "lib/bit_field.hpp"
+#include "lib/common.h"
 
 namespace nes::types::ppu {
 template <usize position, usize bits>

@@ -3,7 +3,7 @@
 #include <chrono>
 #include <format>
 
-#include <nes/nes.h>
+#include "nes/nes.h"
 
 App::App(std::span<std::string_view> args) : args(args) {
   if (args.size() == 1) {

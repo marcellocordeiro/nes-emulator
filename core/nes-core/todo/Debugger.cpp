@@ -5,9 +5,8 @@
 #include <sstream>
 #include <string_view>
 
-#include <lib/common.h>
-
 #include "cpu.h"
+#include "lib/common.h"
 #include "ppu.h"
 #include "types/cpu_types.h"
 

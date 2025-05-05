@@ -2,6 +2,8 @@ file(
   GLOB_RECURSE
   SOURCES
   CONFIGURE_DEPENDS
+  "include/*.hpp"
+  "include/*.h"
   "src/*.cpp"
   "src/*.hpp"
   "src/*.h"

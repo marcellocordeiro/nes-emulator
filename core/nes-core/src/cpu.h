@@ -3,7 +3,7 @@
 #include <array>
 #include <memory>
 
-#include <lib/common.h>
+#include "lib/common.h"
 #include "types/cpu_types.h"
 #include "utility/snapshotable.hpp"
 

@@ -2,7 +2,7 @@
 
 #include <array>
 
-#include <lib/common.h>
+#include "lib/common.h"
 #include "utility/snapshotable.hpp"
 
 namespace nes {

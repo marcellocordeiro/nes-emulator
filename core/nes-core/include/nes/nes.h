@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string_view>
 
-#include <lib/common.h>
+#include "lib/common.h"
 
 class Nes {
 public:

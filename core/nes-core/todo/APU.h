@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lib/common.h>
+#include "lib/common.h"
 
 namespace nes {
 class Apu final {
