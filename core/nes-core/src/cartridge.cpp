@@ -1,15 +1,19 @@
-#include "cartridge.h"
+#include "cartridge.hpp"
 
 #include <format>
+#include <span>
+#include <stdexcept>
 
 #include <spdlog/spdlog.h>
 
-#include "mappers/mapper_0.h"
-#include "mappers/mapper_1.h"
-#include "mappers/mapper_2.h"
-#include "mappers/mapper_4.h"
-#include "mappers/mapper_7.h"
-#include "utility/file_manager.h"
+#include "base_mapper.hpp"
+#include "lib/common.hpp"
+#include "mappers/mapper_0.hpp"
+#include "mappers/mapper_1.hpp"
+#include "mappers/mapper_2.hpp"
+#include "mappers/mapper_4.hpp"
+#include "mappers/mapper_7.hpp"
+#include "utility/file_manager.hpp"
 
 namespace nes {
 auto Cartridge::get() -> Cartridge& {

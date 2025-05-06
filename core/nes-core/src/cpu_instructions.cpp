@@ -1,14 +1,18 @@
-#include "cpu.h"
+#include "cpu.hpp"
 
 #include <format>
+#include <stdexcept>
 
 #include <spdlog/spdlog.h>
+
+#include "lib/common.hpp"
+#include "types/cpu_types.hpp"
 
 namespace nes {
 using enum types::cpu::AddressingMode;
 using enum types::cpu::flags;
 
-template u16 Cpu::get_operand<Immediate>();
+template auto Cpu::get_operand<Immediate>() -> u16;
 
 template <>
 auto Cpu::get_operand<Relative>() -> u16;

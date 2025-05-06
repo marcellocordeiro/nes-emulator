@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../base_mapper.h"
+#include "../base_mapper.hpp"
 
 namespace nes {
 class Mapper4 final : public BaseMapper {
@@ -11,8 +11,8 @@ public:
 
   void scanline_counter() override;
 
-  void save(std::ofstream&) const override;
-  void load(std::ifstream&) override;
+  void save(std::ofstream& out) const override;
+  void load(std::ifstream& in) override;
 
 private:
   void apply();

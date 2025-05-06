@@ -2,6 +2,13 @@ root = true
 
 [*]
 charset = utf-8
+end_of_line = lf
 indent_style = space
-trim_trailing_whitespace = true
 insert_final_newline = true
+trim_trailing_whitespace = true
+
+[.gitmodules]
+indent_style = tab
+
+[*.{bat,cmd}]
+end_of_line = crlf

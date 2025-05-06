@@ -1,11 +1,15 @@
-#include "ppu.h"
+#include "ppu.hpp"
 
 #include <algorithm>
+#include <iosfwd>
+#include <stdexcept>
 
 #include <spdlog/spdlog.h>
 
-#include "cartridge.h"
-#include "utility/file_manager.h"
+#include "cartridge.hpp"
+#include "lib/common.hpp"
+#include "types/ppu_types.hpp"
+#include "utility/file_manager.hpp"
 
 namespace nes {
 auto Ppu::get() -> Ppu& {
@@ -444,7 +448,7 @@ void Ppu::background_shift() {
 auto Ppu::get_background_pixel() const -> u8 {
   auto pixel = static_cast<u8>(tick - 2);
 
-  if (mask.show_bg && !(!mask.bg_left && pixel < 8)) {
+  if (mask.show_bg && (mask.bg_left || pixel >= 8)) {
     u8 bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
 
     if (bg_palette) {
@@ -462,7 +466,7 @@ auto Ppu::get_sprite_pixel() -> u8 {
   auto pixel = static_cast<u8>(tick - 2);
   auto bg_palette = get_background_pixel();
 
-  if (!(mask.show_spr && !(!mask.spr_left && pixel < 8))) {
+  if (!mask.show_spr || (!mask.spr_left && pixel < 8)) {
     return bg_palette;
   }
 

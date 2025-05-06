@@ -5,7 +5,6 @@
         "**/out": true,
         "**/target": true,
     },
-    "cmake.copyCompileCommands": "${workspaceFolder}/build/compile_commands.json",
     "files.associations": {
         "__bit_reference": "cpp",
         "__hash_table": "cpp",

@@ -4,7 +4,7 @@
 #include <format>
 #include <string>
 
-#include "sdl_include.hpp"
+#include "sdl_include.hpp" // IWYU pragma: keep
 
 namespace SDL {
 class Error final : public std::exception {

@@ -3,17 +3,12 @@
 #include <memory>
 #include <span>
 
-#include "base_mapper.h"
-#include "lib/common.h"
+#include "base_mapper.hpp"
+#include "lib/common.hpp"
 
 namespace nes {
 class Cartridge final {
 public:
-  Cartridge(const Cartridge&) = delete;
-  Cartridge(Cartridge&&) = delete;
-  auto operator=(const Cartridge&) -> Cartridge& = delete;
-  auto operator=(Cartridge&&) -> Cartridge& = delete;
-
   using MirroringType = BaseMapper::MirroringType;
 
   static auto get() -> Cartridge&;
@@ -22,8 +17,8 @@ public:
 
   void load();
 
-  auto prg_read(u16) const -> u8;
-  auto chr_read(u16) const -> u8;
+  [[nodiscard]] auto prg_read(u16) const -> u8;
+  [[nodiscard]] auto chr_read(u16) const -> u8;
 
   void prg_write(u16, u8);
   void chr_write(u16, u8);

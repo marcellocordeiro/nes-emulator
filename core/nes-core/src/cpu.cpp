@@ -1,10 +1,15 @@
-#include "cpu.h"
+#include "cpu.hpp"
+
+#include <iosfwd>
+#include <stdexcept>
 
 #include <spdlog/spdlog.h>
 
-#include "cartridge.h"
-#include "controller.h"
-#include "ppu.h"
+#include "cartridge.hpp"
+#include "controller.hpp"
+#include "lib/common.hpp"
+#include "ppu.hpp"
+#include "types/cpu_types.hpp"
 
 namespace nes {
 auto Cpu::get() -> Cpu& {

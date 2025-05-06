@@ -1,7 +1,8 @@
 #pragma once
 
+#include "lib/common.hpp"
 #include "sdl_error.hpp"
-#include "sdl_include.hpp"
+#include "sdl_include.hpp" // IWYU pragma: keep
 
 namespace SDL {
 class Context {

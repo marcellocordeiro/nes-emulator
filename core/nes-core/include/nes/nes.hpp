@@ -3,15 +3,11 @@
 #include <filesystem>
 #include <string_view>
 
-#include "lib/common.h"
+#include "lib/common.hpp"
 
+namespace nes {
 class Nes {
 public:
-  Nes(const Nes&) = delete;
-  Nes(Nes&&) = delete;
-  auto operator=(const Nes&) -> Nes& = delete;
-  auto operator=(Nes&&) -> Nes& = delete;
-
   static void set_app_path(const std::filesystem::path&);
   static void load(const std::filesystem::path&);
   static void reset();
@@ -46,3 +42,4 @@ public:
 private:
   Nes() = default;
 };
+} // namespace nes

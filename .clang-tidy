@@ -1,29 +1,33 @@
----
-Checks: >
-  *,
-  -abseil-*,
-  -altera-*,
-  -android-*,
-  -fuchsia-*,
-  -google-*,
-  -llvm*,
-  -modernize-use-trailing-return-type,
-  -zircon-*,
+# $schema: "https://json.schemastore.org/clang-tidy.json"
 
-  -readability-magic-numbers,
-  -cppcoreguidelines-avoid-magic-numbers,
-  -misc-include-cleaner,
-  
-  -cppcoreguidelines-pro-bounds-constant-array-index,
-  -bugprone-easily-swappable-parameters,
-  -readability-avoid-return-with-void-value,
-  -hicpp-signed-bitwise,
-  -misc-const-correctness,
-  -readability-implicit-bool-conversion,
-  -readability-identifier-length,
-  -bugprone-narrowing-conversions,
-  -readability-suspicious-call-argument,
-  -misc-no-recursion,
+---
+Checks: [
+  "*",
+  # "-abseil-*",
+  "-altera-*",
+  # "-android-*",
+  "-fuchsia-*",
+  # "-google-*",
+  "-llvm*",
+  # "-zircon-*",
+  # "-modernize-use-trailing-return-type",
+  "-readability-magic-numbers",
+  "-cppcoreguidelines-avoid-magic-numbers",
+  # "-misc-include-cleaner",
+  "-cppcoreguidelines-pro-bounds-constant-array-index",
+  "-bugprone-easily-swappable-parameters",
+  "-readability-avoid-return-with-void-value",
+  "-hicpp-signed-bitwise",
+  # "-misc-const-correctness",
+  # "-readability-implicit-bool-conversion",
+  "-readability-identifier-length",
+  # "-bugprone-narrowing-conversions",
+  # "-readability-suspicious-call-argument",
+  "-misc-no-recursion",
+  "-cppcoreguidelines-non-private-member-variables-in-classes",
+  "-misc-non-private-member-variables-in-classes",
+]
+
 
 
 #  -readability-else-after-return,
@@ -32,11 +36,11 @@ Checks: >
 #  -cppcoreguidelines-non-private-member-variables-in-classes,
 #  -misc-non-private-member-variables-in-classes,
 
-#  
+#
 #  -cppcoreguidelines-avoid-magic-numbers,
 #  -cppcoreguidelines-pro-bounds-constant-array-index,
 #  -google-build-using-namespace,
-#  
+#
 #  -hicpp-braces-around-statements,
 #  -readability-convert-member-functions-to-static,
 #  -readability-implicit-bool-conversion,

@@ -1,4 +1,4 @@
-#include "cpu_types.h"
+#include "cpu_types.hpp"
 
 namespace nes::types::cpu {
 auto State::check_flags(u8 flags) const -> bool {
@@ -126,7 +126,7 @@ auto get_map(u16 addr) -> MemoryMap {
   return MemoryMap::Unknown;
 }
 
-template MemoryMap get_map<Operation::Read>(u16);
-template MemoryMap get_map<Operation::Write>(u16);
+template auto get_map<Operation::Read>(u16) -> MemoryMap;
+template auto get_map<Operation::Write>(u16) -> MemoryMap;
 } // namespace memory
 } // namespace nes::types::cpu

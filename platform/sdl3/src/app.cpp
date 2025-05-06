@@ -2,8 +2,12 @@
 
 #include <chrono>
 #include <format>
+#include <stdexcept>
 
-#include "nes/nes.h"
+#include "lib/common.hpp"
+#include "nes/nes.hpp"
+
+using nes::Nes;
 
 App::App(std::span<std::string_view> args) : args(args) {
   if (args.size() == 1) {
@@ -44,12 +48,12 @@ auto App::run() -> void {
   running = true;
 
   while (true) {
-    SDL_Event e;
+    SDL_Event event;
 
-    while (SDL_PollEvent(&e)) {
-      switch (e.type) {
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
       case SDL_EVENT_QUIT: Nes::power_off(); return;
-      case SDL_EVENT_KEY_DOWN: processInput(e.key); break;
+      case SDL_EVENT_KEY_DOWN: processInput(event.key); break;
 
       default: break;
       }

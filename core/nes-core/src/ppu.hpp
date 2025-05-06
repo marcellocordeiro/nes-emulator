@@ -3,24 +3,19 @@
 #include <array>
 #include <memory>
 
-#include "lib/common.h"
-#include "types/ppu_types.h"
+#include "lib/common.hpp"
+#include "types/ppu_types.hpp"
 #include "utility/snapshotable.hpp"
 
 namespace nes {
 class Ppu final : public utility::Snapshotable {
 public:
-  Ppu(const Ppu&) = delete;
-  Ppu(Ppu&&) = delete;
-  auto operator=(const Ppu&) -> Ppu& = delete;
-  auto operator=(Ppu&&) -> Ppu& = delete;
-
   static auto get() -> Ppu&;
 
   void power_on();
   void reset();
 
-  auto get_frame_buffer() const -> const u32*;
+  [[nodiscard]] auto get_frame_buffer() const -> const u32*;
 
   void set_palette();
 
@@ -36,23 +31,23 @@ public:
   // Read without side effects
   //
 
-  auto cycle_count() const -> i32 {
+  [[nodiscard]] auto cycle_count() const -> i32 {
     return tick;
   }
 
-  auto scanline_count() const -> i32 {
+  [[nodiscard]] auto scanline_count() const -> i32 {
     return scanline;
   }
 
-  auto peek_reg(u16) const -> u8;
-  auto peek_vram(u16) const -> u8;
+  [[nodiscard]] auto peek_reg(u16) const -> u8;
+  [[nodiscard]] auto peek_vram(u16) const -> u8;
 
   //
   // Snapshot
   //
 
-  void save(std::ofstream&) const override;
-  void load(std::ifstream&) override;
+  void save(std::ofstream& out) const override;
+  void load(std::ifstream& in) override;
 
 private:
   Ppu() = default;
@@ -61,7 +56,7 @@ private:
   // VRAM access
   //
 
-  auto vram_read(u16) const -> u8;
+  [[nodiscard]] auto vram_read(u16) const -> u8;
   void vram_write(u16, u8);
 
   //
@@ -86,8 +81,8 @@ private:
   // Rendering
   //
 
-  auto get_background_pixel() const -> u8;
-  auto get_sprite_pixel() -> u8;
+  [[nodiscard]] auto get_background_pixel() const -> u8;
+  [[nodiscard]] auto get_sprite_pixel() -> u8;
 
   void render_pixel();
 
@@ -106,14 +101,14 @@ private:
   // Addresses
   //
 
-  auto nt_addr() const -> u16;           // Nametable address
-  auto at_addr() const -> u16;           // Attribute address
-  auto bg_addr() const -> u16;           // Background address
-  auto palette_addr(u16) const -> u16;   // Palette address
-  auto nt_mirror_addr(u16) const -> u16; // Relative nametable address
+  [[nodiscard]] auto nt_addr() const -> u16;           // Nametable address
+  [[nodiscard]] auto at_addr() const -> u16;           // Attribute address
+  [[nodiscard]] auto bg_addr() const -> u16;           // Background address
+  [[nodiscard]] auto palette_addr(u16) const -> u16;   // Palette address
+  [[nodiscard]] auto nt_mirror_addr(u16) const -> u16; // Relative nametable address
 
   template <typename T>
-  auto get_palette(T, T, i32) const -> u8; // Get palette
+  [[nodiscard]] auto get_palette(T, T, i32) const -> u8; // Get palette
 
   enum timing {
     Idle,

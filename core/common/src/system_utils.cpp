@@ -1,8 +1,6 @@
-#include "lib/system_utils.h"
+#include "lib/system_utils.hpp"
 
 #include <string>
-
-#include "lib/common.h"
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -13,6 +11,8 @@
 
 #include <mach-o/dyld.h>
 #include <sys/syslimits.h>
+
+#include "lib/common.hpp"
 #endif
 
 namespace lib {

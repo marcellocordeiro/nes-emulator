@@ -3,47 +3,47 @@
 #include <concepts>
 #include <limits>
 
-#include "common.h"
+#include "common.hpp"
 
 namespace lib {
 template <typename ValueType, usize position, usize bits>
   requires std::unsigned_integral<ValueType>
-class BitField {
+class Bitfield {
 public:
-  constexpr BitField() = default;
+  constexpr Bitfield() = default;
 
   constexpr operator ValueType() const noexcept {
     return get();
   }
 
-  constexpr auto operator=(const BitField&) -> BitField& = delete;
+  constexpr auto operator=(const Bitfield&) -> Bitfield& = delete;
 
-  constexpr auto operator=(ValueType val) noexcept -> BitField& {
+  constexpr auto operator=(ValueType val) noexcept -> Bitfield& {
     this->set(val);
     return *this;
   }
 
-  constexpr auto operator+=(ValueType rhs) noexcept -> BitField& {
+  constexpr auto operator+=(ValueType rhs) noexcept -> Bitfield& {
     *this = *this + rhs;
     return *this;
   }
 
-  constexpr auto operator-=(ValueType rhs) noexcept -> BitField& {
+  constexpr auto operator-=(ValueType rhs) noexcept -> Bitfield& {
     *this = *this + rhs;
     return *this;
   }
 
-  constexpr auto operator++() noexcept -> BitField& {
+  constexpr auto operator++() noexcept -> Bitfield& {
     *this = *this + 1;
     return *this;
   }
 
-  constexpr auto operator--() noexcept -> BitField& {
+  constexpr auto operator--() noexcept -> Bitfield& {
     *this = *this - 1;
     return *this;
   }
 
-  constexpr auto operator^=(ValueType rhs) noexcept -> BitField& {
+  constexpr auto operator^=(ValueType rhs) noexcept -> Bitfield& {
     *this = *this ^ rhs;
     return *this;
   }

@@ -1,4 +1,6 @@
-#include "base_mapper.h"
+#include "base_mapper.hpp"
+
+#include "lib/common.hpp"
 
 namespace nes {
 void BaseMapper::set_mirroring(MirroringType value) {
@@ -59,12 +61,14 @@ void BaseMapper::set_chr_map(usize slot, i32 page) {
 void BaseMapper::scanline_counter() {}
 
 // TODO
-void BaseMapper::save(std::ofstream& /*out*/) const {
+void BaseMapper::save(std::ofstream& out) const {
+  UNUSED(out);
   // dump_snapshot(out, prg_ram);
   // dump_snapshot(out, chr);
 }
 
-void BaseMapper::load(std::ifstream& /*in*/) {
+void BaseMapper::load(std::ifstream& in) {
+  UNUSED(in);
   // get_snapshot(in, prg_ram);
   // get_snapshot(in, chr);
 }

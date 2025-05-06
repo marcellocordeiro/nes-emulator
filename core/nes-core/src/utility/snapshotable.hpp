@@ -5,15 +5,21 @@
 #include <fstream>
 #include <vector>
 
-#include "lib/common.h"
+#include "lib/common.hpp"
 
 namespace nes::utility {
 class Snapshotable {
 public:
+  Snapshotable() = default;
   virtual ~Snapshotable() = default;
 
-  virtual void save(std::ofstream&) const = 0;
-  virtual void load(std::ifstream&) = 0;
+  Snapshotable(const Snapshotable&) = default;
+  Snapshotable(Snapshotable&&) = default;
+  auto operator=(const Snapshotable&) -> Snapshotable& = default;
+  auto operator=(Snapshotable&&) -> Snapshotable& = default;
+
+  virtual void save(std::ofstream& out) const = 0;
+  virtual void load(std::ifstream& in) = 0;
 
 protected:
   template <typename... Args>

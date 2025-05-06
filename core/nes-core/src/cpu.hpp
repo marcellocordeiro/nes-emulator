@@ -3,18 +3,13 @@
 #include <array>
 #include <memory>
 
-#include "lib/common.h"
-#include "types/cpu_types.h"
+#include "lib/common.hpp"
+#include "types/cpu_types.hpp"
 #include "utility/snapshotable.hpp"
 
 namespace nes {
 class Cpu final : public utility::Snapshotable {
 public:
-  Cpu(const Cpu&) = delete;
-  Cpu(Cpu&&) = delete;
-  auto operator=(const Cpu&) -> Cpu& = delete;
-  auto operator=(Cpu&&) -> Cpu& = delete;
-
   using ram_type = std::array<u8, 0x800>;
 
   static auto get() -> Cpu&;
@@ -33,28 +28,28 @@ public:
   // Read without side effects
   //
 
-  auto get_state() const -> types::cpu::State;
+  [[nodiscard]] auto get_state() const -> types::cpu::State;
 
-  auto peek(u16) const -> u8;
+  [[nodiscard]] auto peek(u16) const -> u8;
 
-  auto peek_imm() const -> u16;
-  auto peek_rel() const -> u16;
-  auto peek_zp() const -> u16;
-  auto peek_zpx() const -> u16;
-  auto peek_zpy() const -> u16;
-  auto peek_ab() const -> u16;
-  auto peek_abx() const -> u16;
-  auto peek_aby() const -> u16;
-  auto peek_ind() const -> u16;
-  auto peek_indx() const -> u16;
-  auto peek_indy() const -> u16;
+  [[nodiscard]] auto peek_imm() const -> u16;
+  [[nodiscard]] auto peek_rel() const -> u16;
+  [[nodiscard]] auto peek_zp() const -> u16;
+  [[nodiscard]] auto peek_zpx() const -> u16;
+  [[nodiscard]] auto peek_zpy() const -> u16;
+  [[nodiscard]] auto peek_ab() const -> u16;
+  [[nodiscard]] auto peek_abx() const -> u16;
+  [[nodiscard]] auto peek_aby() const -> u16;
+  [[nodiscard]] auto peek_ind() const -> u16;
+  [[nodiscard]] auto peek_indx() const -> u16;
+  [[nodiscard]] auto peek_indy() const -> u16;
 
   //
   // Snapshot
   //
 
-  void save(std::ofstream&) const override;
-  void load(std::ifstream&) override;
+  void save(std::ofstream& out) const override;
+  void load(std::ifstream& in) override;
 
 private:
   Cpu() = default;
@@ -64,7 +59,7 @@ private:
 
   void tick();
 
-  auto read(u16) const -> u8;
+  [[nodiscard]] auto read(u16) const -> u8;
   void write(u16, u8);
 
   auto memory_read(u16) -> u8;

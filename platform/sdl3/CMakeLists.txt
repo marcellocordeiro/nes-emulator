@@ -23,8 +23,7 @@ target_link_libraries(nes-emulator-sdl3 PRIVATE fmt::fmt)
 find_package(spdlog CONFIG REQUIRED)
 target_link_libraries(nes-emulator-sdl3 PRIVATE spdlog::spdlog)
 
-target_link_libraries(nes-emulator-sdl3 PRIVATE lib-common)
-target_link_libraries(nes-emulator-sdl3 PRIVATE nes-core)
+target_link_libraries(nes-emulator-sdl3 PRIVATE nes::common nes::core)
 
 set_target_properties(
   nes-emulator-sdl3

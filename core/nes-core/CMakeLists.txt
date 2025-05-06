@@ -10,10 +10,11 @@ file(
 )
 
 add_library(nes-core STATIC ${SOURCES})
+add_library(nes::core ALIAS nes-core)
 
 target_include_directories(nes-core PUBLIC "include")
 
-target_link_libraries(nes-core PRIVATE lib-common)
+target_link_libraries(nes-core PRIVATE common)
 
 find_package(fmt CONFIG REQUIRED)
 target_link_libraries(nes-core PRIVATE fmt::fmt)

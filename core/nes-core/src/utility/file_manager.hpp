@@ -3,16 +3,11 @@
 #include <filesystem>
 #include <vector>
 
-#include "lib/common.h"
+#include "lib/common.hpp"
 
 namespace nes::utility {
 class FileManager final {
 public:
-  FileManager(const FileManager&) = delete;
-  FileManager(FileManager&&) = delete;
-  auto operator=(const FileManager&) -> FileManager& = delete;
-  auto operator=(FileManager&&) -> FileManager& = delete;
-
   static auto get() -> FileManager&;
 
   void set_app_path(const std::filesystem::path&);
@@ -25,16 +20,16 @@ public:
 
   void save_prg_ram(const std::vector<u8>&);
 
-  auto get_app_path() const -> std::filesystem::path;
-  auto get_rom_path() const -> std::filesystem::path;
-  auto get_patch_path() const -> std::filesystem::path;
-  auto get_prg_ram_path() const -> std::filesystem::path;
-  auto get_palette_path() const -> std::filesystem::path;
-  auto get_snapshot_path() const -> std::filesystem::path;
+  [[nodiscard]] auto get_app_path() const -> std::filesystem::path;
+  [[nodiscard]] auto get_rom_path() const -> std::filesystem::path;
+  [[nodiscard]] auto get_patch_path() const -> std::filesystem::path;
+  [[nodiscard]] auto get_prg_ram_path() const -> std::filesystem::path;
+  [[nodiscard]] auto get_palette_path() const -> std::filesystem::path;
+  [[nodiscard]] auto get_snapshot_path() const -> std::filesystem::path;
 
-  auto has_patch() const -> bool;
-  auto has_prg_ram() const -> bool;
-  auto has_snapshot() const -> bool;
+  [[nodiscard]] auto has_patch() const -> bool;
+  [[nodiscard]] auto has_prg_ram() const -> bool;
+  [[nodiscard]] auto has_snapshot() const -> bool;
 
 private:
   FileManager() = default;

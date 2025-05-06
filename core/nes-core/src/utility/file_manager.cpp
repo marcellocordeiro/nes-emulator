@@ -1,10 +1,14 @@
-#include "file_manager.h"
+#include "file_manager.hpp"
 
+#include <filesystem>
 #include <fstream>
+#include <ios>
+#include <stdexcept>
+#include <vector>
 
 #include <spdlog/spdlog.h>
 
-#include "ips_patch.h"
+#include "ips_patch.hpp"
 
 namespace nes::utility {
 auto FileManager::get() -> FileManager& {

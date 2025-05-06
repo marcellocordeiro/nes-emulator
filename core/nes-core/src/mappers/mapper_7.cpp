@@ -1,4 +1,10 @@
-#include "mapper_7.h"
+#include "mapper_7.hpp"
+
+#include <iosfwd>
+#include <stdexcept>
+
+#include "../base_mapper.hpp"
+#include "lib/common.hpp"
 
 namespace nes {
 void Mapper7::reset() {

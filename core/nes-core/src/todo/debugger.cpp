@@ -1,14 +1,14 @@
-#include "debugger.h"
+#include "debugger.hpp"
 
 #include <array>
 #include <format>
 #include <sstream>
 #include <string_view>
 
-#include "cpu.h"
-#include "lib/common.h"
-#include "ppu.h"
-#include "types/cpu_types.h"
+#include "../cpu.hpp"
+#include "../ppu.hpp"
+#include "../types/cpu_types.hpp"
+#include "lib/common.hpp"
 
 #include <iomanip> // TODO: remove this
 
@@ -62,7 +62,7 @@ void Debugger::cpu_log() {
   };
   // clang-format on
 
-  auto* cpu_ptr = &CPU::get();
+  auto* cpu_ptr = &Cpu::get();
 
   auto peek = [&](u16 addr) { return cpu_ptr->peek(addr); };
   auto peek_imm = [&]() { return cpu_ptr->peek_imm(); };
@@ -92,7 +92,9 @@ void Debugger::cpu_log() {
   u8 arg8_2 = peek(state.pc + 2);
   u16 arg16 = (arg8_2 << 8) | arg8;
 
-  switch (addr_m) {
+  using enum types::cpu::AddressingMode;
+
+  switch (static_cast<types::cpu::AddressingMode>(addr_m)) {
   case Absolute:
   case AbsoluteX:
   case AbsoluteY:
@@ -111,7 +113,7 @@ void Debugger::cpu_log() {
 
   ss << std::left << std::setw(28) << std::setfill(' ');
 
-  switch (addr_m) {
+  switch (static_cast<types::cpu::AddressingMode>(addr_m)) {
   case Implicit: {
     ss << " ";
     break;
@@ -186,8 +188,8 @@ void Debugger::cpu_log() {
   default: ss << " "; break;
   }
 
-  auto ppu_cycle = PPU::get().cycle_count();
-  auto ppu_scanline = PPU::get().scanline_count();
+  auto ppu_cycle = Ppu::get().cycle_count();
+  auto ppu_scanline = Ppu::get().scanline_count();
 
   ss << std::format(
     "A:{:02X} X:{:02X} Y:{:02X} P:{:02X} SP:{:02X} PPU:{:3d},{:3d} "

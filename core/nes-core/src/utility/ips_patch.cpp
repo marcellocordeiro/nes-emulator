@@ -1,4 +1,4 @@
-#include "ips_patch.h"
+#include "ips_patch.hpp"
 
 #include <algorithm>
 #include <string>

@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "controller.hpp"
 
 namespace nes {
 auto Controller::get() -> Controller& {

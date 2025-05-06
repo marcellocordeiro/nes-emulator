@@ -1,15 +1,22 @@
-#include "nes/nes.h"
+#include "nes/nes.hpp"
+
+#include <array>
+#include <filesystem>
+#include <fstream>
+#include <ios>
 
 #include <spdlog/spdlog.h>
 
-#include "cartridge.h"
-#include "controller.h"
-#include "cpu.h"
-#include "ppu.h"
-#include "utility/file_manager.h"
+#include "cartridge.hpp"
+#include "controller.hpp"
+#include "cpu.hpp"
+#include "lib/common.hpp"
+#include "ppu.hpp"
+#include "types/ppu_types.hpp"
+#include "utility/file_manager.hpp"
+#include "utility/snapshotable.hpp"
 
-using namespace nes;
-
+namespace nes {
 void Nes::set_app_path(const std::filesystem::path& path) {
   utility::FileManager::get().set_app_path(path);
 }
@@ -86,3 +93,4 @@ void Nes::load_snapshot() {
     component->load(in);
   }
 }
+} // namespace nes

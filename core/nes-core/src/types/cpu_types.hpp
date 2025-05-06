@@ -1,6 +1,6 @@
 #pragma once
 
-#include "lib/common.h"
+#include "lib/common.hpp"
 
 namespace nes::types::cpu {
 enum class InterruptionType {
@@ -56,7 +56,7 @@ struct State {
 
   i32 cycle_count = 0;
 
-  auto check_flags(u8) const -> bool;
+  [[nodiscard]] auto check_flags(u8) const -> bool;
   void set_flags(u8);
   void clear_flags(u8);
   void update_nz(u8);

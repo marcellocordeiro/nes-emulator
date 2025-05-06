@@ -26,6 +26,6 @@ include("cmake/StandardProjectSettings.cmake")
 add_library(project-warnings INTERFACE)
 set_project_warnings(project-warnings)
 
-add_subdirectory("core/lib-common")
+add_subdirectory("core/common")
 add_subdirectory("core/nes-core")
 add_subdirectory("platform/sdl3")

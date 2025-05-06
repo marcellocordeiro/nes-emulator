@@ -111,12 +111,6 @@
 
         },
         {
-            "name": "macos-x64-gcc",
-            "description": "",
-            "inherits": [ "base", "x64", "gcc", "macos" ]
-
-        },
-        {
             "name": "linux-x64-gcc",
             "description": "",
             "inherits": [ "base", "x64", "gcc", "linux" ]
@@ -157,16 +151,6 @@
         {
             "name": "macos-x64-clang-release",
             "configurePreset": "macos-x64-clang",
-            "configuration": "Release"
-        },
-        {
-            "name": "macos-x64-gcc-debug",
-            "configurePreset": "macos-x64-gcc",
-            "configuration": "Debug"
-        },
-        {
-            "name": "maco-x64s-gcc-release",
-            "configurePreset": "macos-x64-gcc",
             "configuration": "Release"
         },
         {

@@ -3,21 +3,13 @@
 #include <array>
 #include <memory>
 
-#include "lib/common.h"
-#include "types/ppu_types.h"
+#include "lib/common.hpp"
+#include "types/ppu_types.hpp"
 #include "utility/snapshotable.hpp"
 
 namespace nes {
 class BaseMapper : public utility::Snapshotable {
 public:
-  BaseMapper() = default;
-  ~BaseMapper() override = default;
-
-  BaseMapper(const BaseMapper&) = delete;
-  BaseMapper(BaseMapper&&) = delete;
-  auto operator=(const BaseMapper&) -> BaseMapper& = delete;
-  auto operator=(BaseMapper&&) -> BaseMapper& = delete;
-
   using MirroringType = types::ppu::MirroringType;
 
   virtual void reset() = 0;
@@ -25,8 +17,8 @@ public:
   void set_mirroring(MirroringType);
   void set_irq(bool);
 
-  auto get_prg_addr(u16 addr) const -> usize;
-  auto get_chr_addr(u16 addr) const -> usize;
+  [[nodiscard]] auto get_prg_addr(u16 addr) const -> usize;
+  [[nodiscard]] auto get_chr_addr(u16 addr) const -> usize;
 
   virtual void write(u16, u8);
 
@@ -38,8 +30,8 @@ public:
 
   virtual void scanline_counter();
 
-  void save(std::ofstream&) const override;
-  void load(std::ifstream&) override;
+  void save(std::ofstream& out) const override;
+  void load(std::ifstream& in) override;
 
   // TODO: save mirroring
   // TODO: fix this

@@ -2,17 +2,12 @@
 
 #include <array>
 
-#include "lib/common.h"
+#include "lib/common.hpp"
 #include "utility/snapshotable.hpp"
 
 namespace nes {
 class Controller final : public utility::Snapshotable {
 public:
-  Controller(const Controller&) = delete;
-  Controller(Controller&&) = delete;
-  auto operator=(const Controller&) -> Controller& = delete;
-  auto operator=(Controller&&) -> Controller& = delete;
-
   static auto get() -> Controller&;
 
   void update_state(usize, u8);
@@ -24,14 +19,14 @@ public:
   // Read status without side effects
   //
 
-  auto peek(usize) const -> u8;
+  [[nodiscard]] auto peek(usize) const -> u8;
 
   //
   // Snapshot
   //
 
-  void save(std::ofstream&) const override;
-  void load(std::ifstream&) override;
+  void save(std::ofstream& out) const override;
+  void load(std::ifstream& in) override;
 
 private:
   Controller() = default;

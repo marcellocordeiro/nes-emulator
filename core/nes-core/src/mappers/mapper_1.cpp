@@ -1,6 +1,11 @@
-#include "mapper_1.h"
+#include "mapper_1.hpp"
+
+#include <iosfwd>
 
 #include <spdlog/spdlog.h>
+
+#include "../base_mapper.hpp"
+#include "lib/common.hpp"
 
 namespace nes {
 void Mapper1::reset() {
