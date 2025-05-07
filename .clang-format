@@ -189,7 +189,7 @@ KeepEmptyLines:
   AtEndOfFile:     false
   AtStartOfBlock:  false
   AtStartOfFile:   false
-KeepFormFeed:    false
+#KeepFormFeed:    false
 LambdaBodyIndentation: Signature
 LineEnding:      DeriveLF
 MacroBlockBegin: ''
@@ -249,9 +249,10 @@ RawStringFormats:
     CanonicalDelimiter: pb
     BasedOnStyle:    google
 ReferenceAlignment: Pointer
-ReflowComments:  Never
+#ReflowComments:  Never
+ReflowComments:  false
 RemoveBracesLLVM: false
-RemoveEmptyLinesInUnwrappedLines: true
+#RemoveEmptyLinesInUnwrappedLines: true
 RemoveParentheses: Leave
 RemoveSemicolon: true
 RequiresClausePosition: OwnLine
