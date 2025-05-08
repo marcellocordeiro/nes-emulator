@@ -11,7 +11,7 @@ public:
     auto result = SDL_Init(flags);
 
     if (!result) {
-      throw Error::fromContextWithSource("SDL_Init");
+      throw Error::from_context_with_source("SDL_Init");
     }
 
     ++counter;
@@ -26,9 +26,9 @@ public:
   }
 
   Context(const Context&) = delete;
-  Context& operator=(const Context&) = delete;
   Context(Context&&) = delete;
-  Context& operator=(Context&&) = delete;
+  auto operator=(const Context&) -> Context& = delete;
+  auto operator=(Context&&) -> Context& = delete;
 
 private:
   static inline i32 counter = 0;

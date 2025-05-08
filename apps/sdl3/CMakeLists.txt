@@ -1,5 +1,3 @@
-project(nes-emulator-sdl3)
-
 file(
   GLOB_RECURSE
   SOURCES
@@ -12,6 +10,17 @@ file(
 add_executable(nes-emulator-sdl3)
 target_sources(nes-emulator-sdl3 PRIVATE ${SOURCES})
 
+target_link_libraries(nes-emulator-sdl3 PRIVATE nes::common nes::core)
+
+function(copy_palette target)
+  add_custom_command(
+    TARGET ${target} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      "${CMAKE_SOURCE_DIR}/data/nes_mesen.pal"
+      "$<TARGET_FILE_DIR:${target}>/palette.pal"
+  )
+endfunction()
+
 copy_palette(nes-emulator-sdl3)
 
 find_package(SDL3 CONFIG REQUIRED COMPONENTS SDL3-shared)
@@ -22,8 +31,6 @@ target_link_libraries(nes-emulator-sdl3 PRIVATE fmt::fmt)
 
 find_package(spdlog CONFIG REQUIRED)
 target_link_libraries(nes-emulator-sdl3 PRIVATE spdlog::spdlog)
-
-target_link_libraries(nes-emulator-sdl3 PRIVATE nes::common nes::core)
 
 set_target_properties(
   nes-emulator-sdl3

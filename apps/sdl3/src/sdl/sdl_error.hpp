@@ -15,27 +15,27 @@ public:
   }
 
   [[nodiscard]]
-  auto static fromContextWithSource(std::string source) -> Error {
+  auto static from_context_with_source(std::string source) -> Error {
     const auto* rawError = SDL_GetError();
     auto wrappedError = std::string(rawError);
 
-    clearContextError();
+    clear_context_error();
 
     return {std::move(source), wrappedError};
   }
 
   [[nodiscard]]
-  auto getSource() const -> std::string {
+  auto get_source() const -> std::string {
     return source;
   }
 
   [[nodiscard]]
-  auto getError() const -> std::string {
+  auto get_error() const -> std::string {
     return error;
   }
 
   [[nodiscard]]
-  auto getMessage() const -> std::string {
+  auto get_message() const -> std::string {
     return message;
   }
 
@@ -46,7 +46,7 @@ private:
     error(error),
     message(std::format("Error in {}: {}", source, error)) {}
 
-  static void clearContextError() {
+  static void clear_context_error() {
     SDL_ClearError();
   }
 

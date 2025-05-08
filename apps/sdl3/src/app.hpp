@@ -19,10 +19,6 @@ private:
 
   std::span<std::string_view> args;
 
-  SDL::Context context{SDL_INIT_VIDEO};
-
-  SDL::Window window;
-
   // double volume = 0.1;
   bool running = false;
 
@@ -59,13 +55,4 @@ private:
   std::map<Button, SDL_Scancode> controllerKeyBindings;
 
   const bool* keys = nullptr;
-
-  //
-  // Renderer
-  //
-
-  auto render() -> void;
-
-  SDL::Renderer renderer;
-  SDL::Texture texture;
 };

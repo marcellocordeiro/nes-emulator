@@ -4,19 +4,17 @@
 
 #include "lib/common.hpp"
 #include "sdl_error.hpp"
+#include "sdl_include.hpp"
 
 namespace SDL {
 class Window {
 public:
   [[nodiscard]]
-  Window() = default;
-
-  [[nodiscard]]
   Window(const std::string& title, i32 width, i32 height, SDL_WindowFlags flags) {
     auto* raw = SDL_CreateWindow(title.c_str(), width, height, flags);
 
     if (raw == nullptr) {
-      throw Error::fromContextWithSource("SDL_CreateWindow");
+      throw Error::from_context_with_source("SDL_CreateWindow");
     }
 
     pointer.reset(raw);
@@ -27,26 +25,26 @@ public:
     return pointer.get();
   }
 
-  void setWindowPosition(i32 x, i32 y) {
-    auto result = SDL_SetWindowPosition(pointer.get(), x, y);
+  void set_window_position(const i32 x, const i32 y) const {
+    const auto result = SDL_SetWindowPosition(pointer.get(), x, y);
 
     if (!result) {
-      throw Error::fromContextWithSource("SDL_SetWindowPosition");
+      throw Error::from_context_with_source("SDL_SetWindowPosition");
     }
   }
 
-  void showWindow() {
-    auto result = SDL_ShowWindow(pointer.get());
+  void show_window() const {
+    const auto result = SDL_ShowWindow(pointer.get());
 
     if (!result) {
-      throw Error::fromContextWithSource("SDL_ShowWindow");
+      throw Error::from_context_with_source("SDL_ShowWindow");
     }
   }
 
 private:
   struct Deleter {
-    void operator()(SDL_Window* ptr) {
-      if (ptr) {
+    void operator()(SDL_Window* ptr) const {
+      if (ptr != nullptr) {
         SDL_DestroyWindow(ptr);
       }
     }

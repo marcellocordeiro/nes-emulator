@@ -2,12 +2,29 @@
 
 #include <chrono>
 #include <format>
+#include <span>
 #include <stdexcept>
+#include <string>
+#include <string_view>
 
 #include "lib/common.hpp"
 #include "nes/nes.hpp"
+#include "sdl/sdl.hpp"
+#include "utils/scaling.hpp"
 
 using nes::Nes;
+
+namespace {
+void render_display(const SDL::Renderer& renderer, const SDL::Texture& texture) {
+  const auto available_size = renderer.get_current_render_output_size();
+  const auto rect =
+    integer_scale_centered_rect(available_size, {.width = Nes::width, .height = Nes::height});
+
+  UNUSED(rect); // fix
+
+  SDL_RenderTexture(renderer.get(), texture.get(), nullptr, nullptr);
+}
+} // namespace
 
 App::App(std::span<std::string_view> args) : args(args) {
   if (args.size() == 1) {
@@ -16,15 +33,23 @@ App::App(std::span<std::string_view> args) : args(args) {
 }
 
 auto App::run() -> void {
-  SDL_WindowFlags window_flags = 0;
+  Nes::set_app_path(SDL_GetBasePath());
+  Nes::load(args[1]);
+  Nes::power_on();
 
-  window = SDL::Window(std::string(Nes::title), Nes::width * 3, Nes::height * 3, window_flags);
-  renderer = SDL::Renderer(window);
-  renderer.enableVsync();
+  auto context = SDL::Context{SDL_INIT_VIDEO | SDL_INIT_GAMEPAD};
 
-  //SDL_SetRenderLogicalPresentation(renderer.get(), Nes::width, Nes::height, SDL_LOGICAL_PRESENTATION_INTEGER_SCALE);
+  const auto window_flags = SDL_WindowFlags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
 
-  texture = SDL::Texture(
+  const auto window =
+    SDL::Window(std::string(Nes::title), Nes::width * 3, Nes::height * 3, window_flags);
+  const auto renderer = SDL::Renderer(window);
+
+  renderer.enable_vsync();
+  window.set_window_position(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+  window.show_window();
+
+  const auto texture = SDL::Texture(
     renderer,
     SDL_PIXELFORMAT_XRGB8888,
     SDL_TEXTUREACCESS_STREAMING,
@@ -32,15 +57,11 @@ auto App::run() -> void {
     Nes::height
   );
 
-  texture.setScaleMode(SDL_SCALEMODE_NEAREST);
+  texture.set_scale_mode(SDL_SCALEMODE_NEAREST);
 
   keys = SDL_GetKeyboardState(nullptr);
 
   setupDefaultBindings();
-
-  Nes::set_app_path(SDL_GetBasePath());
-  Nes::load(args[1]);
-  Nes::power_on();
 
   auto fpsTimer = std::chrono::steady_clock::now();
   i32 elapsedFrames = 0;
@@ -56,6 +77,11 @@ auto App::run() -> void {
       case SDL_EVENT_KEY_DOWN: processInput(event.key); break;
 
       default: break;
+      }
+
+      if (SDL_GetWindowFlags(window.get()) & SDL_WINDOW_MINIMIZED) {
+        SDL_Delay(10);
+        continue;
       }
     }
 
@@ -79,7 +105,12 @@ auto App::run() -> void {
       Nes::run_frame();
     }
 
-    render();
+    SDL_UpdateTexture(texture.get(), nullptr, Nes::get_frame_buffer(), Nes::width * sizeof(u32));
+
+    SDL_RenderClear(renderer.get());
+    render_display(renderer, texture);
+    SDL_RenderPresent(renderer.get());
+
     ++elapsedFrames;
   }
 }
@@ -136,12 +167,4 @@ auto App::processInput(const SDL_KeyboardEvent& key_event) -> void {
     case Action::VolumeDown: return;
     }
   }
-}
-
-auto App::render() -> void {
-  SDL_UpdateTexture(texture.get(), nullptr, Nes::get_frame_buffer(), Nes::width * sizeof(u32));
-
-  SDL_RenderClear(renderer.get());
-  SDL_RenderTexture(renderer.get(), texture.get(), nullptr, nullptr);
-  SDL_RenderPresent(renderer.get());
 }
