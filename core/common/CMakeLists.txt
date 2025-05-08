@@ -22,4 +22,4 @@ set_target_properties(
     CXX_EXTENSIONS NO
 )
 
-target_link_libraries(common PRIVATE project-warnings)
+target_link_libraries(common PRIVATE nes::warnings)

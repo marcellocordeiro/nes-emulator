@@ -6,7 +6,10 @@
             "hidden": true,
             "generator": "Ninja Multi-Config",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}"
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "warnings": {
+                "dev": true
+            }
         },
         {
             "name": "windows",

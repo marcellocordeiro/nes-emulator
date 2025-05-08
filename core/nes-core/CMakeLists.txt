@@ -14,14 +14,6 @@ add_library(nes::core ALIAS nes-core)
 
 target_include_directories(nes-core PUBLIC "include")
 
-target_link_libraries(nes-core PRIVATE common)
-
-find_package(fmt CONFIG REQUIRED)
-target_link_libraries(nes-core PRIVATE fmt::fmt)
-
-find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(nes-core PRIVATE spdlog::spdlog)
-
 set_target_properties(
   nes-core
   PROPERTIES
@@ -30,4 +22,11 @@ set_target_properties(
     CXX_EXTENSIONS NO
 )
 
-target_link_libraries(nes-core PRIVATE project-warnings)
+target_link_libraries(
+  nes-core
+  PRIVATE
+    nes::warnings
+    nes::common
+    fmt::fmt
+    spdlog::spdlog
+)
