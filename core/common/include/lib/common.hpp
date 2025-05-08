@@ -13,7 +13,8 @@ using u32 = std::uint32_t;
 using u64 = std::uint64_t;
 using usize = std::size_t;
 
-#ifdef _DEBUG
+#ifndef NDEBUG
+#define DEBUG
 constexpr auto DEBUG_MODE = true;
 #else
 constexpr auto DEBUG_MODE = false;
