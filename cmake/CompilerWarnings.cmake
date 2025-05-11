@@ -80,4 +80,3 @@ endfunction()
 add_library(project-warnings INTERFACE)
 add_library(global::warnings ALIAS project-warnings)
 set_project_warnings(project-warnings)
-

@@ -48,7 +48,4 @@ copy_palette(nes-emulator-sdl3)
 
 install(
   TARGETS nes-emulator-sdl3
-  ARCHIVE
-  OBJECTS
-  LIBRARY FILE_SET HEADERS
 )

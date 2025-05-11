@@ -65,17 +65,17 @@ void Debugger::cpu_log() {
   auto* cpu_ptr = &Cpu::get();
 
   auto peek = [&](u16 addr) { return cpu_ptr->peek(addr); };
-  auto peek_imm = [&]() { return cpu_ptr->peek_imm(); };
-  auto peek_rel = [&]() { return cpu_ptr->peek_rel(); };
-  auto peek_zp = [&]() { return cpu_ptr->peek_zp(); };
-  auto peek_zpx = [&]() { return cpu_ptr->peek_zpx(); };
-  auto peek_zpy = [&]() { return cpu_ptr->peek_zpy(); };
-  auto peek_ab = [&]() { return cpu_ptr->peek_ab(); };
-  auto peek_abx = [&]() { return cpu_ptr->peek_abx(); };
-  auto peek_aby = [&]() { return cpu_ptr->peek_aby(); };
-  auto peek_ind = [&]() { return cpu_ptr->peek_ind(); };
-  auto peek_indx = [&]() { return cpu_ptr->peek_indx(); };
-  auto peek_indy = [&]() { return cpu_ptr->peek_indy(); };
+  auto peek_imm = [&] { return cpu_ptr->peek_imm(); };
+  auto peek_rel = [&] { return cpu_ptr->peek_rel(); };
+  auto peek_zp = [&] { return cpu_ptr->peek_zp(); };
+  auto peek_zpx = [&] { return cpu_ptr->peek_zpx(); };
+  auto peek_zpy = [&] { return cpu_ptr->peek_zpy(); };
+  auto peek_ab = [&] { return cpu_ptr->peek_ab(); };
+  auto peek_abx = [&] { return cpu_ptr->peek_abx(); };
+  auto peek_aby = [&] { return cpu_ptr->peek_aby(); };
+  auto peek_ind = [&] { return cpu_ptr->peek_ind(); };
+  auto peek_indx = [&] { return cpu_ptr->peek_indx(); };
+  auto peek_indy = [&] { return cpu_ptr->peek_indy(); };
 
   auto read_word_zp = [&](u16 addr) -> u16 { return peek((addr + 1) & 0xFF) << 8 | peek(addr); };
 

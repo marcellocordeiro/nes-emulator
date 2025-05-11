@@ -10,4 +10,5 @@ include("cmake/StandardProjectSettings.cmake")
 
 add_subdirectory("apps/sdl3")
 add_subdirectory("core/common")
+add_subdirectory("core/common-sys")
 add_subdirectory("core/nes-core")

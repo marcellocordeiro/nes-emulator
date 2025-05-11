@@ -32,7 +32,7 @@ private:
 
   void process_input(const SDL_KeyboardEvent& key_event);
 
-  enum class Button : u8 {
+  enum class Button: u8 {
     A,
     B,
     Select,
@@ -43,7 +43,7 @@ private:
     Right,
   };
 
-  enum class Action : u8 {
+  enum class Action: u8 {
     Pause,
     Reset,
     SaveSnapshot,
@@ -53,8 +53,8 @@ private:
     VolumeDown,
   };
 
-  std::map<Action, SDL_Scancode> actionKeyBindings;
-  std::map<Button, SDL_Scancode> controllerKeyBindings;
+  std::map<Action, SDL_Scancode> action_key_bindings;
+  std::map<Button, SDL_Scancode> controller_key_bindings;
 
   const bool* keys = nullptr;
 };

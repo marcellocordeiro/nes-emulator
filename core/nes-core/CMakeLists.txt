@@ -43,17 +43,11 @@ set(HEADERS
 add_library(nes-core STATIC ${SOURCES})
 add_library(nes::core ALIAS nes-core)
 
-target_sources(common
-  INTERFACE
+target_sources(nes-core
+  PUBLIC
     FILE_SET HEADERS
     BASE_DIRS include
     FILES ${HEADERS}
-)
-
-target_include_directories(nes-core
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>
 )
 
 set_target_properties(nes-core
@@ -73,6 +67,5 @@ target_link_libraries(nes-core
 
 install(
   TARGETS nes-core
-  LIBRARY
   FILE_SET HEADERS
 )

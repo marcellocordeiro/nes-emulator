@@ -15,7 +15,7 @@ auto Controller::read(usize port) -> u8 {
     return 0x40 | (controller_state[port] & 1); // 1 == A
   }
 
-  u8 status = 0x40 | (controller_bits[port] & 1);
+  const u8 status = 0x40 | (controller_bits[port] & 1);
   controller_bits[port] = 0x80 | (controller_bits[port] >> 1);
 
   return status;

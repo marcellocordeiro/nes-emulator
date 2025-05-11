@@ -116,35 +116,35 @@ void App::run() {
 }
 
 void App::setup_default_bindings() {
-  actionKeyBindings[Action::Pause] = SDL_SCANCODE_ESCAPE;
-  actionKeyBindings[Action::Reset] = SDL_SCANCODE_R;
-  actionKeyBindings[Action::SaveSnapshot] = SDL_SCANCODE_F1;
-  actionKeyBindings[Action::LoadSnapshot] = SDL_SCANCODE_F3;
-  actionKeyBindings[Action::ToggleLimiter] = SDL_SCANCODE_TAB;
-  actionKeyBindings[Action::VolumeUp] = SDL_SCANCODE_KP_PLUS;
-  actionKeyBindings[Action::VolumeDown] = SDL_SCANCODE_KP_MINUS;
+  action_key_bindings[Action::Pause] = SDL_SCANCODE_ESCAPE;
+  action_key_bindings[Action::Reset] = SDL_SCANCODE_R;
+  action_key_bindings[Action::SaveSnapshot] = SDL_SCANCODE_F1;
+  action_key_bindings[Action::LoadSnapshot] = SDL_SCANCODE_F3;
+  action_key_bindings[Action::ToggleLimiter] = SDL_SCANCODE_TAB;
+  action_key_bindings[Action::VolumeUp] = SDL_SCANCODE_KP_PLUS;
+  action_key_bindings[Action::VolumeDown] = SDL_SCANCODE_KP_MINUS;
 
-  controllerKeyBindings[Button::A] = SDL_SCANCODE_A;
-  controllerKeyBindings[Button::B] = SDL_SCANCODE_S;
-  controllerKeyBindings[Button::Select] = SDL_SCANCODE_BACKSPACE;
-  controllerKeyBindings[Button::Start] = SDL_SCANCODE_RETURN;
-  controllerKeyBindings[Button::Up] = SDL_SCANCODE_UP;
-  controllerKeyBindings[Button::Down] = SDL_SCANCODE_DOWN;
-  controllerKeyBindings[Button::Left] = SDL_SCANCODE_LEFT;
-  controllerKeyBindings[Button::Right] = SDL_SCANCODE_RIGHT;
+  controller_key_bindings[Button::A] = SDL_SCANCODE_A;
+  controller_key_bindings[Button::B] = SDL_SCANCODE_S;
+  controller_key_bindings[Button::Select] = SDL_SCANCODE_BACKSPACE;
+  controller_key_bindings[Button::Start] = SDL_SCANCODE_RETURN;
+  controller_key_bindings[Button::Up] = SDL_SCANCODE_UP;
+  controller_key_bindings[Button::Down] = SDL_SCANCODE_DOWN;
+  controller_key_bindings[Button::Left] = SDL_SCANCODE_LEFT;
+  controller_key_bindings[Button::Right] = SDL_SCANCODE_RIGHT;
 }
 
 void App::update_emulated_controllers() {
   u8 state = 0;
 
-  state |= keys[controllerKeyBindings[Button::A]] << 0;
-  state |= keys[controllerKeyBindings[Button::B]] << 1;
-  state |= keys[controllerKeyBindings[Button::Select]] << 2;
-  state |= keys[controllerKeyBindings[Button::Start]] << 3;
-  state |= keys[controllerKeyBindings[Button::Up]] << 4;
-  state |= keys[controllerKeyBindings[Button::Down]] << 5;
-  state |= keys[controllerKeyBindings[Button::Left]] << 6;
-  state |= keys[controllerKeyBindings[Button::Right]] << 7;
+  state |= keys[controller_key_bindings[Button::A]] << 0;
+  state |= keys[controller_key_bindings[Button::B]] << 1;
+  state |= keys[controller_key_bindings[Button::Select]] << 2;
+  state |= keys[controller_key_bindings[Button::Start]] << 3;
+  state |= keys[controller_key_bindings[Button::Up]] << 4;
+  state |= keys[controller_key_bindings[Button::Down]] << 5;
+  state |= keys[controller_key_bindings[Button::Left]] << 6;
+  state |= keys[controller_key_bindings[Button::Right]] << 7;
 
   Nes::update_controller_state(0, state);
 }
@@ -152,7 +152,7 @@ void App::update_emulated_controllers() {
 void App::process_input(const SDL_KeyboardEvent& key_event) {
   const auto key = key_event.scancode;
 
-  for (const auto& [action, mappedKey] : actionKeyBindings) {
+  for (const auto& [action, mappedKey] : action_key_bindings) {
     if (mappedKey != key) {
       continue;
     }

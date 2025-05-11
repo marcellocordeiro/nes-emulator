@@ -350,7 +350,7 @@ void Cpu::execute() {
 //
 
 void Cpu::add(u8 value) {
-  u16 result = state.a + value + state.check_flags(Carry);
+  const u16 result = state.a + value + state.check_flags(Carry);
 
   state.clear_flags(Carry | Overflow);
 
@@ -366,7 +366,7 @@ void Cpu::add(u8 value) {
 }
 
 auto Cpu::shift_left(u8 value) -> u8 {
-  u8 result = value << 1;
+  const u8 result = value << 1;
   state.update_nz(result);
 
   state.clear_flags(Carry);
@@ -379,7 +379,7 @@ auto Cpu::shift_left(u8 value) -> u8 {
 }
 
 auto Cpu::shift_right(u8 value) -> u8 {
-  u8 result = value >> 1;
+  const u8 result = value >> 1;
   state.update_nz(result);
 
   state.clear_flags(Carry);
@@ -392,7 +392,7 @@ auto Cpu::shift_right(u8 value) -> u8 {
 }
 
 auto Cpu::rotate_left(u8 value) -> u8 {
-  u8 result = (value << 1) | static_cast<u8>(state.check_flags(Carry));
+  const u8 result = (value << 1) | static_cast<u8>(state.check_flags(Carry));
   state.update_nz(result);
 
   state.clear_flags(Carry);
