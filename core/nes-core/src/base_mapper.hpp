@@ -14,8 +14,8 @@ public:
 
   virtual void reset() = 0;
 
-  void set_mirroring(MirroringType);
-  void set_irq(bool);
+  void set_mirroring(MirroringType) const;
+  void set_irq(bool) const;
 
   [[nodiscard]] auto get_prg_addr(u16 addr) const -> usize;
   [[nodiscard]] auto get_chr_addr(u16 addr) const -> usize;

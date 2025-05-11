@@ -3,8 +3,9 @@
 #include <exception>
 #include <format>
 #include <string>
+#include <utility>
 
-#include "sdl_include.hpp" // IWYU pragma: keep
+#include "sdl_include.hpp"
 
 namespace SDL {
 class Error final : public std::exception {

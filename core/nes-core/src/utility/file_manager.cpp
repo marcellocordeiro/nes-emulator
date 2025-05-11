@@ -48,7 +48,7 @@ void FileManager::set_palette(const std::filesystem::path& value) {
   palette_path = std::filesystem::canonical(value); // May throw
 }
 
-auto FileManager::get_rom() -> std::vector<u8> {
+auto FileManager::get_rom() const -> std::vector<u8> {
   if (!std::filesystem::exists(rom_path)) {
     throw std::invalid_argument("The ROM path needs to be set first");
   }
@@ -65,7 +65,7 @@ auto FileManager::get_rom() -> std::vector<u8> {
   return rom;
 }
 
-auto FileManager::get_prg_ram() -> std::vector<u8> {
+auto FileManager::get_prg_ram() const -> std::vector<u8> {
   std::vector prg_ram(std::filesystem::file_size(prg_ram_path), u8{});
 
   if (has_prg_ram()) {
@@ -76,7 +76,7 @@ auto FileManager::get_prg_ram() -> std::vector<u8> {
   return prg_ram;
 }
 
-auto FileManager::get_palette() -> std::vector<u8> {
+auto FileManager::get_palette() const -> std::vector<u8> {
   std::ifstream file(palette_path, std::ios::binary);
 
   std::vector palette(std::filesystem::file_size(palette_path), u8{});
@@ -86,7 +86,7 @@ auto FileManager::get_palette() -> std::vector<u8> {
   return palette;
 }
 
-void FileManager::save_prg_ram(const std::vector<u8>& vec) {
+void FileManager::save_prg_ram(const std::vector<u8>& vec) const {
   std::ofstream prg_ram_file(prg_ram_path, std::ios::binary);
   prg_ram_file.write(reinterpret_cast<const char*>(vec.data()), vec.size());
 }

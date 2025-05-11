@@ -3,26 +3,26 @@
 #include "lib/common.hpp"
 
 namespace nes {
-void BaseMapper::set_mirroring(MirroringType value) {
+void BaseMapper::set_mirroring(MirroringType value) const {
   // TODO: save this?
   // mirroring = value;
   *mirroring_conn = value;
 }
 
-void BaseMapper::set_irq(bool value) {
+void BaseMapper::set_irq(bool value) const {
   *irq_conn = value;
 }
 
 auto BaseMapper::get_prg_addr(u16 addr) const -> usize {
-  usize slot = (addr - 0x8000) / 0x2000;
-  usize prg_addr = (addr - 0x8000) % 0x2000;
+  const usize slot = (addr - 0x8000) / 0x2000;
+  const usize prg_addr = (addr - 0x8000) % 0x2000;
 
   return prg_map[slot] + prg_addr;
 }
 
-auto BaseMapper::get_chr_addr(u16 addr) const -> usize {
-  usize slot = addr / 0x400;
-  usize chr_addr = addr % 0x400;
+auto BaseMapper::get_chr_addr(const u16 addr) const -> usize {
+  const usize slot = addr / 0x400;
+  const usize chr_addr = addr % 0x400;
 
   return chr_map[slot] + chr_addr;
 }
@@ -48,12 +48,12 @@ void BaseMapper::set_prg_map(usize slot, i32 page) {
 }
 
 // Size must be in KB
-template <usize size>
-void BaseMapper::set_chr_map(usize slot, i32 page) {
-  constexpr usize pages = size;
-  constexpr usize pages_b = size * 0x400; // In bytes
+template <usize Size>
+void BaseMapper::set_chr_map(const usize slot, const i32 page) {
+  constexpr usize pages = Size;
+  constexpr usize pages_b = Size * 0x400; // In bytes
 
-  for (usize i = 0; i < size; ++i) {
+  for (usize i = 0; i < Size; ++i) {
     chr_map[(pages * slot) + i] = ((pages_b * page) + 0x400 * i) % chr_size;
   }
 }

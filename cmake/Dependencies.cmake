@@ -5,12 +5,13 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
-  URI "gh:gabime/spdlog#v1.15.2"
+  URI "gh:gabime/spdlog#v1.15.3"
   OPTIONS
     "SPDLOG_FMT_EXTERNAL ON"
     "SPDLOG_BUILD_SHARED OFF"
 )
 
+# Not needed
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 

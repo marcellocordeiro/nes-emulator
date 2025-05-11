@@ -7,29 +7,30 @@
 #include "lib/common.hpp"
 #include "vec2.hpp"
 
-static auto integer_scale(Vec2 availableSize, Vec2 textureSize) -> i32 {
-  auto widthRatio = std::max(
-    static_cast<double>(availableSize.width) / static_cast<double>(textureSize.width),
+[[nodiscard]] static auto integer_scale(const Vec2 available_size, const Vec2 texture_size) -> i32 {
+  const auto width_ratio = std::max(
+    static_cast<double>(available_size.width) / static_cast<double>(texture_size.width),
     1.0
   );
-  auto heightRatio = std::max(
-    static_cast<double>(availableSize.height) / static_cast<double>(textureSize.height),
+  const auto height_ratio = std::max(
+    static_cast<double>(available_size.height) / static_cast<double>(texture_size.height),
     1.0
   );
 
-  auto scale = std::floor(std::clamp(widthRatio, 1.0, heightRatio));
+  const auto scale = std::floor(std::clamp(width_ratio, 1.0, height_ratio));
 
   return static_cast<i32>(scale);
 }
 
-static auto integer_scale_centered_rect(Vec2 availableSize, Vec2 textureSize) -> SDL_FRect {
-  auto scale = integer_scale(availableSize, textureSize);
+[[nodiscard]] static auto
+integer_scale_centered_rect(const Vec2 available_size, const Vec2 texture_size) -> SDL_FRect {
+  const auto scale = integer_scale(available_size, texture_size);
 
-  auto w = static_cast<float>(textureSize.height * scale);
-  auto h = static_cast<float>(textureSize.width * scale);
+  const auto w = static_cast<float>(texture_size.height * scale);
+  const auto h = static_cast<float>(texture_size.width * scale);
 
-  float x = (availableSize.width / 2) - (w / 2);
-  float y = (availableSize.height / 2) - (h / 2);
+  const float x = (static_cast<float>(available_size.width) / 2) - (w / 2);
+  const float y = (static_cast<float>(available_size.height) / 2) - (h / 2);
 
   return {.x = x, .y = y, .w = w, .h = h};
 }

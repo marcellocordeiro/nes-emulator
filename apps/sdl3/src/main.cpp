@@ -7,7 +7,7 @@
 #include "app.hpp"
 #include "lib/common.hpp"
 
-auto main(i32 argc, char* argv[]) -> i32 {
+auto main(const i32 argc, char* argv[]) -> i32 {
   auto args = std::vector<std::string_view>(argv, argv + argc);
 
   try {

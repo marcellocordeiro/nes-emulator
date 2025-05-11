@@ -3,7 +3,7 @@
 #include <array>
 #include <filesystem>
 #include <fstream>
-#include <ios>
+#include <memory>
 
 #include <spdlog/spdlog.h>
 
@@ -31,15 +31,16 @@ void Nes::reset() {
 }
 
 void Nes::power_on() {
-  auto irq = std::make_shared<bool>(false);
+  const auto irq = std::make_shared<bool>(false);
   Cartridge::get().irq_conn = irq;
   Cpu::get().irq_conn = irq;
 
-  auto nmi = std::make_shared<bool>(false);
+  const auto nmi = std::make_shared<bool>(false);
   Cpu::get().nmi_conn = nmi;
   Ppu::get().nmi_conn = nmi;
 
-  auto mirroring = std::make_shared<types::ppu::MirroringType>(types::ppu::MirroringType::Unknown);
+  const auto mirroring =
+    std::make_shared<types::ppu::MirroringType>(types::ppu::MirroringType::Unknown);
   Ppu::get().mirroring_conn = mirroring;
   Cartridge::get().mirroring_conn = mirroring;
 
@@ -70,7 +71,7 @@ void Nes::update_controller_state(usize port, u8 state) {
 //
 
 void Nes::save_snapshot() {
-  std::array<utility::Snapshotable*, 4> snapshotable =
+  const std::array<utility::Snapshotable*, 4> snapshotable =
     {&Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()};
 
   std::ofstream out{utility::FileManager::get().get_snapshot_path(), std::ios::binary};
@@ -80,7 +81,7 @@ void Nes::save_snapshot() {
 }
 
 void Nes::load_snapshot() {
-  std::array<utility::Snapshotable*, 4> snapshotable =
+  const std::array<utility::Snapshotable*, 4> snapshotable =
     {&Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()};
 
   if (!utility::FileManager::get().has_snapshot()) {
@@ -89,7 +90,7 @@ void Nes::load_snapshot() {
   }
 
   std::ifstream in{utility::FileManager::get().get_snapshot_path(), std::ios::binary};
-  for (auto& component : snapshotable) {
+  for (const auto& component : snapshotable) {
     component->load(in);
   }
 }

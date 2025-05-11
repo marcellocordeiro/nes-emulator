@@ -9,5 +9,5 @@
 ## Formatting and linting
 
 ```sh
-clang-format -i {core,platform}/**/**.{cpp,hpp,h}
+clang-format -i {apps,core}/**/**.{cpp,hpp,h}
 ```

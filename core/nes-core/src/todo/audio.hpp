@@ -10,7 +10,7 @@ public:
   void power_on();
 
   auto read() -> u8;
-  void write(u16, u8);
+  void write(u16 addr, u8 value);
 
 private:
   Audio() = default;

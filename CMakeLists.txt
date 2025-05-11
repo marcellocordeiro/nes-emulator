@@ -8,10 +8,6 @@ include("cmake/Dependencies.cmake")
 include("cmake/InterproceduralOptimization.cmake")
 include("cmake/StandardProjectSettings.cmake")
 
-add_library(project-warnings INTERFACE)
-add_library(nes::warnings ALIAS project-warnings)
-set_project_warnings(project-warnings)
-
 add_subdirectory("apps/sdl3")
 add_subdirectory("core/common")
 add_subdirectory("core/nes-core")

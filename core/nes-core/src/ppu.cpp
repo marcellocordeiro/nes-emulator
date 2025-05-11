@@ -57,16 +57,16 @@ auto Ppu::get_frame_buffer() const -> const u32* {
 }
 
 void Ppu::set_palette() {
-  auto palette = utility::FileManager::get().get_palette();
+  const auto palette = utility::FileManager::get().get_palette();
 
   if (palette.size() != 64 * 3) {
     throw std::invalid_argument("Invalid palette file");
   }
 
   for (usize i = 0; i < 64; ++i) {
-    u8 r = palette[(i * 3) + 0];
-    u8 g = palette[(i * 3) + 1];
-    u8 b = palette[(i * 3) + 2];
+    const auto r = palette[(i * 3) + 0];
+    const auto g = palette[(i * 3) + 1];
+    const auto b = palette[(i * 3) + 2];
 
     full_nes_palette[0][i] = (r << 16) | (g << 8) | b;
   }
@@ -81,31 +81,31 @@ void Ppu::set_palette() {
       constexpr double factor = 0.3;
 
       // Intensify red
-      if (i & 0x01) {
+      if ((i & 0x01) != 0u) {
         red *= 1 + factor;
         green *= 1 - factor;
         blue *= 1 - factor;
       }
 
       // Intensify green
-      if (i & 0x02) {
+      if ((i & 0x02) != 0u) {
         red *= 1 - factor;
         green *= 1 + factor;
         blue *= 1 - factor;
       }
 
       // Intensify blue
-      if (i & 0x04) {
+      if ((i & 0x04) != 0u) {
         red *= 1 - factor;
         green *= 1 - factor;
         blue *= 1 + factor;
       }
 
-      auto r = static_cast<u8>(red > 255 ? 255 : red);
-      auto g = static_cast<u8>(green > 255 ? 255 : green);
-      auto b = static_cast<u8>(blue > 255 ? 255 : blue);
+      const auto r = static_cast<u8>(red > 255 ? 255 : red);
+      const auto g = static_cast<u8>(green > 255 ? 255 : green);
+      const auto b = static_cast<u8>(blue > 255 ? 255 : blue);
 
-      u32 color = (r << 16) | (g << 8) | (b << 0);
+      const u32 color = (r << 16) | (g << 8) | (b << 0);
 
       full_nes_palette[i][j] = color;
     }

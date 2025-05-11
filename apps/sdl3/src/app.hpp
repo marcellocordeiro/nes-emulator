@@ -10,7 +10,7 @@ class App {
 public:
   explicit App(std::span<std::string_view> args);
 
-  auto run() -> void;
+  void run();
 
 private:
   //
@@ -26,11 +26,13 @@ private:
   // Input
   //
 
-  auto setupDefaultBindings() -> void;
-  auto updateEmulatedControllers() -> void;
-  auto processInput(const SDL_KeyboardEvent& key_event) -> void;
+  void setup_default_bindings();
 
-  enum class Button {
+  void update_emulated_controllers();
+
+  void process_input(const SDL_KeyboardEvent& key_event);
+
+  enum class Button : u8 {
     A,
     B,
     Select,
@@ -41,7 +43,7 @@ private:
     Right,
   };
 
-  enum class Action {
+  enum class Action : u8 {
     Pause,
     Reset,
     SaveSnapshot,

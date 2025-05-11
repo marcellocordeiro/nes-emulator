@@ -32,14 +32,14 @@ App::App(std::span<std::string_view> args) : args(args) {
   }
 }
 
-auto App::run() -> void {
+void App::run() {
   Nes::set_app_path(SDL_GetBasePath());
   Nes::load(args[1]);
   Nes::power_on();
 
   auto context = SDL::Context{SDL_INIT_VIDEO | SDL_INIT_GAMEPAD};
 
-  const auto window_flags = SDL_WindowFlags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
+  constexpr auto window_flags = SDL_WindowFlags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
 
   const auto window =
     SDL::Window(std::string(Nes::title), Nes::width * 3, Nes::height * 3, window_flags);
@@ -61,10 +61,10 @@ auto App::run() -> void {
 
   keys = SDL_GetKeyboardState(nullptr);
 
-  setupDefaultBindings();
+  setup_default_bindings();
 
-  auto fpsTimer = std::chrono::steady_clock::now();
-  i32 elapsedFrames = 0;
+  auto fps_timer = std::chrono::steady_clock::now();
+  i32 elapsed_frames = 0;
 
   running = true;
 
@@ -74,7 +74,7 @@ auto App::run() -> void {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_EVENT_QUIT: Nes::power_off(); return;
-      case SDL_EVENT_KEY_DOWN: processInput(event.key); break;
+      case SDL_EVENT_KEY_DOWN: process_input(event.key); break;
 
       default: break;
       }
@@ -88,20 +88,20 @@ auto App::run() -> void {
     {
       using namespace std::chrono_literals;
 
-      auto elapsedTime = std::chrono::steady_clock::now() - fpsTimer;
+      auto elapsed_time = std::chrono::steady_clock::now() - fps_timer;
 
-      if (elapsedTime > 1s) {
-        auto fps = elapsedFrames / std::chrono::duration<double>(elapsedTime).count();
+      if (elapsed_time > 1s) {
+        auto fps = elapsed_frames / std::chrono::duration<double>(elapsed_time).count();
         auto title = std::format("{} | {:5.2f}fps", Nes::title, fps);
         SDL_SetWindowTitle(window.get(), title.c_str());
 
-        fpsTimer = std::chrono::steady_clock::now();
-        elapsedFrames = 0;
+        fps_timer = std::chrono::steady_clock::now();
+        elapsed_frames = 0;
       }
     }
 
     if (running) {
-      updateEmulatedControllers();
+      update_emulated_controllers();
       Nes::run_frame();
     }
 
@@ -111,11 +111,11 @@ auto App::run() -> void {
     render_display(renderer, texture);
     SDL_RenderPresent(renderer.get());
 
-    ++elapsedFrames;
+    ++elapsed_frames;
   }
 }
 
-auto App::setupDefaultBindings() -> void {
+void App::setup_default_bindings() {
   actionKeyBindings[Action::Pause] = SDL_SCANCODE_ESCAPE;
   actionKeyBindings[Action::Reset] = SDL_SCANCODE_R;
   actionKeyBindings[Action::SaveSnapshot] = SDL_SCANCODE_F1;
@@ -134,23 +134,23 @@ auto App::setupDefaultBindings() -> void {
   controllerKeyBindings[Button::Right] = SDL_SCANCODE_RIGHT;
 }
 
-auto App::updateEmulatedControllers() -> void {
+void App::update_emulated_controllers() {
   u8 state = 0;
 
-  state |= (keys[controllerKeyBindings[Button::A]]) << 0;
-  state |= (keys[controllerKeyBindings[Button::B]]) << 1;
-  state |= (keys[controllerKeyBindings[Button::Select]]) << 2;
-  state |= (keys[controllerKeyBindings[Button::Start]]) << 3;
-  state |= (keys[controllerKeyBindings[Button::Up]]) << 4;
-  state |= (keys[controllerKeyBindings[Button::Down]]) << 5;
-  state |= (keys[controllerKeyBindings[Button::Left]]) << 6;
-  state |= (keys[controllerKeyBindings[Button::Right]]) << 7;
+  state |= keys[controllerKeyBindings[Button::A]] << 0;
+  state |= keys[controllerKeyBindings[Button::B]] << 1;
+  state |= keys[controllerKeyBindings[Button::Select]] << 2;
+  state |= keys[controllerKeyBindings[Button::Start]] << 3;
+  state |= keys[controllerKeyBindings[Button::Up]] << 4;
+  state |= keys[controllerKeyBindings[Button::Down]] << 5;
+  state |= keys[controllerKeyBindings[Button::Left]] << 6;
+  state |= keys[controllerKeyBindings[Button::Right]] << 7;
 
   Nes::update_controller_state(0, state);
 }
 
-auto App::processInput(const SDL_KeyboardEvent& key_event) -> void {
-  auto key = key_event.scancode;
+void App::process_input(const SDL_KeyboardEvent& key_event) {
+  const auto key = key_event.scancode;
 
   for (const auto& [action, mappedKey] : actionKeyBindings) {
     if (mappedKey != key) {

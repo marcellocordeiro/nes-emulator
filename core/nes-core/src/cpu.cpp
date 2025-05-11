@@ -139,8 +139,8 @@ auto Cpu::peek_imm() const -> u16 {
 }
 
 auto Cpu::peek_rel() const -> u16 {
-  auto addr = peek_imm();
-  auto offset = static_cast<i8>(peek(addr));
+  const auto addr = peek_imm();
+  const auto offset = static_cast<i8>(peek(addr));
 
   return (state.pc + 2) + offset;
 }

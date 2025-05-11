@@ -14,11 +14,11 @@ public:
   void set_rom(const std::filesystem::path&);
   void set_palette(const std::filesystem::path&);
 
-  auto get_rom() -> std::vector<u8>;
-  auto get_prg_ram() -> std::vector<u8>;
-  auto get_palette() -> std::vector<u8>;
+  auto get_rom() const -> std::vector<u8>;
+  auto get_prg_ram() const -> std::vector<u8>;
+  auto get_palette() const -> std::vector<u8>;
 
-  void save_prg_ram(const std::vector<u8>&);
+  void save_prg_ram(const std::vector<u8>&) const;
 
   [[nodiscard]] auto get_app_path() const -> std::filesystem::path;
   [[nodiscard]] auto get_rom_path() const -> std::filesystem::path;

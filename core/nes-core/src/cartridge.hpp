@@ -13,7 +13,7 @@ public:
 
   static auto get() -> Cartridge&;
 
-  auto get_mapper() -> BaseMapper*;
+  auto get_mapper() const -> BaseMapper*;
 
   void load();
 
@@ -23,7 +23,7 @@ public:
   void prg_write(u16, u8);
   void chr_write(u16, u8);
 
-  void scanline_counter();
+  void scanline_counter() const;
 
   void dump_prg_ram() const;
 

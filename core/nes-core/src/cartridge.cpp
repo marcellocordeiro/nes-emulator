@@ -21,14 +21,14 @@ auto Cartridge::get() -> Cartridge& {
   return instance;
 }
 
-auto Cartridge::get_mapper() -> BaseMapper* {
+auto Cartridge::get_mapper() const -> BaseMapper* {
   return mapper.get();
 }
 
 void Cartridge::load() {
   rom = utility::FileManager::get().get_rom();
 
-  std::span header(rom.begin(), rom.begin() + 16);
+  const std::span header(rom.begin(), rom.begin() + 16);
 
   mapper_num = (header[7] & 0xF0) | (header[6] >> 4);
   prg_size = header[4] * 0x4000;
@@ -82,16 +82,16 @@ void Cartridge::load() {
   spdlog::info("PRG RAM size: {}", prg_ram_size);
 }
 
-auto Cartridge::prg_read(u16 addr) const -> u8 {
+auto Cartridge::prg_read(const u16 addr) const -> u8 {
   if (addr < 0x8000) {
     return prg_ram[addr - 0x6000];
   }
 
-  usize mapped_addr = mapper->get_prg_addr(addr);
+  const usize mapped_addr = mapper->get_prg_addr(addr);
   return prg[mapped_addr];
 }
 
-void Cartridge::prg_write(u16 addr, u8 value) {
+void Cartridge::prg_write(const u16 addr, const u8 value) {
   if (addr < 0x8000) {
     prg_ram[addr - 0x6000] = value;
     return;
@@ -101,7 +101,7 @@ void Cartridge::prg_write(u16 addr, u8 value) {
 }
 
 auto Cartridge::chr_read(u16 addr) const -> u8 {
-  usize mapped_addr = mapper->get_chr_addr(addr);
+  const usize mapped_addr = mapper->get_chr_addr(addr);
   return chr[mapped_addr];
 }
 
@@ -109,7 +109,7 @@ void Cartridge::chr_write(u16 addr, u8 value) {
   chr[addr] = value;
 }
 
-void Cartridge::scanline_counter() {
+void Cartridge::scanline_counter() const {
   mapper->scanline_counter();
 }
 
