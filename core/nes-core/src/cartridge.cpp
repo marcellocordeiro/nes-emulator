@@ -34,8 +34,8 @@ void Cartridge::load() {
   prg_size = header[4] * 0x4000;
   chr_size = header[5] * 0x2000;
   has_chr_ram = chr_size == 0;
-  prg_ram_size = header[8] ? header[8] * 0x2000 : 0x2000;
-  mirroring = (header[6] & 1) ? MirroringType::Vertical : MirroringType::Horizontal;
+  prg_ram_size = header[8] != 0 ? header[8] * 0x2000 : 0x2000;
+  mirroring = (header[6] & 1) != 0 ? MirroringType::Vertical : MirroringType::Horizontal;
 
   switch (mapper_num) {
   case 0: mapper = std::make_unique<Mapper0>(); break;
@@ -100,12 +100,12 @@ void Cartridge::prg_write(const u16 addr, const u8 value) {
   mapper->write(addr, value);
 }
 
-auto Cartridge::chr_read(u16 addr) const -> u8 {
+auto Cartridge::chr_read(const u16 addr) const -> u8 {
   const usize mapped_addr = mapper->get_chr_addr(addr);
   return chr[mapped_addr];
 }
 
-void Cartridge::chr_write(u16 addr, u8 value) {
+void Cartridge::chr_write(const u16 addr, const u8 value) {
   chr[addr] = value;
 }
 

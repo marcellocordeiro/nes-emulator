@@ -37,7 +37,7 @@ void Cpu::reset() {
   INT_RST();
 }
 
-void Cpu::dma_oam(u8 addr) {
+void Cpu::dma_oam(const u16 addr) {
   for (u16 i = 0; i < 256; ++i) {
     // 0x2004 == OAMDATA
     memory_write(0x2004, memory_read((addr * 0x100) + i));
@@ -104,7 +104,7 @@ auto Cpu::read(u16 addr) const -> u8 {
   }
 }
 
-void Cpu::write(u16 addr, u8 value) {
+void Cpu::write(const u16 addr, const u8 value) {
   using types::cpu::memory::get_map;
   using enum types::cpu::memory::MemoryMap;
   using enum types::cpu::memory::Operation;
@@ -114,18 +114,18 @@ void Cpu::write(u16 addr, u8 value) {
   case PpuAccess: Ppu::get().write(addr, value); break;
   case ApuAccess: break;
   case OamDma: dma_oam(value); break;
-  case ControllerAccess: Controller::get().write(value & 1); break;
+  case ControllerAccess: Controller::get().write((value & 1) != 0); break;
   case CartridgeAccess: Cartridge::get().prg_write(addr, value); break;
   default: throw std::runtime_error("Invalid write address");
   }
 }
 
-auto Cpu::memory_read(u16 addr) -> u8 {
+auto Cpu::memory_read(const u16 addr) -> u8 {
   tick();
   return read(addr);
 }
 
-void Cpu::memory_write(u16 addr, u8 value) {
+void Cpu::memory_write(const u16 addr, const u8 value) {
   tick();
   write(addr, value);
 }

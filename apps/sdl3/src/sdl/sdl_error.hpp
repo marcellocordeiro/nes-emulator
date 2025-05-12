@@ -7,7 +7,7 @@
 
 #include "sdl_include.hpp"
 
-namespace SDL {
+namespace sdl {
 class Error final : public std::exception {
 public:
   [[nodiscard]]
@@ -55,4 +55,4 @@ private:
   std::string error;
   std::string message;
 };
-} // namespace SDL
+} // namespace sdl

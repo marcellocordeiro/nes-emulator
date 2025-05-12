@@ -6,11 +6,11 @@
 #include "sdl_error.hpp"
 #include "sdl_include.hpp"
 
-namespace SDL {
+namespace sdl {
 class Window {
 public:
   [[nodiscard]]
-  Window(const std::string& title, i32 width, i32 height, SDL_WindowFlags flags) {
+  Window(const std::string& title, const i32 width, const i32 height, const SDL_WindowFlags flags) {
     auto* raw = SDL_CreateWindow(title.c_str(), width, height, flags);
 
     if (raw == nullptr) {
@@ -54,4 +54,4 @@ private:
 
   Pointer pointer;
 };
-} // namespace SDL
+} // namespace sdl

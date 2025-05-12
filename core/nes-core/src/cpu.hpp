@@ -17,7 +17,7 @@ public:
   void power_on();
   void reset();
 
-  void dma_oam(u8);
+  void dma_oam(u16 addr);
 
   void run_frame();
 
@@ -91,7 +91,7 @@ private:
 
   void branch(bool);
 
-  auto crossed_page(u16, u16) const -> bool;
+  static auto crossed_page(u16, u16) -> bool;
 
   template <auto Mode>
   auto get_operand() -> u16;

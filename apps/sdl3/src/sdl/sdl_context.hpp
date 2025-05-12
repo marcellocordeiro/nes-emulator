@@ -4,11 +4,11 @@
 #include "sdl_error.hpp"
 #include "sdl_include.hpp"
 
-namespace SDL {
+namespace sdl {
 class Context {
 public:
-  explicit Context(SDL_InitFlags flags) {
-    auto result = SDL_Init(flags);
+  explicit Context(const SDL_InitFlags flags) {
+    const auto result = SDL_Init(flags);
 
     if (!result) {
       throw Error::from_context_with_source("SDL_Init");
@@ -20,7 +20,7 @@ public:
   ~Context() {
     --counter;
 
-    if (!counter) {
+    if (counter == 0) {
       SDL_Quit();
     }
   }
@@ -33,4 +33,4 @@ public:
 private:
   static inline i32 counter = 0;
 };
-} // namespace SDL
+} // namespace sdl

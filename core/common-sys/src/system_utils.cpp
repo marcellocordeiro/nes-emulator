@@ -1,5 +1,6 @@
 #include "lib/system_utils.hpp"
 
+#include <filesystem>
 #include <string>
 
 #ifdef _WIN32

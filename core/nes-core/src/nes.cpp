@@ -62,7 +62,7 @@ auto Nes::get_frame_buffer() -> const u32* {
   return Ppu::get().get_frame_buffer();
 }
 
-void Nes::update_controller_state(usize port, u8 state) {
+void Nes::update_controller_state(const usize port, const u8 state) {
   Controller::get().update_state(port, state);
 }
 

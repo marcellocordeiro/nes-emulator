@@ -15,7 +15,7 @@
 using nes::Nes;
 
 namespace {
-void render_display(const SDL::Renderer& renderer, const SDL::Texture& texture) {
+void render_display(const sdl::Renderer& renderer, const sdl::Texture& texture) {
   const auto available_size = renderer.get_current_render_output_size();
   const auto rect =
     integer_scale_centered_rect(available_size, {.width = Nes::width, .height = Nes::height});
@@ -26,7 +26,7 @@ void render_display(const SDL::Renderer& renderer, const SDL::Texture& texture) 
 }
 } // namespace
 
-App::App(std::span<std::string_view> args) : args(args) {
+App::App(const std::span<std::string_view> args) : args(args) {
   if (args.size() == 1) {
     throw std::invalid_argument("Too few arguments");
   }
@@ -37,19 +37,19 @@ void App::run() {
   Nes::load(args[1]);
   Nes::power_on();
 
-  auto context = SDL::Context{SDL_INIT_VIDEO | SDL_INIT_GAMEPAD};
+  auto context = sdl::Context{SDL_INIT_VIDEO | SDL_INIT_GAMEPAD};
 
   constexpr auto window_flags = SDL_WindowFlags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
 
   const auto window =
-    SDL::Window(std::string(Nes::title), Nes::width * 3, Nes::height * 3, window_flags);
-  const auto renderer = SDL::Renderer(window);
+    sdl::Window(std::string(Nes::title), Nes::width * 3, Nes::height * 3, window_flags);
+  const auto renderer = sdl::Renderer(window);
 
   renderer.enable_vsync();
   window.set_window_position(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
   window.show_window();
 
-  const auto texture = SDL::Texture(
+  const auto texture = sdl::Texture(
     renderer,
     SDL_PIXELFORMAT_XRGB8888,
     SDL_TEXTUREACCESS_STREAMING,

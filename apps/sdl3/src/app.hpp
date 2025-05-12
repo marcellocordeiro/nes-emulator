@@ -32,7 +32,7 @@ private:
 
   void process_input(const SDL_KeyboardEvent& key_event);
 
-  enum class Button: u8 {
+  enum class Button {
     A,
     B,
     Select,
@@ -43,7 +43,7 @@ private:
     Right,
   };
 
-  enum class Action: u8 {
+  enum class Action {
     Pause,
     Reset,
     SaveSnapshot,

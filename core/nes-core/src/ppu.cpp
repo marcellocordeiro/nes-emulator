@@ -81,21 +81,21 @@ void Ppu::set_palette() {
       constexpr double factor = 0.3;
 
       // Intensify red
-      if ((i & 0x01) != 0u) {
+      if ((i & 0x01) != 0) {
         red *= 1 + factor;
         green *= 1 - factor;
         blue *= 1 - factor;
       }
 
       // Intensify green
-      if ((i & 0x02) != 0u) {
+      if ((i & 0x02) != 0) {
         red *= 1 - factor;
         green *= 1 + factor;
         blue *= 1 - factor;
       }
 
       // Intensify blue
-      if ((i & 0x04) != 0u) {
+      if ((i & 0x04) != 0) {
         red *= 1 - factor;
         green *= 1 - factor;
         blue *= 1 + factor;
@@ -132,7 +132,7 @@ void Ppu::step() {
 
     if (scanline == 240) {
       frame_buffer = work_frame_buffer;
-      std::ranges::transform(frame_buffer, frame_buffer.begin(), [this](u32 p) {
+      std::ranges::transform(frame_buffer, frame_buffer.begin(), [this](const u32 p) {
         return full_nes_palette[mask.rgb][p];
       });
       ppu_state = Idle;
@@ -156,7 +156,7 @@ void Ppu::step() {
   }
 }
 
-auto Ppu::peek_reg(u16 addr) const -> u8 {
+auto Ppu::peek_reg(const u16 addr) const -> u8 {
   using enum types::ppu::PpuMap;
 
   switch (addr % 8) {
@@ -175,7 +175,7 @@ auto Ppu::peek_reg(u16 addr) const -> u8 {
   return bus_latch;
 }
 
-auto Ppu::read(u16 addr) -> u8 {
+auto Ppu::read(const u16 addr) -> u8 {
   using enum types::ppu::PpuMap;
 
   switch (addr % 8) {
@@ -214,7 +214,7 @@ auto Ppu::read(u16 addr) -> u8 {
   return bus_latch;
 }
 
-void Ppu::write(u16 addr, u8 value) {
+void Ppu::write(const u16 addr, const u8 value) {
   using enum types::ppu::PpuMap;
 
   bus_latch = value;
@@ -287,11 +287,11 @@ void Ppu::write(u16 addr, u8 value) {
   }
 }
 
-auto Ppu::peek_vram(u16 addr) const -> u8 {
+auto Ppu::peek_vram(const u16 addr) const -> u8 {
   return vram_read(addr);
 }
 
-auto Ppu::vram_read(u16 addr) const -> u8 {
+auto Ppu::vram_read(const u16 addr) const -> u8 {
   using enum types::ppu::MemoryMap;
 
   switch (types::ppu::get_memory_map(addr)) {
@@ -302,7 +302,7 @@ auto Ppu::vram_read(u16 addr) const -> u8 {
   }
 }
 
-void Ppu::vram_write(u16 addr, u8 value) {
+void Ppu::vram_write(const u16 addr, const u8 value) {
   using enum types::ppu::MemoryMap;
 
   switch (types::ppu::get_memory_map(addr)) {
@@ -321,7 +321,7 @@ void Ppu::sprite_evaluation() {
   usize size = 0;
 
   for (usize i = 0; i < 64; ++i) {
-    i32 line = scanline - oam_mem[i * 4];
+    const i32 line = scanline - oam_mem[i * 4];
 
     if (line >= 0 && line < sprite_height) {
       sec_oam[size].id = i;
@@ -446,13 +446,13 @@ void Ppu::background_shift() {
 }
 
 auto Ppu::get_background_pixel() const -> u8 {
-  auto pixel = static_cast<u8>(tick - 2);
+  const auto pixel = static_cast<u8>(tick - 2);
 
   if (mask.show_bg && (mask.bg_left || pixel >= 8)) {
     u8 bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
 
     if (bg_palette) {
-      u8 attr_palette = get_palette(at_shift_l, at_shift_h, 7 - fine_x);
+      const auto attr_palette = get_palette(at_shift_l, at_shift_h, 7 - fine_x);
       bg_palette |= attr_palette << 2;
     }
 
@@ -463,8 +463,8 @@ auto Ppu::get_background_pixel() const -> u8 {
 }
 
 auto Ppu::get_sprite_pixel() -> u8 {
-  auto pixel = static_cast<u8>(tick - 2);
-  auto bg_palette = get_background_pixel();
+  const auto pixel = static_cast<u8>(tick - 2);
+  const auto bg_palette = get_background_pixel();
 
   if (!mask.show_spr || (!mask.spr_left && pixel < 8)) {
     return bg_palette;
@@ -475,7 +475,7 @@ auto Ppu::get_sprite_pixel() -> u8 {
       break;
     }
 
-    i32 offset = pixel - sprite.x;
+    const i32 offset = pixel - sprite.x;
 
     if (offset < 0 || offset >= 8) {
       continue; // Not in range
@@ -485,7 +485,7 @@ auto Ppu::get_sprite_pixel() -> u8 {
 
     if (spr_palette != 0) {
       bool is_sprite0 = sprite.id == 0;
-      bool spr_priority = !(sprite.attr & 0x20);
+      bool spr_priority = (sprite.attr & 0x20) == 0;
       spr_palette |= (sprite.attr & 3) << 2;
       spr_palette += 16;
 
@@ -612,7 +612,7 @@ void Ppu::scanline_cycle_nmi() {
   if (tick == 1) {
     status.vblank = true;
 
-    if (ctrl.nmi) {
+    if (ctrl.nmi != 0) {
       *nmi_conn = true;
     }
   }
@@ -634,7 +634,7 @@ auto Ppu::bg_addr() const -> u16 {
   return (ctrl.bg_table * 0x1000) + (nt_latch * 16) + vram_addr.fine_y;
 }
 
-auto Ppu::nt_mirror_addr(u16 addr) const -> u16 {
+auto Ppu::nt_mirror_addr(const u16 addr) const -> u16 {
   using enum types::ppu::MirroringType;
 
   switch (*mirroring_conn) {
@@ -647,7 +647,7 @@ auto Ppu::nt_mirror_addr(u16 addr) const -> u16 {
   }
 }
 
-auto Ppu::palette_addr(u16 addr) const -> u16 {
+auto Ppu::palette_addr(const u16 addr) const -> u16 {
   return (((addr & 0x13) == 0x10) ? (addr & ~0x10) : addr) & 0x1F;
 }
 

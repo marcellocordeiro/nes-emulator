@@ -1,6 +1,7 @@
 set(HEADERS
   include/lib/bitfield.hpp
   include/lib/common.hpp
+  include/lib/files.hpp
 )
 
 add_library(common INTERFACE)

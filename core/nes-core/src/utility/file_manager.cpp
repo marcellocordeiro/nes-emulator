@@ -9,6 +9,7 @@
 #include <spdlog/spdlog.h>
 
 #include "ips_patch.hpp"
+#include "lib/files.hpp"
 
 namespace nes::utility {
 auto FileManager::get() -> FileManager& {
@@ -53,10 +54,7 @@ auto FileManager::get_rom() const -> std::vector<u8> {
     throw std::invalid_argument("The ROM path needs to be set first");
   }
 
-  std::ifstream rom_stream(rom_path, std::ios::binary);
-
-  std::vector rom(std::filesystem::file_size(rom_path), u8{});
-  rom_stream.read(reinterpret_cast<char*>(rom.data()), rom.size());
+  auto rom = lib::read_binary_file(rom_path);
 
   if (has_patch()) {
     rom = IpsPatch(patch_path).patch(rom);
@@ -66,24 +64,15 @@ auto FileManager::get_rom() const -> std::vector<u8> {
 }
 
 auto FileManager::get_prg_ram() const -> std::vector<u8> {
-  std::vector prg_ram(std::filesystem::file_size(prg_ram_path), u8{});
-
-  if (has_prg_ram()) {
-    std::ifstream prg_ram_file(prg_ram_path, std::ios::binary);
-    prg_ram_file.read(reinterpret_cast<char*>(prg_ram.data()), prg_ram.size());
+  if (!has_prg_ram()) {
+    return {};
   }
 
-  return prg_ram;
+  return lib::read_binary_file(prg_ram_path);
 }
 
 auto FileManager::get_palette() const -> std::vector<u8> {
-  std::ifstream file(palette_path, std::ios::binary);
-
-  std::vector palette(std::filesystem::file_size(palette_path), u8{});
-
-  file.read(reinterpret_cast<char*>(palette.data()), palette.size());
-
-  return palette;
+  return lib::read_binary_file(palette_path);
 }
 
 void FileManager::save_prg_ram(const std::vector<u8>& vec) const {

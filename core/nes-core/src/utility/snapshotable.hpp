@@ -37,7 +37,7 @@ private:
   // dump specialisations
   //
 
-  void dump(std::ofstream& out, std::integral auto value) const {
+  static void dump(std::ofstream& out, std::integral auto value) {
     out.write(reinterpret_cast<char*>(&value), sizeof(value));
   }
 
@@ -60,7 +60,7 @@ private:
   // get specialisations
   //
 
-  void get(std::ifstream& in, std::integral auto& value) {
+  static void get(std::ifstream& in, std::integral auto& value) {
     in.read(reinterpret_cast<char*>(&value), sizeof(value));
   }
 

@@ -7,7 +7,7 @@
 #include "sdl_include.hpp"
 #include "sdl_window.hpp"
 
-namespace SDL {
+namespace sdl {
 class Renderer {
 public:
   [[nodiscard]]
@@ -61,4 +61,4 @@ private:
 
   Pointer pointer;
 };
-} // namespace SDL
+} // namespace sdl

@@ -21,10 +21,10 @@ set(SOURCES
   src/nes.cpp
   src/ppu.cpp
   src/ppu.hpp
-  src/todo/audio.cpp
-  src/todo/audio.hpp
-  src/todo/debugger.cpp
-  src/todo/debugger.hpp
+  #src/todo/audio.cpp
+  #src/todo/audio.hpp
+  #src/todo/debugger.cpp
+  #src/todo/debugger.hpp
   src/types/cpu_types.cpp
   src/types/cpu_types.hpp
   src/types/ppu_types.cpp

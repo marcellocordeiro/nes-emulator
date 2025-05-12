@@ -49,7 +49,7 @@ public:
   }
 
 private:
-  constexpr auto get() const noexcept -> ValueType {
+  [[nodiscard]] constexpr auto get() const noexcept -> ValueType {
     return (data & get_mask()) >> Position;
   }
 
@@ -57,7 +57,7 @@ private:
     data = (data & ~get_mask()) | ((value << Position) & get_mask());
   }
 
-  constexpr auto get_mask() const noexcept -> ValueType {
+  [[nodiscard]] constexpr auto get_mask() const noexcept -> ValueType {
     return (std::numeric_limits<ValueType>::max() >> (8 * sizeof(ValueType) - Bits)) << Position;
   }
 

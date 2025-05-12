@@ -1,48 +1,48 @@
 #include "cpu_types.hpp"
 
 namespace nes::types::cpu {
-auto State::check_flags(u8 flags) const -> bool {
+auto State::check_flags(const u8 flags) const -> bool {
   return (this->ps & flags) == flags;
 }
 
-void State::set_flags(u8 flags) {
+void State::set_flags(const u8 flags) {
   this->ps |= flags;
 }
 
-void State::clear_flags(u8 flags) {
+void State::clear_flags(const u8 flags) {
   this->ps &= ~flags;
 }
 
-void State::update_nz(u8 value) {
+void State::update_nz(const u8 value) {
   clear_flags(flags::Zero | flags::Negative);
 
   if (value == 0) {
     set_flags(flags::Zero);
-  } else if (value & 0x80) {
+  } else if ((value & 0x80) != 0) {
     set_flags(flags::Negative);
   }
 }
 
-void State::set_a(u8 value) {
+void State::set_a(const u8 value) {
   this->a = value;
   this->update_nz(this->a);
 }
 
-void State::set_x(u8 value) {
+void State::set_x(const u8 value) {
   this->x = value;
   this->update_nz(this->x);
 }
 
-void State::set_y(u8 value) {
+void State::set_y(const u8 value) {
   this->y = value;
   this->update_nz(this->y);
 }
 
-void State::set_pc(u16 addr) {
+void State::set_pc(const u16 addr) {
   this->pc = addr;
 }
 
-void State::set_ps(u8 value) {
+void State::set_ps(const u8 value) {
   this->ps = value & 0xCF;
 }
 

@@ -2,7 +2,9 @@
 
 namespace nes::types::ppu {
 auto get_memory_map(u16 addr) -> MemoryMap {
-  auto in_range = [addr](u32 lower, u32 upper) { return (addr >= lower) && (addr <= upper); };
+  auto in_range = [addr](const u16 lower, const u16 upper) {
+    return (addr >= lower) && (addr <= upper);
+  };
 
   if (in_range(0x0000, 0x1FFF)) {
     return MemoryMap::Chr;
@@ -19,13 +21,13 @@ auto get_memory_map(u16 addr) -> MemoryMap {
   return MemoryMap::Unknown;
 }
 
-auto get_mirroring_name(MirroringType type) -> std::string_view {
-  static std::string_view horizontal = "Horizontal";
-  static std::string_view vertical = "Vertical";
-  static std::string_view one_screen_low = "One Screen Low";
-  static std::string_view one_screen_high = "One Screen High";
-  static std::string_view four_screen = "Four Screen";
-  static std::string_view unknown = "Unknown";
+auto get_mirroring_name(const MirroringType type) -> std::string_view {
+  constexpr static std::string_view horizontal = "Horizontal";
+  constexpr static std::string_view vertical = "Vertical";
+  constexpr static std::string_view one_screen_low = "One Screen Low";
+  constexpr static std::string_view one_screen_high = "One Screen High";
+  constexpr static std::string_view four_screen = "Four Screen";
+  constexpr static std::string_view unknown = "Unknown";
 
   switch (type) {
   case MirroringType::Horizontal: return horizontal;

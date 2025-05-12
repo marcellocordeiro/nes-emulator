@@ -6,11 +6,11 @@ auto Controller::get() -> Controller& {
   return instance;
 }
 
-void Controller::update_state(usize port, u8 state) {
+void Controller::update_state(const usize port, const u8 state) {
   controller_state[port] = state;
 }
 
-auto Controller::read(usize port) -> u8 {
+auto Controller::read(const usize port) -> u8 {
   if (strobe) {
     return 0x40 | (controller_state[port] & 1); // 1 == A
   }
@@ -21,7 +21,7 @@ auto Controller::read(usize port) -> u8 {
   return status;
 }
 
-void Controller::write(bool signal) {
+void Controller::write(const bool signal) {
   if (strobe && !signal) {
     controller_bits = controller_state;
   }
@@ -29,7 +29,7 @@ void Controller::write(bool signal) {
   strobe = signal;
 }
 
-auto Controller::peek(usize port) const -> u8 {
+auto Controller::peek(const usize port) const -> u8 {
   if (strobe) {
     return 0x40 | (controller_state[port] & 1); // 1 == A
   }

@@ -24,7 +24,7 @@ void Mapper4::reset() {
 void Mapper4::apply() {
   set_prg_map<8>(1, regs[7]);
 
-  if (!(reg_8000 & (1 << 6))) {
+  if ((reg_8000 & (1 << 6)) == 0) {
     // PRG Mode 0
     set_prg_map<8>(0, regs[6]);
     set_prg_map<8>(2, -2);
@@ -34,7 +34,7 @@ void Mapper4::apply() {
     set_prg_map<8>(2, regs[6]);
   }
 
-  if (!(reg_8000 & (1 << 7))) {
+  if ((reg_8000 & (1 << 7)) == 0) {
     // CHR Mode 0
     set_chr_map<2>(0, regs[0] >> 1);
     set_chr_map<2>(1, regs[1] >> 1);
@@ -53,15 +53,15 @@ void Mapper4::apply() {
   }
 }
 
-void Mapper4::write(u16 addr, u8 value) {
+void Mapper4::write(const u16 addr, const u8 value) {
   if (addr < 0x8000) {
     // prg_ram[addr - 0x6000] = value;
-  } else if (addr & 0x8000) {
+  } else if ((addr & 0x8000) != 0) {
     switch (addr & 0xE001) {
     case 0x8000: reg_8000 = value; break;
     case 0x8001: regs[reg_8000 & 7] = value; break;
     case 0xA000:
-      set_mirroring((value & 1) ? MirroringType::Horizontal : MirroringType::Vertical);
+      set_mirroring((value & 1) != 0 ? MirroringType::Horizontal : MirroringType::Vertical);
       break;
     case 0xC000: irq_period = value; break;
     case 0xC001: irq_counter = 0; break;

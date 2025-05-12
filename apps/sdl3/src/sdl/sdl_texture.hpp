@@ -7,7 +7,7 @@
 #include "sdl_include.hpp"
 #include "sdl_renderer.hpp"
 
-namespace SDL {
+namespace sdl {
 class Texture {
 public:
   [[nodiscard]]
@@ -32,7 +32,7 @@ public:
     return pointer.get();
   }
 
-  void set_scale_mode(SDL_ScaleMode mode) const {
+  void set_scale_mode(const SDL_ScaleMode mode) const {
     const auto result = SDL_SetTextureScaleMode(pointer.get(), mode);
 
     if (!result) {
@@ -53,4 +53,4 @@ private:
 
   Pointer pointer;
 };
-} // namespace SDL
+} // namespace sdl

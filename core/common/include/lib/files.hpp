@@ -4,9 +4,10 @@
 #include <fstream>
 #include <vector>
 
-#include "lib/common.hpp"
+#include "common.hpp"
 
-static auto read_binary_file(const std::filesystem::path& path) -> std::vector<u8> {
+namespace lib {
+inline auto read_binary_file(const std::filesystem::path& path) -> std::vector<u8> {
   std::ifstream stream(path, std::ios::binary);
 
   stream.seekg(0, std::ios_base::end);
@@ -18,3 +19,4 @@ static auto read_binary_file(const std::filesystem::path& path) -> std::vector<u
 
   return file;
 }
+} // namespace lib

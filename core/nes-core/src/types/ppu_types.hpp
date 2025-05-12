@@ -6,11 +6,11 @@
 #include "lib/common.hpp"
 
 namespace nes::types::ppu {
-template <usize position, usize bits>
-using BitfieldU8 = lib::Bitfield<u8, position, bits>;
+template <usize Position, usize Bits>
+using BitfieldU8 = lib::Bitfield<u8, Position, Bits>;
 
-template <usize position, usize bits>
-using BitfieldU16 = lib::Bitfield<u16, position, bits>;
+template <usize Position, usize Bits>
+using BitfieldU16 = lib::Bitfield<u16, Position, Bits>;
 
 // PPUCTRL ($2000) register
 union ppuctrl {
@@ -48,7 +48,7 @@ union ppustatus {
 };
 
 // Loopy's VRAM address
-union loopy_addr {
+union LoopyAddr {
   u16 raw = 0;
 
   BitfieldU16<0, 5> coarse_x; // Coarse X
@@ -63,7 +63,7 @@ union loopy_addr {
 };
 
 // Sprite info
-struct sprite_info {
+struct SpriteInfo {
   u8 y = 64;      // Y position
   u8 tile = 0xFF; // Tile index
   u8 attr = 0xFF; // Attributes

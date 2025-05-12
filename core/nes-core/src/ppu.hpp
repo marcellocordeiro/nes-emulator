@@ -128,8 +128,8 @@ private:
   u8 ppudata_buffer = 0;   // PPUDATA read buffer
   bool addr_latch = false; // Address latch used by PPUSCROLL and PPUADDR
 
-  using sprite_info = types::ppu::sprite_info;
-  using loopy_addr = types::ppu::loopy_addr;
+  using sprite_info = types::ppu::SpriteInfo;
+  using loopy_addr = types::ppu::LoopyAddr;
   using ppuctrl = types::ppu::ppuctrl;
   using ppumask = types::ppu::ppumask;
   using ppustatus = types::ppu::ppustatus;

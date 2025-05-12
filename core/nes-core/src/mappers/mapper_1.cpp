@@ -21,9 +21,9 @@ void Mapper1::reset() {
 }
 
 void Mapper1::apply() {
-  if (control & 0b1000) {
+  if ((control & 0b1000) != 0) {
     // 16KB PRG-ROM
-    if (control & 0b100) {
+    if ((control & 0b100) != 0) {
       // Switchable or fixed to the first bank
       set_prg_map<16>(0, prg_bank & 0xF);
       set_prg_map<16>(1, 0xF);
@@ -37,7 +37,7 @@ void Mapper1::apply() {
     set_prg_map<32>(0, (prg_bank & 0xF) >> 1);
   }
 
-  if (control & 0b10000) {
+  if ((control & 0b10000) != 0) {
     // 4KB CHR-ROM
     set_chr_map<4>(0, chr_bank_0);
     set_chr_map<4>(1, chr_bank_1);
@@ -59,11 +59,11 @@ void Mapper1::apply() {
   }
 }
 
-void Mapper1::write(u16 addr, u8 value) {
+void Mapper1::write(const u16 addr, const u8 value) {
   if (addr < 0x8000) {
     // prg_ram[addr - 0x6000] = value;
-  } else if (addr & 0x8000) {
-    if (value & 0x80) { // Reset
+  } else if ((addr & 0x8000) != 0) {
+    if ((value & 0x80) != 0) { // Reset
       control |= 0x0C;
       write_delay = 5;
       shift_reg = 0;

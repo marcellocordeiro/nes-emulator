@@ -36,7 +36,7 @@ auto IpsPatch::patch(const std::vector<u8>& rom) -> std::vector<u8> {
 
   // If the stream is still good, there is a 3-byte truncate offset after EOF
   if (ips_file) {
-    usize truncate_offset = (buffer[0] << 16) | (buffer[1] << 8) | (buffer[2]);
+    const usize truncate_offset = (buffer[0] << 16) | (buffer[1] << 8) | (buffer[2]);
 
     if (output.size() > truncate_offset) {
       output.resize(truncate_offset);
@@ -76,7 +76,7 @@ auto IpsPatch::read_record() -> bool {
   } else { // RLE
     ips_file.read(reinterpret_cast<char*>(buffer), 3);
     record.length = (buffer[0] << 8) | (buffer[1]);
-    u8 value = buffer[2];
+    const u8 value = buffer[2];
 
     record.data.resize(record.length);
     std::fill_n(record.data.begin(), record.length, value);

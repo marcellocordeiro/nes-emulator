@@ -34,7 +34,7 @@ void BaseMapper::write(u16 addr, u8 value) {
 
 // Size must be in KB
 template <usize Size>
-void BaseMapper::set_prg_map(usize slot, i32 page) {
+void BaseMapper::set_prg_map(const usize slot, i32 page) {
   constexpr usize pages = Size / 8;
   constexpr usize pages_b = Size * 0x400; // In bytes
 

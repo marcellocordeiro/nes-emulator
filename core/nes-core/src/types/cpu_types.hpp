@@ -30,7 +30,7 @@ enum class AddressingMode {
   IndirectY_Exception,
 };
 
-enum flags : u8 {
+enum flags {
   Carry = 0x01,
   Zero = 0x02,
   Interrupt = 0x04,

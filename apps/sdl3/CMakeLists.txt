@@ -9,7 +9,6 @@ set(SOURCES
   src/sdl/sdl_renderer.hpp
   src/sdl/sdl_texture.hpp
   src/sdl/sdl_window.hpp
-  src/utils/files.hpp
   src/utils/scaling.hpp
   src/utils/vec2.hpp
 )
