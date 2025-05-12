@@ -2,6 +2,8 @@ set(HEADERS
   include/lib/bitfield.hpp
   include/lib/common.hpp
   include/lib/files.hpp
+  include/lib/sane_integer.hpp
+  include/lib/concepts/binary_ops.hpp
 )
 
 add_library(common INTERFACE)
@@ -27,3 +29,5 @@ install(
   TARGETS common
   FILE_SET HEADERS
 )
+
+add_subdirectory(tests)

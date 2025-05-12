@@ -6,11 +6,11 @@
 #include "lib/common.hpp"
 
 namespace nes::types::ppu {
-template <usize Position, usize Bits>
-using BitfieldU8 = lib::Bitfield<u8, Position, Bits>;
+template <std::size_t Position, std::size_t Bits>
+using BitfieldU8 = lib::Bitfield<std::uint8_t, Position, Bits>;
 
-template <usize Position, usize Bits>
-using BitfieldU16 = lib::Bitfield<u16, Position, Bits>;
+template <std::size_t Position, std::size_t Bits>
+using BitfieldU16 = lib::Bitfield<std::uint16_t, Position, Bits>;
 
 // PPUCTRL ($2000) register
 union ppuctrl {

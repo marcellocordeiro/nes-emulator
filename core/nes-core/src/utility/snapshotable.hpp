@@ -41,8 +41,8 @@ private:
     out.write(reinterpret_cast<char*>(&value), sizeof(value));
   }
 
-  template <typename T, usize size>
-  void dump(std::ofstream& out, const std::array<T, size>& arr) const {
+  template <typename T, std::size_t Size>
+  void dump(std::ofstream& out, const std::array<T, Size>& arr) const {
     for (auto value : arr) {
       dump(out, value);
     }
@@ -64,8 +64,8 @@ private:
     in.read(reinterpret_cast<char*>(&value), sizeof(value));
   }
 
-  template <typename T, usize size>
-  void get(std::ifstream& in, std::array<T, size>& arr) {
+  template <typename T, std::size_t Size>
+  void get(std::ifstream& in, std::array<T, Size>& arr) {
     for (auto& ref : arr) {
       get(in, ref);
     }
@@ -74,7 +74,7 @@ private:
   template <typename T>
   void get(std::ifstream& in, std::vector<T>& vec) {
     {
-      usize size = 0;
+      std::size_t size = 0;
       get(in, size);
       vec.resize(size);
     }

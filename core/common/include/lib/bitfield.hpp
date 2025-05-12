@@ -6,7 +6,7 @@
 #include "common.hpp"
 
 namespace lib {
-template <typename ValueType, usize Position, usize Bits>
+template <typename ValueType, std::size_t Position, std::size_t Bits>
   requires std::unsigned_integral<ValueType>
 class Bitfield {
 public:
