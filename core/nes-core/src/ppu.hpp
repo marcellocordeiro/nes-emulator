@@ -129,10 +129,10 @@ private:
   bool addr_latch = false; // Address latch used by PPUSCROLL and PPUADDR
 
   using sprite_info = types::ppu::SpriteInfo;
-  using loopy_addr = types::ppu::LoopyAddr;
-  using ppuctrl = types::ppu::ppuctrl;
-  using ppumask = types::ppu::ppumask;
-  using ppustatus = types::ppu::ppustatus;
+  using LoopyAddr = types::ppu::LoopyAddr;
+  using Ppuctrl = types::ppu::Ppuctrl;
+  using Ppumask = types::ppu::Ppumask;
+  using Ppustatus = types::ppu::Ppustatus;
 
   using ci_ram_type = std::array<u8, 0x800>;
   using cg_ram_type = std::array<u8, 0x20>;
@@ -159,14 +159,14 @@ private:
   u8 selected_palette = 0;
   // const u32* nes_to_rgb = full_nes_palette[0].data();
 
-  loopy_addr vram_addr;
-  loopy_addr temp_addr;
+  LoopyAddr vram_addr;
+  LoopyAddr temp_addr;
   u8 fine_x = 0;
   u8 oam_addr = 0;
 
-  ppuctrl ctrl;     // PPUCTRL   ($2000) register
-  ppumask mask;     // PPUMASK   ($2001) register
-  ppustatus status; // PPUSTATUS ($2002) register
+  Ppuctrl ctrl;     // PPUCTRL   ($2000) register
+  Ppumask mask;     // PPUMASK   ($2001) register
+  Ppustatus status; // PPUSTATUS ($2002) register
 
   //
   // Background latches

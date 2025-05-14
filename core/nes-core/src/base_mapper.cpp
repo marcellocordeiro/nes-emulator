@@ -3,17 +3,17 @@
 #include "lib/common.hpp"
 
 namespace nes {
-void BaseMapper::set_mirroring(MirroringType value) const {
+void BaseMapper::set_mirroring(const MirroringType value) const {
   // TODO: save this?
   // mirroring = value;
   *mirroring_conn = value;
 }
 
-void BaseMapper::set_irq(bool value) const {
+void BaseMapper::set_irq(const bool value) const {
   *irq_conn = value;
 }
 
-auto BaseMapper::get_prg_addr(u16 addr) const -> usize {
+auto BaseMapper::get_prg_addr(const u16 addr) const -> usize {
   const usize slot = (addr - 0x8000) / 0x2000;
   const usize prg_addr = (addr - 0x8000) % 0x2000;
 
@@ -27,7 +27,7 @@ auto BaseMapper::get_chr_addr(const u16 addr) const -> usize {
   return chr_map[slot] + chr_addr;
 }
 
-void BaseMapper::write(u16 addr, u8 value) {
+void BaseMapper::write(const u16 addr, const u8 value) {
   UNUSED(addr);
   UNUSED(value);
 }

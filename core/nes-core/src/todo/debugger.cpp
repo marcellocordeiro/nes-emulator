@@ -64,7 +64,7 @@ void Debugger::cpu_log() {
 
   auto* cpu_ptr = &Cpu::get();
 
-  auto peek = [&](u16 addr) { return cpu_ptr->peek(addr); };
+  auto peek = [&](const u16 addr) { return cpu_ptr->peek(addr); };
   auto peek_imm = [&] { return cpu_ptr->peek_imm(); };
   auto peek_rel = [&] { return cpu_ptr->peek_rel(); };
   auto peek_zp = [&] { return cpu_ptr->peek_zp(); };
@@ -77,7 +77,9 @@ void Debugger::cpu_log() {
   auto peek_indx = [&] { return cpu_ptr->peek_indx(); };
   auto peek_indy = [&] { return cpu_ptr->peek_indy(); };
 
-  auto read_word_zp = [&](u16 addr) -> u16 { return peek((addr + 1) & 0xFF) << 8 | peek(addr); };
+  auto read_word_zp = [&](const u16 addr) -> u16 {
+    return peek((addr + 1) & 0xFF) << 8 | peek(addr);
+  };
 
   auto state = cpu_ptr->get_state();
 

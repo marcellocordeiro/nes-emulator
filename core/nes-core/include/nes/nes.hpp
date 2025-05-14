@@ -8,27 +8,27 @@
 namespace nes {
 class Nes {
 public:
-  static void set_app_path(const std::filesystem::path&);
-  static void load(const std::filesystem::path&);
-  static void reset();
-  static void power_on();
-  static void power_off();
+  void set_app_path(const std::filesystem::path&);
+  void load(const std::filesystem::path&);
+  void reset();
+  void power_on();
+  void power_off();
 
   //
   // Component access
   //
 
-  static void run_frame();
-  static auto get_frame_buffer() -> const u32*;
+  void run_frame();
+  auto get_frame_buffer() -> const u32*;
 
-  static void update_controller_state(usize, u8);
+  void update_controller_state(usize, u8);
 
   //
   // Snapshot
   //
 
-  static void save_snapshot();
-  static void load_snapshot();
+  void save_snapshot();
+  void load_snapshot();
 
   static constexpr i32 SCREEN_WIDTH = 256;
   static constexpr i32 SCREEN_HEIGHT = 240;
@@ -38,8 +38,5 @@ public:
   static constexpr i32 height = SCREEN_HEIGHT;
 
   static constexpr auto title = std::string_view("nes-emulator");
-
-private:
-  Nes() = default;
 };
 } // namespace nes

@@ -1,6 +1,7 @@
 #include "ips_patch.hpp"
 
 #include <algorithm>
+#include <array>
 #include <string>
 
 namespace nes::utility {
@@ -31,8 +32,8 @@ auto IpsPatch::patch(const std::vector<u8>& rom) -> std::vector<u8> {
   // Truncate (extension)
   //
 
-  u8 buffer[] = {0, 0, 0};
-  ips_file.read(reinterpret_cast<char*>(buffer), 3 * sizeof(u8));
+  std::array<u8, 3> buffer = {};
+  ips_file.read(reinterpret_cast<char*>(buffer.data()), 3 * sizeof(u8));
 
   // If the stream is still good, there is a 3-byte truncate offset after EOF
   if (ips_file) {
@@ -59,22 +60,23 @@ auto IpsPatch::read_record() -> bool {
 
   record_entry record;
 
-  u8 buffer[] = {0, 0, 0};
-  ips_file.read(reinterpret_cast<char*>(buffer), 3 * sizeof(u8));
+  std::array<u8, 3> buffer = {};
+
+  ips_file.read(reinterpret_cast<char*>(buffer.data()), 3 * sizeof(u8));
   record.addr = (buffer[0] << 16) | (buffer[1] << 8) | (buffer[2]);
 
   if (record.addr == magic_eof) {
     return false;
   }
 
-  ips_file.read(reinterpret_cast<char*>(buffer), 2);
+  ips_file.read(reinterpret_cast<char*>(buffer.data()), 2);
   record.length = (buffer[0] << 8) | (buffer[1]);
 
   if (record.length > 0) {
     record.data.resize(record.length);
     ips_file.read(reinterpret_cast<char*>(record.data.data()), record.length);
   } else { // RLE
-    ips_file.read(reinterpret_cast<char*>(buffer), 3);
+    ips_file.read(reinterpret_cast<char*>(buffer.data()), 3);
     record.length = (buffer[0] << 8) | (buffer[1]);
     const u8 value = buffer[2];
 
