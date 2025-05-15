@@ -8,7 +8,7 @@
 #include "utility/snapshotable.hpp"
 
 namespace nes {
-class Cpu final : public utility::Snapshotable {
+class Cpu final: public utility::Snapshotable {
 public:
   using ram_type = std::array<u8, 0x800>;
 

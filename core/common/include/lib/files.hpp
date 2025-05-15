@@ -14,7 +14,7 @@ inline auto read_binary_file(const std::filesystem::path& path) -> std::vector<u
   const auto length = stream.tellg();
   stream.seekg(0, std::ios_base::beg);
 
-  std::vector file(length, u8{});
+  std::vector file(static_cast<usize>(length), u8{});
   stream.read(reinterpret_cast<char*>(file.data()), length);
 
   return file;

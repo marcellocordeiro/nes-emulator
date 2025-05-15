@@ -3,17 +3,17 @@
 #include "lib/common.hpp"
 
 namespace nes {
-void BaseMapper::set_mirroring(MirroringType value) const {
+void BaseMapper::set_mirroring(const MirroringType value) const {
   // TODO: save this?
   // mirroring = value;
   *mirroring_conn = value;
 }
 
-void BaseMapper::set_irq(bool value) const {
+void BaseMapper::set_irq(const bool value) const {
   *irq_conn = value;
 }
 
-auto BaseMapper::get_prg_addr(u16 addr) const -> usize {
+auto BaseMapper::get_prg_addr(const u16 addr) const -> usize {
   const usize slot = (addr - 0x8000) / 0x2000;
   const usize prg_addr = (addr - 0x8000) % 0x2000;
 
@@ -27,7 +27,7 @@ auto BaseMapper::get_chr_addr(const u16 addr) const -> usize {
   return chr_map[slot] + chr_addr;
 }
 
-void BaseMapper::write(u16 addr, u8 value) {
+void BaseMapper::write(const u16 addr, const u8 value) {
   UNUSED(addr);
   UNUSED(value);
 }
@@ -39,11 +39,11 @@ void BaseMapper::set_prg_map(const usize slot, i32 page) {
   constexpr usize pages_b = Size * 0x400; // In bytes
 
   if (page < 0) {
-    page = (static_cast<i32>(prg_size) / pages_b) + page;
+    page += static_cast<i32>(prg_size) / static_cast<i32>(pages_b);
   }
 
   for (usize i = 0; i < pages; ++i) {
-    prg_map[(pages * slot) + i] = ((pages_b * page) + 0x2000 * i) % prg_size;
+    prg_map[(pages * slot) + i] = ((pages_b * static_cast<usize>(page)) + 0x2000 * i) % prg_size;
   }
 }
 
@@ -54,7 +54,7 @@ void BaseMapper::set_chr_map(const usize slot, const i32 page) {
   constexpr usize pages_b = Size * 0x400; // In bytes
 
   for (usize i = 0; i < Size; ++i) {
-    chr_map[(pages * slot) + i] = ((pages_b * page) + 0x400 * i) % chr_size;
+    chr_map[(pages * slot) + i] = ((pages_b * static_cast<usize>(page)) + 0x400 * i) % chr_size;
   }
 }
 

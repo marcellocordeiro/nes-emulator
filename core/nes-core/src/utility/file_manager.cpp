@@ -77,7 +77,10 @@ auto FileManager::get_palette() const -> std::vector<u8> {
 
 void FileManager::save_prg_ram(const std::vector<u8>& vec) const {
   std::ofstream prg_ram_file(prg_ram_path, std::ios::binary);
-  prg_ram_file.write(reinterpret_cast<const char*>(vec.data()), vec.size());
+  prg_ram_file.write(
+    reinterpret_cast<const char*>(vec.data()),
+    static_cast<std::streamsize>(vec.size())
+  );
 }
 
 auto FileManager::get_app_path() const -> std::filesystem::path {

@@ -1,5 +1,5 @@
 set(SOURCES
-  src/sane_integer.cpp
+  src/sane_integer_tests.cpp
 )
 
 add_executable(common-tests ${SOURCES})

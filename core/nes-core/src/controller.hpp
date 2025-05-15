@@ -6,7 +6,7 @@
 #include "utility/snapshotable.hpp"
 
 namespace nes {
-class Controller final : public utility::Snapshotable {
+class Controller final: public utility::Snapshotable {
 public:
   static auto get() -> Controller&;
 

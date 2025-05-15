@@ -34,6 +34,14 @@ set(SOURCES
   src/utility/ips_patch.cpp
   src/utility/ips_patch.hpp
   src/utility/snapshotable.hpp
+  src/types/ppu/ppuctrl.cpp
+  src/types/ppu/ppuctrl.hpp
+  src/types/ppu/ppustatus.cpp
+  src/types/ppu/ppustatus.hpp
+  src/types/ppu/ppumask.cpp
+  src/types/ppu/ppumask.hpp
+  src/types/ppu/loopy_addr.cpp
+  src/types/ppu/loopy_addr.hpp
 )
 
 set(HEADERS

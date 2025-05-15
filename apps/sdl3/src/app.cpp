@@ -33,9 +33,11 @@ App::App(const std::span<std::string_view> args) : args(args) {
 }
 
 void App::run() {
-  Nes::set_app_path(SDL_GetBasePath());
-  Nes::load(args[1]);
-  Nes::power_on();
+  auto nes = Nes();
+
+  nes.set_app_path(SDL_GetBasePath());
+  nes.load(args[1]);
+  nes.power_on();
 
   auto context = sdl::Context{SDL_INIT_VIDEO | SDL_INIT_GAMEPAD};
 
@@ -73,13 +75,13 @@ void App::run() {
 
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
-      case SDL_EVENT_QUIT: Nes::power_off(); return;
-      case SDL_EVENT_KEY_DOWN: process_input(event.key); break;
+      case SDL_EVENT_QUIT: nes.power_off(); return;
+      case SDL_EVENT_KEY_DOWN: process_input(event.key, nes); break;
 
       default: break;
       }
 
-      if (SDL_GetWindowFlags(window.get()) & SDL_WINDOW_MINIMIZED) {
+      if ((SDL_GetWindowFlags(window.get()) & SDL_WINDOW_MINIMIZED) != 0) {
         SDL_Delay(10);
         continue;
       }
@@ -101,11 +103,11 @@ void App::run() {
     }
 
     if (running) {
-      update_emulated_controllers();
-      Nes::run_frame();
+      update_emulated_controllers(nes);
+      nes.run_frame();
     }
 
-    SDL_UpdateTexture(texture.get(), nullptr, Nes::get_frame_buffer(), Nes::width * sizeof(u32));
+    SDL_UpdateTexture(texture.get(), nullptr, nes.get_frame_buffer(), Nes::width * sizeof(u32));
 
     SDL_RenderClear(renderer.get());
     render_display(renderer, texture);
@@ -134,7 +136,7 @@ void App::setup_default_bindings() {
   controller_key_bindings[Button::Right] = SDL_SCANCODE_RIGHT;
 }
 
-void App::update_emulated_controllers() {
+void App::update_emulated_controllers(Nes& nes) {
   u8 state = 0;
 
   state |= keys[controller_key_bindings[Button::A]] << 0;
@@ -146,10 +148,10 @@ void App::update_emulated_controllers() {
   state |= keys[controller_key_bindings[Button::Left]] << 6;
   state |= keys[controller_key_bindings[Button::Right]] << 7;
 
-  Nes::update_controller_state(0, state);
+  nes.update_controller_state(0, state);
 }
 
-void App::process_input(const SDL_KeyboardEvent& key_event) {
+void App::process_input(const SDL_KeyboardEvent& key_event, Nes& nes) {
   const auto key = key_event.scancode;
 
   for (const auto& [action, mappedKey] : action_key_bindings) {
@@ -159,9 +161,9 @@ void App::process_input(const SDL_KeyboardEvent& key_event) {
 
     switch (action) {
     case Action::Pause: running = !running; return;
-    case Action::Reset: Nes::reset(); return;
-    case Action::SaveSnapshot: Nes::save_snapshot(); return;
-    case Action::LoadSnapshot: Nes::load_snapshot(); return;
+    case Action::Reset: nes.reset(); return;
+    case Action::SaveSnapshot: nes.save_snapshot(); return;
+    case Action::LoadSnapshot: nes.load_snapshot(); return;
     case Action::ToggleLimiter: return;
     case Action::VolumeUp: return;
     case Action::VolumeDown: return;

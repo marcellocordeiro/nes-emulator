@@ -59,7 +59,7 @@ auto Ppu::get_frame_buffer() const -> const u32* {
 void Ppu::set_palette() {
   const auto palette = utility::FileManager::get().get_palette();
 
-  if (palette.size() != 64 * 3) {
+  if (palette.size() != (64 * 3)) {
     throw std::invalid_argument("Invalid palette file");
   }
 
@@ -68,7 +68,8 @@ void Ppu::set_palette() {
     const auto g = palette[(i * 3) + 1];
     const auto b = palette[(i * 3) + 2];
 
-    full_nes_palette[0][i] = (r << 16) | (g << 8) | b;
+    full_nes_palette[0][i] =
+      static_cast<u32>(r << 16) | static_cast<u32>(g << 8) | static_cast<u32>(b);
   }
 
   // Generate full colour palette
@@ -105,7 +106,7 @@ void Ppu::set_palette() {
       const auto g = static_cast<u8>(green > 255 ? 255 : green);
       const auto b = static_cast<u8>(blue > 255 ? 255 : blue);
 
-      const u32 color = (r << 16) | (g << 8) | (b << 0);
+      const u32 color = static_cast<u32>(r << 16) | static_cast<u32>(g << 8) | static_cast<u32>(b);
 
       full_nes_palette[i][j] = color;
     }
@@ -133,7 +134,7 @@ void Ppu::step() {
     if (scanline == 240) {
       frame_buffer = work_frame_buffer;
       std::ranges::transform(frame_buffer, frame_buffer.begin(), [this](const u32 p) {
-        return full_nes_palette[mask.rgb][p];
+        return full_nes_palette[mask.rgb()][p];
       });
       ppu_state = Idle;
     } else if (scanline == 241) {
@@ -163,11 +164,11 @@ auto Ppu::peek_reg(const u16 addr) const -> u8 {
   case PpuStatus: return (bus_latch & 0x1F) | status.raw;
   case OamData: return oam_mem[oam_addr];
   case PpuData:
-    if (vram_addr.addr <= 0x3EFF) {
+    if (vram_addr.addr() <= 0x3EFF) {
       return ppudata_buffer;
     }
 
-    return peek_vram(vram_addr.addr);
+    return peek_vram(vram_addr.addr());
 
   default: break;
   }
@@ -181,7 +182,7 @@ auto Ppu::read(const u16 addr) -> u8 {
   switch (addr % 8) {
   case PpuStatus: {
     bus_latch = (bus_latch & 0x1F) | status.raw;
-    status.vblank = 0;
+    status.set_vblank(false);
     addr_latch = false;
     break;
   }
@@ -192,15 +193,15 @@ auto Ppu::read(const u16 addr) -> u8 {
   }
 
   case PpuData: {
-    if (vram_addr.addr <= 0x3EFF) {
+    if (vram_addr.addr() <= 0x3EFF) {
       bus_latch = ppudata_buffer;
-      ppudata_buffer = vram_read(vram_addr.addr);
+      ppudata_buffer = vram_read(vram_addr.addr());
     } else {
-      ppudata_buffer = vram_read(vram_addr.addr);
+      ppudata_buffer = vram_read(vram_addr.addr());
       bus_latch = ppudata_buffer;
     }
 
-    vram_addr.addr += addr_increment;
+    vram_addr.set_addr(vram_addr.addr() + addr_increment);
 
     break;
   }
@@ -222,19 +223,19 @@ void Ppu::write(const u16 addr, const u8 value) {
   switch (addr % 8) {
   case PpuCtrl: {
     ctrl.raw = value;
-    temp_addr.nt = ctrl.nt;
+    temp_addr.set_nt(ctrl.nt());
 
-    sprite_height = ctrl.spr_size ? 16 : 8;
-    addr_increment = ctrl.addr_inc ? 32 : 1;
+    sprite_height = ctrl.spr_size() ? 16 : 8;
+    addr_increment = ctrl.addr_inc() ? 32 : 1;
     break;
   }
 
   case PpuMask: {
     mask.raw = value;
 
-    is_rendering = mask.show_bg || mask.show_spr;
-    grayscale_mask = mask.grayscale ? 0x30 : 0x3F;
-    selected_palette = mask.rgb;
+    is_rendering = mask.show_bg() || mask.show_spr();
+    grayscale_mask = mask.grayscale() ? 0x30 : 0x3F;
+    selected_palette = mask.rgb();
     break;
   }
 
@@ -250,12 +251,14 @@ void Ppu::write(const u16 addr, const u8 value) {
   }
 
   case PpuScroll: {
-    if (!addr_latch) { // First write
+    if (!addr_latch) {
+      // First write
       fine_x = value & 7;
-      temp_addr.coarse_x = value >> 3;
-    } else { // Second write
-      temp_addr.fine_y = value & 7;
-      temp_addr.coarse_y = value >> 3;
+      temp_addr.set_coarse_x(value >> 3);
+    } else {
+      // Second write
+      temp_addr.set_fine_y(value & 7);
+      temp_addr.set_coarse_y(value >> 3);
     }
 
     addr_latch = !addr_latch;
@@ -263,10 +266,12 @@ void Ppu::write(const u16 addr, const u8 value) {
   }
 
   case PpuAddr: {
-    if (!addr_latch) { // First write
-      temp_addr.h = value & 0x3F;
-    } else { // Second write
-      temp_addr.l = value;
+    if (!addr_latch) {
+      // First write
+      temp_addr.set_addr_high(value & 0x3F);
+    } else {
+      // Second write
+      temp_addr.set_addr_low(value);
       vram_addr.raw = temp_addr.raw;
     }
 
@@ -275,8 +280,8 @@ void Ppu::write(const u16 addr, const u8 value) {
   }
 
   case PpuData: {
-    vram_write(vram_addr.addr, value);
-    vram_addr.addr += addr_increment;
+    vram_write(vram_addr.addr(), value);
+    vram_addr.set_addr(vram_addr.addr() + addr_increment);
     break;
   }
 
@@ -333,7 +338,7 @@ void Ppu::sprite_evaluation() {
       ++size;
 
       if (size >= 8) {
-        status.spr_overflow = true;
+        status.set_spr_overflow(true);
         return;
       }
     }
@@ -350,12 +355,12 @@ void Ppu::load_sprites() {
     u8 offset = (scanline - sprite.y) % sprite_height;
 
     // Vertical flip
-    if (sprite.attr & 0x80) {
+    if ((sprite.attr & 0x80) != 0) {
       offset ^= sprite_height - 1;
     }
 
     if (sprite_height == 8) {
-      addr = (ctrl.spr_table * 0x1000) + (sprite.tile * 16);
+      addr = (static_cast<u16>(ctrl.spr_table()) * 0x1000) + (sprite.tile * 16);
       addr += offset;
     } else {
       addr = ((sprite.tile & 1) * 0x1000) + ((sprite.tile & 0xFE) * 16);
@@ -367,7 +372,7 @@ void Ppu::load_sprites() {
     sprite.data_h = vram_read(addr + 8);
 
     // Horizontal flip
-    if (sprite.attr & 0x40) {
+    if ((sprite.attr & 0x40) != 0) {
       // clang-format off
       constexpr auto lookup_table = std::to_array<u8>({
           0x00, 0x80, 0x40, 0xC0, 0x20, 0xA0, 0x60, 0xE0, 0x10, 0x90, 0x50, 0xD0, 0x30, 0xB0, 0x70, 0xF0,
@@ -396,25 +401,26 @@ void Ppu::load_sprites() {
 }
 
 void Ppu::horizontal_scroll() {
-  if (vram_addr.coarse_x == 31) {
+  const auto coarse_x = vram_addr.coarse_x();
+  if (coarse_x == 31) {
     vram_addr.raw ^= 0x41F;
   } else {
-    ++vram_addr.coarse_x;
+    vram_addr.set_coarse_x(coarse_x + 1);
   }
 }
 
 void Ppu::vertical_scroll() {
-  if (vram_addr.fine_y < 7) {
-    ++vram_addr.fine_y;
+  if (vram_addr.fine_y() < 7) {
+    vram_addr.set_fine_y(vram_addr.fine_y() + 1);
   } else {
-    vram_addr.fine_y = 0;
-    switch (vram_addr.coarse_y) {
+    vram_addr.set_fine_y(0);
+    switch (vram_addr.coarse_y()) {
     case 29:
-      vram_addr.nt ^= 0b10;
-      vram_addr.coarse_y = 0;
+      vram_addr.set_nt(vram_addr.nt() ^ 0b10);
+      vram_addr.set_coarse_y(0);
       break;
-    case 31: vram_addr.coarse_y = 0; break;
-    default: ++vram_addr.coarse_y; break;
+    case 31: vram_addr.set_coarse_y(0); break;
+    default: vram_addr.set_coarse_y(vram_addr.coarse_y() + 1); break;
     }
   }
 }
@@ -430,15 +436,15 @@ void Ppu::vertical_update() {
 void Ppu::background_shift() {
   bg_shift_l <<= 1;
   bg_shift_h <<= 1;
-  at_shift_l = (at_shift_l << 1) | at_latch_l;
-  at_shift_h = (at_shift_h << 1) | at_latch_h;
+  at_shift_l = static_cast<u8>(at_shift_l << 1) | at_latch_l;
+  at_shift_h = static_cast<u8>(at_shift_h << 1) | at_latch_h;
 
   // Reload shift registers
   if (tick % 8 == 1) {
     bg_shift_l = (bg_shift_l & 0xFF00) | bg_latch_l;
     bg_shift_h = (bg_shift_h & 0xFF00) | bg_latch_h;
 
-    at_latch >>= 2 * ((vram_addr.coarse_y & 0x02) | (((vram_addr.coarse_x - 1) & 0x02) >> 1));
+    at_latch >>= 2 * ((vram_addr.coarse_y() & 0x02) | (((vram_addr.coarse_x() - 1) & 0x02) >> 1));
 
     at_latch_l = at_latch & 1;
     at_latch_h = (at_latch >> 1) & 1;
@@ -448,10 +454,10 @@ void Ppu::background_shift() {
 auto Ppu::get_background_pixel() const -> u8 {
   const auto pixel = static_cast<u8>(tick - 2);
 
-  if (mask.show_bg && (mask.bg_left || pixel >= 8)) {
+  if (mask.show_bg() && (mask.bg_left() || pixel >= 8)) {
     u8 bg_palette = get_palette(bg_shift_l, bg_shift_h, 15 - fine_x);
 
-    if (bg_palette) {
+    if (bg_palette != 0) {
       const auto attr_palette = get_palette(at_shift_l, at_shift_h, 7 - fine_x);
       bg_palette |= attr_palette << 2;
     }
@@ -466,7 +472,7 @@ auto Ppu::get_sprite_pixel() -> u8 {
   const auto pixel = static_cast<u8>(tick - 2);
   const auto bg_palette = get_background_pixel();
 
-  if (!mask.show_spr || (!mask.spr_left && pixel < 8)) {
+  if (!mask.show_spr() || (!mask.spr_left() && pixel < 8)) {
     return bg_palette;
   }
 
@@ -484,17 +490,17 @@ auto Ppu::get_sprite_pixel() -> u8 {
     u8 spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
 
     if (spr_palette != 0) {
-      bool is_sprite0 = sprite.id == 0;
-      bool spr_priority = (sprite.attr & 0x20) == 0;
+      const auto is_sprite0 = sprite.id == 0;
+      const auto spr_priority = (sprite.attr & 0x20) == 0;
       spr_palette |= (sprite.attr & 3) << 2;
       spr_palette += 16;
 
-      if (is_sprite0 && spr_palette && bg_palette && pixel != 255) {
-        status.spr0_hit = true;
+      if (is_sprite0 && (spr_palette != 0) && (bg_palette != 0) && pixel != 255) {
+        status.set_spr0_hit(true);
       }
 
       // Evaluate priority
-      if (spr_palette && (spr_priority || bg_palette == 0)) {
+      if ((spr_palette != 0) && (spr_priority || bg_palette == 0)) {
         return spr_palette;
       }
 
@@ -506,8 +512,8 @@ auto Ppu::get_sprite_pixel() -> u8 {
 }
 
 void Ppu::render_pixel() {
-  usize row_pixel = tick - 2;
-  usize pixel_pos = (scanline * 256) + row_pixel;
+  const usize row_pixel = tick - 2;
+  const usize pixel_pos = (scanline * 256) + row_pixel;
 
   if (!is_rendering) {
     work_frame_buffer[pixel_pos] = vram_read(0x3F00);
@@ -518,7 +524,9 @@ void Ppu::render_pixel() {
 }
 
 void Ppu::background_fetch() {
-  auto in_range = [this](i32 lower, i32 upper) { return (tick >= lower) && (tick <= upper); };
+  auto in_range = [this](const auto lower, const auto upper) {
+    return (tick >= lower) && (tick <= upper);
+  };
 
   if (in_range(2, 257) || in_range(322, 337)) {
     background_shift();
@@ -564,12 +572,14 @@ void Ppu::background_fetch() {
 }
 
 void Ppu::scanline_cycle_pre() {
-  auto in_range = [this](i32 lower, i32 upper) { return (tick >= lower) && (tick <= upper); };
+  auto in_range = [this](const auto lower, const auto upper) {
+    return (tick >= lower) && (tick <= upper);
+  };
 
   if (tick == 1) {
-    status.vblank = false;
-    status.spr_overflow = false;
-    status.spr0_hit = false;
+    status.set_vblank(false);
+    status.set_spr_overflow(false);
+    status.set_spr0_hit(false);
   }
 
   if (is_rendering) {
@@ -610,9 +620,9 @@ void Ppu::scanline_cycle_visible() {
 
 void Ppu::scanline_cycle_nmi() {
   if (tick == 1) {
-    status.vblank = true;
+    status.set_vblank(true);
 
-    if (ctrl.nmi != 0) {
+    if (ctrl.nmi()) {
       *nmi_conn = true;
     }
   }
@@ -627,11 +637,14 @@ auto Ppu::nt_addr() const -> u16 {
 }
 
 auto Ppu::at_addr() const -> u16 {
-  return 0x23C0 | (vram_addr.nt << 10) | ((vram_addr.coarse_y / 4) << 3) | (vram_addr.coarse_x / 4);
+  return 0x23C0
+    | static_cast<u16>(vram_addr.nt() << 10)
+    | static_cast<u16>((vram_addr.coarse_y() / 4) << 3)
+    | static_cast<u16>(vram_addr.coarse_x() / 4);
 }
 
 auto Ppu::bg_addr() const -> u16 {
-  return (ctrl.bg_table * 0x1000) + (nt_latch * 16) + vram_addr.fine_y;
+  return (static_cast<u16>(ctrl.bg_table()) * 0x1000) + (nt_latch * 16) + vram_addr.fine_y();
 }
 
 auto Ppu::nt_mirror_addr(const u16 addr) const -> u16 {
@@ -647,7 +660,7 @@ auto Ppu::nt_mirror_addr(const u16 addr) const -> u16 {
   }
 }
 
-auto Ppu::palette_addr(const u16 addr) const -> u16 {
+auto Ppu::palette_addr(const u16 addr) -> u16 {
   return (((addr & 0x13) == 0x10) ? (addr & ~0x10) : addr) & 0x1F;
 }
 
@@ -655,7 +668,7 @@ template <typename T>
 auto Ppu::get_palette(T low, T high, i32 offset) const -> u8 {
   constexpr auto nth_bit = [](auto x, auto n) -> u8 { return ((x >> n) & 1); };
 
-  return nth_bit(high, offset) << 1 | nth_bit(low, offset);
+  return static_cast<u8>(nth_bit(high, offset) << 1) | nth_bit(low, offset);
 }
 
 //
@@ -716,11 +729,11 @@ void Ppu::load(std::ifstream& in) {
   );
 
   // Restore auxiliary
-  is_rendering = mask.show_bg || mask.show_spr;
-  grayscale_mask = mask.grayscale ? 0x30 : 0x3F;
-  selected_palette = mask.rgb;
-  sprite_height = ctrl.spr_size ? 16 : 8;
-  addr_increment = ctrl.addr_inc ? 32 : 1;
+  is_rendering = mask.show_bg() || mask.show_spr();
+  grayscale_mask = mask.grayscale() ? 0x30 : 0x3F;
+  selected_palette = mask.rgb();
+  sprite_height = ctrl.spr_size() ? 16 : 8;
+  addr_increment = ctrl.addr_inc() ? 32 : 1;
 
   // Evaluate and load sprites
   // Might be enough to restore the state

@@ -8,7 +8,7 @@
 #include "sdl_include.hpp"
 
 namespace sdl {
-class Error final : public std::exception {
+class Error final: public std::exception {
 public:
   [[nodiscard]]
   auto what() const noexcept -> const char* override {
@@ -17,12 +17,12 @@ public:
 
   [[nodiscard]]
   auto static from_context_with_source(std::string source) -> Error {
-    const auto* rawError = SDL_GetError();
-    auto wrappedError = std::string(rawError);
+    const auto* raw_error = SDL_GetError();
+    auto wrapped_error = std::string(raw_error);
 
     clear_context_error();
 
-    return {std::move(source), wrappedError};
+    return {std::move(source), wrapped_error};
   }
 
   [[nodiscard]]

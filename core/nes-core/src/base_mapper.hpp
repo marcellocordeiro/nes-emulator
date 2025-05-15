@@ -8,7 +8,7 @@
 #include "utility/snapshotable.hpp"
 
 namespace nes {
-class BaseMapper : public utility::Snapshotable {
+class BaseMapper: public utility::Snapshotable {
 public:
   using MirroringType = types::ppu::MirroringType;
 

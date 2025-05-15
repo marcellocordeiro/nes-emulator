@@ -4,6 +4,7 @@
 #include <span>
 #include <string_view>
 
+#include "nes/nes.hpp"
 #include "sdl/sdl.hpp"
 
 class App {
@@ -27,10 +28,8 @@ private:
   //
 
   void setup_default_bindings();
-
-  void update_emulated_controllers();
-
-  void process_input(const SDL_KeyboardEvent& key_event);
+  void update_emulated_controllers(nes::Nes& nes);
+  void process_input(const SDL_KeyboardEvent& key_event, nes::Nes& nes);
 
   enum class Button {
     A,

@@ -21,7 +21,7 @@ void Cpu::power_on() {
   state.a = 0;
   state.x = 0;
   state.y = 0;
-  state.pc = (peek(0xFFFC + 1) << 8) | peek(0xFFFC);
+  state.pc = static_cast<u16>(peek(0xFFFC + 1) << 8) | peek(0xFFFC);
   state.sp = 0xFD;
 
   state.cycle_count = 0;
@@ -140,9 +140,10 @@ auto Cpu::peek_imm() const -> u16 {
 
 auto Cpu::peek_rel() const -> u16 {
   const auto addr = peek_imm();
-  const auto offset = static_cast<i8>(peek(addr));
+  const auto offset = static_cast<i16>(static_cast<i8>(peek(addr)));
+  const auto base = state.pc + 2;
 
-  return (state.pc + 2) + offset;
+  return static_cast<u16>(static_cast<i16>(base) + offset);
 }
 
 auto Cpu::peek_zp() const -> u16 {
@@ -159,32 +160,54 @@ auto Cpu::peek_zpy() const -> u16 {
 
 auto Cpu::peek_ab() const -> u16 {
   const auto base_addr = peek_imm();
-  return (peek(base_addr + 1) << 8) | peek(base_addr);
+
+  const auto low = peek(base_addr);
+  const auto high = peek(base_addr + 1);
+
+  return static_cast<u8>(high << 8) | low;
 }
 
 auto Cpu::peek_abx() const -> u16 {
   const auto base_addr = peek_ab();
-  return base_addr + state.x;
+  const auto offset = state.x;
+
+  return base_addr + offset;
 }
 
 auto Cpu::peek_aby() const -> u16 {
   const auto base_addr = peek_ab();
-  return base_addr + state.y;
+  const auto offset = state.y;
+
+  return base_addr + offset;
 }
 
 auto Cpu::peek_ind() const -> u16 {
   const auto base_addr = peek_ab();
-  return peek(base_addr) | (peek((base_addr & 0xFF00) | ((base_addr + 1) % 0x100)) << 8);
+
+  const auto low = peek(base_addr);
+  const auto high = peek((base_addr & 0xFF00) | ((base_addr + 1) % 0x100));
+
+  return static_cast<u16>(high << 8) | low;
 }
 
 auto Cpu::peek_indx() const -> u16 {
   const auto base_addr = peek_zpx();
-  return (peek((base_addr + 1) & 0xFF) << 8) | peek(base_addr);
+
+  const auto low = peek(base_addr);
+  const auto high = peek((base_addr + 1) & 0xFF);
+
+  return static_cast<u16>(high << 8) | low;
 }
 
 auto Cpu::peek_indy() const -> u16 {
   const auto base_addr = peek_zp();
-  return ((peek((base_addr + 1) & 0xFF) << 8) | peek(base_addr)) + state.y;
+
+  const auto low = peek(base_addr);
+  const auto high = peek((base_addr + 1) & 0xFF);
+
+  const auto offset = state.y;
+
+  return static_cast<u16>(static_cast<u16>(high << 8) | low) + offset;
 }
 
 //

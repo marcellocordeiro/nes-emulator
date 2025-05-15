@@ -31,8 +31,8 @@ void Cartridge::load() {
   const std::span header(rom.begin(), rom.begin() + 16);
 
   mapper_num = (header[7] & 0xF0) | (header[6] >> 4);
-  prg_size = header[4] * 0x4000;
-  chr_size = header[5] * 0x2000;
+  prg_size = static_cast<usize>(header[4]) * 0x4000;
+  chr_size = static_cast<usize>(header[5]) * 0x2000;
   has_chr_ram = chr_size == 0;
   prg_ram_size = header[8] != 0 ? header[8] * 0x2000 : 0x2000;
   mirroring = (header[6] & 1) != 0 ? MirroringType::Vertical : MirroringType::Horizontal;
@@ -46,14 +46,14 @@ void Cartridge::load() {
   default: throw std::runtime_error(std::format("Mapper #{} not implemented", mapper_num));
   }
 
-  auto prg_start = rom.begin() + 16;
-  auto prg_end = prg_start + prg_size;
+  auto prg_start = std::next(rom.begin(), 16);
+  auto prg_end = std::next(prg_start, static_cast<i32>(prg_size));
 
   prg = {prg_start, prg_end};
 
   if (!has_chr_ram) {
     auto chr_start = prg_end;
-    auto chr_end = chr_start + chr_size;
+    auto chr_end = std::next(chr_start, static_cast<i32>(chr_size));
 
     chr = {chr_start, chr_end};
   } else {

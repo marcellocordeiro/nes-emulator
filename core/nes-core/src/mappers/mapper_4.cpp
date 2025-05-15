@@ -70,6 +70,10 @@ void Mapper4::write(const u16 addr, const u8 value) {
       irq_enabled = false;
       break;
     case 0xE001: irq_enabled = true; break;
+
+    default: {
+      break; // TODO: handle this
+    }
     }
 
     apply();

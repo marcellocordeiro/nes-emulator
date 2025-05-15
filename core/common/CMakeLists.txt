@@ -1,9 +1,10 @@
 set(HEADERS
   include/lib/bitfield.hpp
+  include/lib/bitfield_helper.hpp
   include/lib/common.hpp
+  include/lib/concepts/binary_ops.hpp
   include/lib/files.hpp
   include/lib/sane_integer.hpp
-  include/lib/concepts/binary_ops.hpp
 )
 
 add_library(common INTERFACE)

@@ -3,7 +3,7 @@
 #include "../base_mapper.hpp"
 
 namespace nes {
-class Mapper7 final : public BaseMapper {
+class Mapper7 final: public BaseMapper {
 public:
   void reset() override;
 

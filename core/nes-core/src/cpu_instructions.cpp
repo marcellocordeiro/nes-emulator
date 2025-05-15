@@ -393,7 +393,7 @@ auto Cpu::shift_right(const u8 value) -> u8 {
 }
 
 auto Cpu::rotate_left(const u8 value) -> u8 {
-  const u8 result = (value << 1) | static_cast<u8>(state.check_flags(Carry));
+  const u8 result = static_cast<u8>(value << 1) | static_cast<u8>(state.check_flags(Carry));
   state.update_nz(result);
 
   state.clear_flags(Carry);
@@ -406,7 +406,7 @@ auto Cpu::rotate_left(const u8 value) -> u8 {
 }
 
 auto Cpu::rotate_right(const u8 value) -> u8 {
-  u8 result = (value >> 1) | (static_cast<u8>(state.check_flags(Carry)) << 7);
+  const u8 result = static_cast<u8>(value >> 1) | (static_cast<u8>(state.check_flags(Carry)) << 7);
   state.update_nz(result);
 
   state.clear_flags(Carry);
@@ -419,7 +419,7 @@ auto Cpu::rotate_right(const u8 value) -> u8 {
 }
 
 void Cpu::compare(const u8 reg, const u8 value) {
-  state.update_nz(reg - value);
+  state.update_nz(static_cast<u8>(reg - value));
 
   state.clear_flags(Carry);
 
@@ -573,7 +573,7 @@ void Cpu::INC() {
     tick();
   }
 
-  u8 result = value + 1;
+  const u8 result = value + 1;
   state.update_nz(result);
 
   tick();
@@ -589,7 +589,7 @@ void Cpu::DEC() {
     tick();
   }
 
-  u8 result = value - 1;
+  const u8 result = value - 1;
   state.update_nz(result);
 
   tick();
@@ -598,22 +598,26 @@ void Cpu::DEC() {
 
 void Cpu::INX() {
   tick();
-  state.set_x(state.x + 1);
+  const u8 result = static_cast<u8>(state.x + 1);
+  state.set_x(result);
 }
 
 void Cpu::INY() {
   tick();
-  state.set_y(state.y + 1);
+  const u8 result = static_cast<u8>(state.y + 1);
+  state.set_y(result);
 }
 
 void Cpu::DEX() {
   tick();
-  state.set_x(state.x - 1);
+  const u8 result = static_cast<u8>(state.x - 1);
+  state.set_x(result);
 }
 
 void Cpu::DEY() {
   tick();
-  state.set_y(state.y - 1);
+  const u8 result = static_cast<u8>(state.y - 1);
+  state.set_y(result);
 }
 
 //
@@ -852,7 +856,13 @@ void Cpu::RTS() {
   tick();
   tick();
   tick();
-  state.set_pc((pop() | (pop() << 8)) + 1);
+
+  const auto low = pop();
+  const auto high = pop();
+
+  const auto addr = static_cast<u16>(static_cast<u16>(high << 8) | low) + 1;
+
+  state.set_pc(addr);
 }
 
 void Cpu::RTI() {
@@ -1119,7 +1129,7 @@ void Cpu::ATX() {
 template <auto Mode>
 void Cpu::AXS() {
   const auto value = memory_read(get_operand<Mode>());
-  u8 result = (state.a & state.x) - value;
+  const u8 result = (state.a & state.x) - value;
 
   state.clear_flags(Carry);
 
@@ -1134,9 +1144,9 @@ template <auto Mode>
 void Cpu::SYA() {
   const auto addr = get_operand<Mode>();
 
-  u8 high = addr >> 8;
-  u8 low = addr & 0xFF;
-  u8 value = state.y & (high + 1);
+  const u8 high = addr >> 8;
+  const u8 low = addr & 0xFF;
+  const u8 value = state.y & (high + 1);
 
   memory_write(((state.y & (high + 1)) << 8) | low, value);
 }
@@ -1145,9 +1155,9 @@ template <auto Mode>
 void Cpu::SXA() {
   const auto addr = get_operand<Mode>();
 
-  u8 high = addr >> 8;
-  u8 low = addr & 0xFF;
-  u8 value = state.x & (high + 1);
+  const u8 high = addr >> 8;
+  const u8 low = addr & 0xFF;
+  const u8 value = state.x & (high + 1);
 
   memory_write(((state.x & (high + 1)) << 8) | low, value);
 }
@@ -1245,7 +1255,7 @@ auto Cpu::get_operand<IndirectX>() -> u16 {
 template <>
 auto Cpu::get_operand<IndirectY>() -> u16 {
   const auto zp_addr = get_operand<ZeroPage>();
-  u16 base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+  const u16 base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
   const auto addr = static_cast<u16>(base_addr + state.y);
 
   if (crossed_page(base_addr, addr)) {
@@ -1258,7 +1268,7 @@ auto Cpu::get_operand<IndirectY>() -> u16 {
 template <>
 auto Cpu::get_operand<IndirectY_Exception>() -> u16 {
   const auto zp_addr = get_operand<ZeroPage>();
-  u16 base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+  const u16 base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
 
   return base_addr + state.y;
 }

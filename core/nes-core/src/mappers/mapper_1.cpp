@@ -68,7 +68,7 @@ void Mapper1::write(const u16 addr, const u8 value) {
       write_delay = 5;
       shift_reg = 0;
     } else {
-      shift_reg = ((value & 1) << 4) | (shift_reg >> 1);
+      shift_reg = static_cast<u8>((value & 1) << 4) | (shift_reg >> 1);
       --write_delay;
 
       if (write_delay == 0) {

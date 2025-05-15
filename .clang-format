@@ -271,7 +271,7 @@ SpaceBeforeAssignmentOperators: true
 SpaceBeforeCaseColon: false
 SpaceBeforeCpp11BracedList: false
 SpaceBeforeCtorInitializerColon: true
-SpaceBeforeInheritanceColon: true
+SpaceBeforeInheritanceColon: false
 SpaceBeforeJsonColon: false
 SpaceBeforeParens: ControlStatements
 SpaceBeforeParensOptions:
