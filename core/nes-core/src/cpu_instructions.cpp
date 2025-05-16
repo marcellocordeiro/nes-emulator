@@ -406,7 +406,8 @@ auto Cpu::rotate_left(const u8 value) -> u8 {
 }
 
 auto Cpu::rotate_right(const u8 value) -> u8 {
-  const u8 result = static_cast<u8>(value >> 1) | (static_cast<u8>(state.check_flags(Carry)) << 7);
+  const u8 result =
+    static_cast<u8>(static_cast<u8>(value >> 1) | (static_cast<u8>(state.check_flags(Carry)) << 7));
   state.update_nz(result);
 
   state.clear_flags(Carry);
@@ -860,7 +861,7 @@ void Cpu::RTS() {
   const auto low = pop();
   const auto high = pop();
 
-  const auto addr = static_cast<u16>(static_cast<u16>(high << 8) | low) + 1;
+  const u16 addr = static_cast<u16>(static_cast<u16>(high << 8) | low) + 1;
 
   state.set_pc(addr);
 }
@@ -868,8 +869,14 @@ void Cpu::RTS() {
 void Cpu::RTI() {
   tick();
   tick();
+
   state.set_ps(pop());
-  state.set_pc(pop() | (pop() << 8));
+
+  const u16 low = pop();
+  const u16 high = pop();
+  const u16 addr = static_cast<u16>(static_cast<u16>(high << 8) | low);
+
+  state.set_pc(addr);
 }
 
 //
@@ -914,7 +921,11 @@ void Cpu::INT_NMI() {
 
   constexpr u16 jmp_addr = 0xFFFA;
 
-  state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
+  const u16 low = memory_read(jmp_addr);
+  const u16 high = memory_read(jmp_addr + 1);
+  const u16 addr = static_cast<u16>(static_cast<u16>(high << 8) | low);
+
+  state.pc = addr;
   *nmi_conn = false;
 }
 
@@ -930,7 +941,12 @@ void Cpu::INT_RST() {
   state.set_flags(Interrupt);
 
   constexpr u16 jmp_addr = 0xFFFC;
-  state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
+
+  const u16 low = memory_read(jmp_addr);
+  const u16 high = memory_read(jmp_addr + 1);
+  const u16 addr = static_cast<u16>(static_cast<u16>(high << 8) | low);
+
+  state.pc = addr;
 }
 
 void Cpu::INT_IRQ() {
@@ -944,7 +960,12 @@ void Cpu::INT_IRQ() {
   state.set_flags(Interrupt);
 
   constexpr u16 jmp_addr = 0xFFFE;
-  state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
+
+  const u16 low = memory_read(jmp_addr);
+  const u16 high = memory_read(jmp_addr + 1);
+  const u16 addr = static_cast<u16>(static_cast<u16>(high << 8) | low);
+
+  state.pc = addr;
 }
 
 void Cpu::INT_BRK() {
@@ -957,7 +978,12 @@ void Cpu::INT_BRK() {
   state.set_flags(Interrupt);
 
   constexpr u16 jmp_addr = 0xFFFE;
-  state.pc = (memory_read(jmp_addr + 1) << 8) | memory_read(jmp_addr);
+
+  const u16 low = memory_read(jmp_addr);
+  const u16 high = memory_read(jmp_addr + 1);
+  const u16 addr = static_cast<u16>(static_cast<u16>(high << 8) | low);
+
+  state.pc = addr;
 }
 
 void Cpu::NOP() {
@@ -1148,7 +1174,7 @@ void Cpu::SYA() {
   const u8 low = addr & 0xFF;
   const u8 value = state.y & (high + 1);
 
-  memory_write(((state.y & (high + 1)) << 8) | low, value);
+  memory_write(static_cast<u16>(((value) << 8) | low), value);
 }
 
 template <auto Mode>
@@ -1159,7 +1185,7 @@ void Cpu::SXA() {
   const u8 low = addr & 0xFF;
   const u8 value = state.x & (high + 1);
 
-  memory_write(((state.x & (high + 1)) << 8) | low, value);
+  memory_write(static_cast<u16>(((value) << 8) | low), value);
 }
 
 template <auto Mode>
@@ -1177,7 +1203,7 @@ auto Cpu::get_operand<Relative>() -> u16 {
   const auto addr = get_operand<Immediate>();
   const auto offset = static_cast<i8>(memory_read(addr));
 
-  return state.pc + offset;
+  return static_cast<u16>(state.pc + offset);
 }
 
 template <>
@@ -1202,7 +1228,10 @@ auto Cpu::get_operand<Absolute>() -> u16 {
   const auto base_addr = get_operand<Immediate>();
   ++state.pc;
 
-  return (memory_read(base_addr + 1) << 8) | memory_read(base_addr);
+  const u16 low = memory_read(base_addr);
+  const u16 high = memory_read(base_addr + 1);
+
+  return static_cast<u16>((high << 8) | low);
 }
 
 template <>
@@ -1242,20 +1271,30 @@ auto Cpu::get_operand<AbsoluteY_Exception>() -> u16 {
 template <>
 auto Cpu::get_operand<Indirect>() -> u16 {
   const auto base_addr = get_operand<Absolute>();
-  return memory_read(base_addr)
-    | (memory_read((base_addr & 0xFF00) | ((base_addr + 1) & 0xFF)) << 8);
+
+  const u16 low = memory_read(base_addr);
+  const u16 high = memory_read((base_addr & 0xFF00) | ((base_addr + 1) & 0xFF));
+
+  return static_cast<u16>((high << 8) | low);
 }
 
 template <>
 auto Cpu::get_operand<IndirectX>() -> u16 {
   const auto base_addr = get_operand<ZeroPageX>();
-  return (memory_read((base_addr + 1) & 0xFF) << 8) | memory_read(base_addr);
+
+  const u16 low = memory_read(base_addr);
+  const u16 high = memory_read((base_addr + 1) & 0xFF);
+
+  return static_cast<u16>((high << 8) | low);
 }
 
 template <>
 auto Cpu::get_operand<IndirectY>() -> u16 {
   const auto zp_addr = get_operand<ZeroPage>();
-  const u16 base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+
+  const u16 base_addr =
+    static_cast<u16>((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+
   const auto addr = static_cast<u16>(base_addr + state.y);
 
   if (crossed_page(base_addr, addr)) {
@@ -1268,7 +1307,8 @@ auto Cpu::get_operand<IndirectY>() -> u16 {
 template <>
 auto Cpu::get_operand<IndirectY_Exception>() -> u16 {
   const auto zp_addr = get_operand<ZeroPage>();
-  const u16 base_addr = ((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+  const u16 base_addr =
+    static_cast<u16>((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
 
   return base_addr + state.y;
 }

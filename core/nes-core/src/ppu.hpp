@@ -100,7 +100,7 @@ private:
   [[nodiscard]] auto nt_mirror_addr(u16) const -> u16; // Relative nametable address
 
   template <typename T>
-  [[nodiscard]] auto get_palette(T, T, i32) const -> u8; // Get palette
+  [[nodiscard]] auto get_palette(T, T, u8) const -> u8; // Get palette
 
   enum Timing {
     Idle,
@@ -126,28 +126,28 @@ private:
   using Ppumask = types::ppu::Ppumask;
   using Ppustatus = types::ppu::Ppustatus;
 
-  using ci_ram_type = std::array<u8, 0x800>;
-  using cg_ram_type = std::array<u8, 0x20>;
-  using oam_mem_type = std::array<u8, 0x100>;
+  using CiRamType = std::array<u8, 0x800>;
+  using CgRamType = std::array<u8, 0x20>;
+  using OamMemType = std::array<u8, 0x100>;
 
-  using oam_type = std::array<SpriteInfo, 8>;
-  using sec_oam_type = oam_type;
+  using OamType = std::array<SpriteInfo, 8>;
+  using SecOamType = OamType;
 
-  using frame_buffer_type = std::array<u32, 256 * 240>;
+  using FrameBufferType = std::array<u32, 256 * 240>;
 
-  using full_nes_palette_type = std::array<std::array<u32, 64>, 8>;
+  using FullNesPaletteType = std::array<std::array<u32, 64>, 8>;
 
-  ci_ram_type ci_ram = {};   // Console-Internal RAM
-  cg_ram_type cg_ram = {};   // Colour generator RAM
-  oam_mem_type oam_mem = {}; // Object Attribute Memory (sprites)
+  CiRamType ci_ram = {};   // Console-Internal RAM
+  CgRamType cg_ram = {};   // Colour generator RAM
+  OamMemType oam_mem = {}; // Object Attribute Memory (sprites)
 
-  oam_type oam = {};         // Sprite buffer
-  sec_oam_type sec_oam = {}; // Secondary sprite buffer
+  OamType oam = {};        // Sprite buffer
+  SecOamType sec_oam = {}; // Secondary sprite buffer
 
-  frame_buffer_type frame_buffer = {};      // Frame buffer
-  frame_buffer_type work_frame_buffer = {}; // Back buffer
+  FrameBufferType frame_buffer = {};      // Frame buffer
+  FrameBufferType work_frame_buffer = {}; // Back buffer
 
-  full_nes_palette_type full_nes_palette = {};
+  FullNesPaletteType full_nes_palette = {};
   u8 selected_palette = 0;
   // const u32* nes_to_rgb = full_nes_palette[0].data();
 

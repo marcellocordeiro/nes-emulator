@@ -253,11 +253,11 @@ void Ppu::write(const u16 addr, const u8 value) {
   case PpuScroll: {
     if (!addr_latch) {
       // First write
-      fine_x = value & 7;
+      fine_x = value & 0b111;
       temp_addr.set_coarse_x(value >> 3);
     } else {
       // Second write
-      temp_addr.set_fine_y(value & 7);
+      temp_addr.set_fine_y(value & 0b111);
       temp_addr.set_coarse_y(value >> 3);
     }
 
@@ -268,7 +268,7 @@ void Ppu::write(const u16 addr, const u8 value) {
   case PpuAddr: {
     if (!addr_latch) {
       // First write
-      temp_addr.set_addr_high(value & 0x3F);
+      temp_addr.set_addr_high(value & 0b11'1111);
     } else {
       // Second write
       temp_addr.set_addr_low(value);
@@ -487,7 +487,7 @@ auto Ppu::get_sprite_pixel() -> u8 {
       continue; // Not in range
     }
 
-    u8 spr_palette = get_palette(sprite.data_l, sprite.data_h, 7 - offset);
+    u8 spr_palette = get_palette(sprite.data_l, sprite.data_h, static_cast<u8>(7 - offset));
 
     if (spr_palette != 0) {
       const auto is_sprite0 = sprite.id == 0;
@@ -665,7 +665,7 @@ auto Ppu::palette_addr(const u16 addr) -> u16 {
 }
 
 template <typename T>
-auto Ppu::get_palette(T low, T high, i32 offset) const -> u8 {
+auto Ppu::get_palette(T low, T high, u8 offset) const -> u8 {
   constexpr auto nth_bit = [](auto x, auto n) -> u8 { return ((x >> n) & 1); };
 
   return static_cast<u8>(nth_bit(high, offset) << 1) | nth_bit(low, offset);
