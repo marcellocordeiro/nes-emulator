@@ -5,14 +5,12 @@
 namespace lib {
 template <typename T>
 struct BitfieldHelper {
-  template <T Mask, std::size_t Position>
-  [[nodiscard]] constexpr auto get() const -> T {
-    return (raw & Mask) >> Position;
+  [[nodiscard]] constexpr auto get(T mask, std::size_t position) const -> T {
+    return (raw & mask) >> position;
   }
 
-  template <T Mask, std::size_t Position>
-  constexpr void set(const T value) {
-    raw = (raw & ~Mask) | ((value << Position) & Mask);
+  constexpr void set(T mask, std::size_t position, const T value) {
+    raw = (raw & ~mask) | ((value << position) & mask);
   }
 
   T raw = 0;

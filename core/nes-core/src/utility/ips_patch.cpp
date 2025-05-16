@@ -57,7 +57,7 @@ auto IpsPatch::check() -> bool {
 }
 
 auto IpsPatch::read_record() -> bool {
-  constexpr auto magic_eof = (('E') << 16) | ('O' << 8) | ('F');
+  constexpr auto magic_eof = static_cast<u32>((('E') << 16) | ('O' << 8) | ('F'));
 
   record_entry record;
 
@@ -73,7 +73,7 @@ auto IpsPatch::read_record() -> bool {
   ips_file.read(reinterpret_cast<char*>(buffer.data()), 2);
   record.length = static_cast<u16>(buffer[0] << 8) | buffer[1];
 
-  if (record.length > 0) {
+  if (record.length > 0u) {
     record.data.resize(record.length);
     ips_file.read(reinterpret_cast<char*>(record.data.data()), record.length);
   } else { // RLE
