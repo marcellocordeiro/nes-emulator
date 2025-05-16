@@ -209,42 +209,4 @@ auto Cpu::peek_indy() const -> u16 {
 
   return static_cast<u16>(static_cast<u16>(high << 8) | low) + offset;
 }
-
-//
-// Snapshot
-//
-
-void Cpu::save(std::ofstream& out) const {
-  dump_snapshot(out, ram);
-  dump_snapshot(
-    out,
-    state.a,
-    state.x,
-    state.y,
-    state.pc,
-    state.sp,
-    state.sr,
-    state.ps,
-    state.nmi_flag,
-    state.irq_flag,
-    state.cycle_count
-  );
-}
-
-void Cpu::load(std::ifstream& in) {
-  get_snapshot(in, ram);
-  get_snapshot(
-    in,
-    state.a,
-    state.x,
-    state.y,
-    state.pc,
-    state.sp,
-    state.sr,
-    state.ps,
-    state.nmi_flag,
-    state.irq_flag,
-    state.cycle_count
-  );
-}
 } // namespace nes

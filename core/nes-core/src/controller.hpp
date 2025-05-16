@@ -3,10 +3,9 @@
 #include <array>
 
 #include "lib/common.hpp"
-#include "utility/snapshotable.hpp"
 
 namespace nes {
-class Controller final: public utility::Snapshotable {
+class Controller final {
 public:
   static auto get() -> Controller&;
 
@@ -20,13 +19,6 @@ public:
   //
 
   [[nodiscard]] auto peek(usize) const -> u8;
-
-  //
-  // Snapshot
-  //
-
-  void save(std::ofstream& out) const override;
-  void load(std::ifstream& in) override;
 
 private:
   Controller() = default;

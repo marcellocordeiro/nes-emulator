@@ -9,9 +9,6 @@ public:
 
   void write(u16, u8) override;
 
-  void save(std::ofstream& out) const override;
-  void load(std::ifstream& in) override;
-
 private:
   void apply();
 

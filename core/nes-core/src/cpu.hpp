@@ -8,9 +8,9 @@
 #include "utility/snapshotable.hpp"
 
 namespace nes {
-class Cpu final: public utility::Snapshotable {
+class Cpu final {
 public:
-  using ram_type = std::array<u8, 0x800>;
+  using RamType = std::array<u8, 0x800>;
 
   static auto get() -> Cpu&;
 
@@ -44,18 +44,11 @@ public:
   [[nodiscard]] auto peek_indx() const -> u16;
   [[nodiscard]] auto peek_indy() const -> u16;
 
-  //
-  // Snapshot
-  //
-
-  void save(std::ofstream& out) const override;
-  void load(std::ifstream& in) override;
-
 private:
   Cpu() = default;
 
   types::cpu::State state;
-  ram_type ram = {};
+  RamType ram = {};
 
   void tick();
 

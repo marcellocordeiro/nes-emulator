@@ -5,10 +5,9 @@
 
 #include "lib/common.hpp"
 #include "types/ppu_types.hpp"
-#include "utility/snapshotable.hpp"
 
 namespace nes {
-class Ppu final: public utility::Snapshotable {
+class Ppu final {
 public:
   static auto get() -> Ppu&;
 
@@ -41,13 +40,6 @@ public:
 
   [[nodiscard]] auto peek_reg(u16) const -> u8;
   [[nodiscard]] auto peek_vram(u16) const -> u8;
-
-  //
-  // Snapshot
-  //
-
-  void save(std::ofstream& out) const override;
-  void load(std::ifstream& in) override;
 
 private:
   Ppu() = default;
@@ -110,14 +102,14 @@ private:
   template <typename T>
   [[nodiscard]] auto get_palette(T, T, i32) const -> u8; // Get palette
 
-  enum timing {
+  enum Timing {
     Idle,
     Visible,
     VBlank,
     PreRender
   };
 
-  i32 ppu_state = Visible;
+  Timing ppu_state = Visible;
   u16 ppu_addr = 0;
 
   //

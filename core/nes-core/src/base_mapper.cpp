@@ -39,47 +39,37 @@ void BaseMapper::set_prg_map(const usize slot, i32 page) {
   constexpr usize pages_b = Size * 0x400; // In bytes
 
   if (page < 0) {
+    // Last page
     page += static_cast<i32>(prg_size) / static_cast<i32>(pages_b);
   }
 
+  const usize resolved_page = static_cast<usize>(page);
+
   for (usize i = 0; i < pages; ++i) {
-    prg_map[(pages * slot) + i] = ((pages_b * static_cast<usize>(page)) + 0x2000 * i) % prg_size;
+    prg_map[(pages * slot) + i] = ((pages_b * resolved_page) + 0x2000u * i) % prg_size;
   }
 }
 
 // Size must be in KB
 template <usize Size>
-void BaseMapper::set_chr_map(const usize slot, const i32 page) {
+void BaseMapper::set_chr_map(const usize slot, const usize page) {
   constexpr usize pages = Size;
   constexpr usize pages_b = Size * 0x400; // In bytes
 
   for (usize i = 0; i < Size; ++i) {
-    chr_map[(pages * slot) + i] = ((pages_b * static_cast<usize>(page)) + 0x400 * i) % chr_size;
+    chr_map[(pages * slot) + i] = ((pages_b * page) + 0x400u * i) % chr_size;
   }
 }
 
 void BaseMapper::scanline_counter() {}
-
-// TODO
-void BaseMapper::save(std::ofstream& out) const {
-  UNUSED(out);
-  // dump_snapshot(out, prg_ram);
-  // dump_snapshot(out, chr);
-}
-
-void BaseMapper::load(std::ifstream& in) {
-  UNUSED(in);
-  // get_snapshot(in, prg_ram);
-  // get_snapshot(in, chr);
-}
 
 // Explicit instantiation
 template void BaseMapper::set_prg_map<32>(usize, i32);
 template void BaseMapper::set_prg_map<16>(usize, i32);
 template void BaseMapper::set_prg_map<8>(usize, i32);
 
-template void BaseMapper::set_chr_map<8>(usize, i32);
-template void BaseMapper::set_chr_map<4>(usize, i32);
-template void BaseMapper::set_chr_map<2>(usize, i32);
-template void BaseMapper::set_chr_map<1>(usize, i32);
+template void BaseMapper::set_chr_map<8>(usize, usize);
+template void BaseMapper::set_chr_map<4>(usize, usize);
+template void BaseMapper::set_chr_map<2>(usize, usize);
+template void BaseMapper::set_chr_map<1>(usize, usize);
 } // namespace nes

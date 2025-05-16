@@ -5,12 +5,13 @@
 
 #include "lib/common.hpp"
 #include "types/ppu_types.hpp"
-#include "utility/snapshotable.hpp"
 
 namespace nes {
-class BaseMapper: public utility::Snapshotable {
+class BaseMapper {
 public:
   using MirroringType = types::ppu::MirroringType;
+
+  virtual ~BaseMapper() = default;
 
   virtual void reset() = 0;
 
@@ -26,12 +27,9 @@ public:
   void set_prg_map(usize, i32);
 
   template <usize>
-  void set_chr_map(usize, i32);
+  void set_chr_map(usize, usize);
 
   virtual void scanline_counter();
-
-  void save(std::ofstream& out) const override;
-  void load(std::ifstream& in) override;
 
   // TODO: save mirroring
   // TODO: fix this

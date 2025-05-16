@@ -25,18 +25,4 @@ void Mapper2::write(const u16 addr, const u8 value) {
   mode = value;
   apply();
 }
-
-void Mapper2::save(std::ofstream& out) const {
-  BaseMapper::save(out);
-
-  dump_snapshot(out, mode);
-}
-
-void Mapper2::load(std::ifstream& in) {
-  BaseMapper::load(in);
-
-  get_snapshot(in, mode);
-
-  apply();
-}
 } // namespace nes

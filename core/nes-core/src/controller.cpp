@@ -36,14 +36,4 @@ auto Controller::peek(const usize port) const -> u8 {
 
   return 0x40 | (controller_bits[port] & 1);
 }
-
-void Controller::save(std::ofstream& out) const {
-  dump_snapshot(out, controller_bits);
-  dump_snapshot(out, strobe);
-}
-
-void Controller::load(std::ifstream& in) {
-  get_snapshot(in, controller_bits);
-  get_snapshot(in, strobe);
-}
 } // namespace nes

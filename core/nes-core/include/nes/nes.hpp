@@ -14,21 +14,10 @@ public:
   void power_on();
   void power_off();
 
-  //
-  // Component access
-  //
-
   void run_frame();
   auto get_frame_buffer() -> const u32*;
 
   void update_controller_state(usize, u8);
-
-  //
-  // Snapshot
-  //
-
-  void save_snapshot();
-  void load_snapshot();
 
   static constexpr i32 SCREEN_WIDTH = 256;
   static constexpr i32 SCREEN_HEIGHT = 240;

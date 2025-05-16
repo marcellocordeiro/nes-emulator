@@ -17,7 +17,7 @@ Experimental NES emulator written in C++23 using SDL3.
 - [x] Mapper 2 (UxROM)
 - [x] Mapper 4 (MMC3)
 - [x] Mapper 7 (AxROM)
-- [x] Snapshots
+- [ ] Snapshots (removed for now)
 - [x] Colour emphasis
 - [x] Custom palettes (.pal)
   - [x] 64 colours

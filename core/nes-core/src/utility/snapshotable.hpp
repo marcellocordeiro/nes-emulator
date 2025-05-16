@@ -5,8 +5,6 @@
 #include <fstream>
 #include <vector>
 
-#include "lib/common.hpp"
-
 namespace nes::utility {
 class Snapshotable {
 public:

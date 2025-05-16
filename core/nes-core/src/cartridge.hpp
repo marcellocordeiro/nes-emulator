@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <span>
+#include <vector>
 
 #include "base_mapper.hpp"
 #include "lib/common.hpp"

@@ -65,33 +65,4 @@ auto Nes::get_frame_buffer() -> const u32* {
 void Nes::update_controller_state(const usize port, const u8 state) {
   Controller::get().update_state(port, state);
 }
-
-//
-// Snapshot
-//
-
-void Nes::save_snapshot() {
-  const std::array<utility::Snapshotable*, 4> snapshotable =
-    {&Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()};
-
-  std::ofstream out{utility::FileManager::get().get_snapshot_path(), std::ios::binary};
-  for (const auto& component : snapshotable) {
-    component->save(out);
-  }
-}
-
-void Nes::load_snapshot() {
-  const std::array<utility::Snapshotable*, 4> snapshotable =
-    {&Cpu::get(), &Ppu::get(), Cartridge::get().get_mapper(), &Controller::get()};
-
-  if (!utility::FileManager::get().has_snapshot()) {
-    spdlog::info("Attempting to load a non-existent snapshot file");
-    return;
-  }
-
-  std::ifstream in{utility::FileManager::get().get_snapshot_path(), std::ios::binary};
-  for (const auto& component : snapshotable) {
-    component->load(in);
-  }
-}
 } // namespace nes

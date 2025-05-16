@@ -1,6 +1,5 @@
 #include "mapper_7.hpp"
 
-#include <iosfwd>
 #include <stdexcept>
 
 #include "../base_mapper.hpp"
@@ -26,20 +25,6 @@ void Mapper7::write(const u16 addr, const u8 value) {
   }
 
   mode = value;
-  apply();
-}
-
-void Mapper7::save(std::ofstream& out) const {
-  BaseMapper::save(out);
-
-  dump_snapshot(out, mode);
-}
-
-void Mapper7::load(std::ifstream& in) {
-  BaseMapper::load(in);
-
-  get_snapshot(in, mode);
-
   apply();
 }
 } // namespace nes

@@ -92,20 +92,4 @@ void Mapper1::write(const u16 addr, const u8 value) {
     apply();
   }
 }
-
-void Mapper1::save(std::ofstream& out) const {
-  BaseMapper::save(out);
-
-  dump_snapshot(out, write_delay, shift_reg);
-  dump_snapshot(out, control, chr_bank_0, chr_bank_1, prg_bank);
-}
-
-void Mapper1::load(std::ifstream& in) {
-  BaseMapper::load(in);
-
-  get_snapshot(in, write_delay, shift_reg);
-  get_snapshot(in, control, chr_bank_0, chr_bank_1, prg_bank);
-
-  apply();
-}
 } // namespace nes

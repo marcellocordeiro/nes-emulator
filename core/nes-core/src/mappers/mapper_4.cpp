@@ -1,9 +1,5 @@
 #include "mapper_4.hpp"
 
-#include <iosfwd>
-
-#include <spdlog/spdlog.h>
-
 #include "../base_mapper.hpp"
 #include "lib/common.hpp"
 
@@ -90,25 +86,5 @@ void Mapper4::scanline_counter() {
   if (irq_enabled && irq_counter == 0) {
     set_irq(true);
   }
-}
-
-void Mapper4::save(std::ofstream& out) const {
-  BaseMapper::save(out);
-
-  dump_snapshot(out, regs);
-  dump_snapshot(out, reg_8000);
-  dump_snapshot(out, horizontal_mirroring);
-  dump_snapshot(out, irq_period, irq_counter, irq_enabled);
-}
-
-void Mapper4::load(std::ifstream& in) {
-  BaseMapper::load(in);
-
-  get_snapshot(in, regs);
-  get_snapshot(in, reg_8000);
-  get_snapshot(in, horizontal_mirroring);
-  get_snapshot(in, irq_period, irq_counter, irq_enabled);
-
-  apply();
 }
 } // namespace nes
