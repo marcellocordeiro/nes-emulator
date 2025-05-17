@@ -4,7 +4,7 @@
 #include <iosfwd>
 #include <stdexcept>
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 #include "cartridge.hpp"
 #include "lib/common.hpp"

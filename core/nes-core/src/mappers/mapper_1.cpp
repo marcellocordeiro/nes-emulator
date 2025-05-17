@@ -2,7 +2,7 @@
 
 #include <iosfwd>
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 #include "../base_mapper.hpp"
 #include "lib/common.hpp"

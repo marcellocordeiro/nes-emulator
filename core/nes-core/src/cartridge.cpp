@@ -4,7 +4,7 @@
 #include <span>
 #include <stdexcept>
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 #include "base_mapper.hpp"
 #include "lib/common.hpp"

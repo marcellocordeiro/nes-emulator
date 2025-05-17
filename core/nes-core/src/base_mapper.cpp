@@ -4,8 +4,6 @@
 
 namespace nes {
 void BaseMapper::set_mirroring(const MirroringType value) const {
-  // TODO: save this?
-  // mirroring = value;
   *mirroring_conn = value;
 }
 

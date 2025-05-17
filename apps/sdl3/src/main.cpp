@@ -2,10 +2,9 @@
 #include <string_view>
 #include <vector>
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 #include "app.hpp"
-#include "lib/common.hpp"
 
 auto main(const int argc, char* argv[]) -> int {
   auto args = std::vector<std::string_view>(argv, argv + argc);

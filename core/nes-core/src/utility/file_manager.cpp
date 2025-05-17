@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include <spdlog/spdlog.h>
+#include "spdlog/spdlog.h"
 
 #include "ips_patch.hpp"
 #include "lib/files.hpp"
