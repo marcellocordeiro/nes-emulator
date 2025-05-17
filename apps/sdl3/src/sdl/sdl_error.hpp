@@ -45,7 +45,7 @@ private:
   Error(std::string source, std::string error) :
     source(source),
     error(error),
-    message(std::format("Error in {}: {}", source, error)) {}
+    message(std::format("{}: {}", source, error)) {}
 
   static void clear_context_error() {
     SDL_ClearError();

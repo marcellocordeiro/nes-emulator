@@ -102,14 +102,14 @@ private:
   template <typename T>
   [[nodiscard]] auto get_palette(T, T, u8) const -> u8; // Get palette
 
-  enum Timing {
+  enum class Timing {
     Idle,
     Visible,
     VBlank,
     PreRender
   };
 
-  Timing ppu_state = Visible;
+  Timing ppu_state = Timing::Visible;
   u16 ppu_addr = 0;
 
   //

@@ -1,11 +1,7 @@
 #include "nes/nes.hpp"
 
-#include <array>
 #include <filesystem>
-#include <fstream>
 #include <memory>
-
-#include <spdlog/spdlog.h>
 
 #include "cartridge.hpp"
 #include "controller.hpp"
@@ -14,7 +10,6 @@
 #include "ppu.hpp"
 #include "types/ppu_types.hpp"
 #include "utility/file_manager.hpp"
-#include "utility/snapshotable.hpp"
 
 namespace nes {
 void Nes::set_app_path(const std::filesystem::path& path) {

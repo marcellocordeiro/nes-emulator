@@ -21,7 +21,7 @@ struct SpriteInfo {
   u8 data_h = 0;   // Tile data (high)
 };
 
-enum PpuMap {
+enum class PpuMap {
   PpuCtrl = 0,
   PpuMask = 1,
   PpuStatus = 2,

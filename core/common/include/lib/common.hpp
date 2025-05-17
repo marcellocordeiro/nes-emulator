@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <exception>
 
 #include "sane_integer.hpp" // IWYU pragma: export
 
@@ -25,3 +26,7 @@ constexpr auto DEBUG_MODE = false;
 #endif
 
 #define UNUSED(x) (void)(x)
+
+[[noreturn]] inline void unreachable() {
+  std::terminate();
+}

@@ -1,6 +1,5 @@
 #include "mapper_2.hpp"
 
-#include <iosfwd>
 #include <stdexcept>
 
 #include "../base_mapper.hpp"

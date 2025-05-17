@@ -5,7 +5,6 @@
 
 #include "lib/common.hpp"
 #include "types/cpu_types.hpp"
-#include "utility/snapshotable.hpp"
 
 namespace nes {
 class Cpu final {

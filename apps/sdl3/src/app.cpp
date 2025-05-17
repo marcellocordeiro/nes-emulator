@@ -162,11 +162,13 @@ void App::process_input(const SDL_KeyboardEvent& key_event, Nes& nes) {
     switch (action) {
     case Action::Pause: running = !running; return;
     case Action::Reset: nes.reset(); return;
-    case Action::SaveSnapshot: return;
-    case Action::LoadSnapshot: return;
-    case Action::ToggleLimiter: return;
-    case Action::VolumeUp: return;
-    case Action::VolumeDown: return;
+
+    case Action::SaveSnapshot:
+    case Action::LoadSnapshot:
+    case Action::ToggleLimiter:
+    case Action::VolumeUp:
+    case Action::VolumeDown:
+    default: return;
     }
   }
 }

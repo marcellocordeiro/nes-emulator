@@ -574,7 +574,7 @@ void Cpu::INC() {
     tick();
   }
 
-  const u8 result = value + 1;
+  const u8 result = static_cast<u8>(value + 1);
   state.update_nz(result);
 
   tick();
@@ -590,7 +590,7 @@ void Cpu::DEC() {
     tick();
   }
 
-  const u8 result = value - 1;
+  const u8 result = static_cast<u8>(value - 1);
   state.update_nz(result);
 
   tick();
@@ -1029,7 +1029,7 @@ void Cpu::DCP() {
     state.set_flags(Carry);
   }
 
-  state.update_nz(state.a - value);
+  state.update_nz(static_cast<u8>(state.a - value));
 
   memory_write(addr, value);
 }

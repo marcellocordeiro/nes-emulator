@@ -115,15 +115,12 @@ void Ppu::set_palette() {
 
 void Ppu::step() {
   switch (ppu_state) {
-  case Visible: scanline_cycle_visible(); break;
-  case VBlank: scanline_cycle_nmi(); break;
-  case PreRender: scanline_cycle_pre(); break;
-  case Idle: break;
+  case Timing::Visible: scanline_cycle_visible(); break;
+  case Timing::VBlank: scanline_cycle_nmi(); break;
+  case Timing::PreRender: scanline_cycle_pre(); break;
+  case Timing::Idle: break;
 
-  default: {
-    SPDLOG_CRITICAL("Unreachable");
-    std::terminate();
-  }
+  default: unreachable();
   }
 
   ++tick;
@@ -136,13 +133,13 @@ void Ppu::step() {
       std::ranges::transform(frame_buffer, frame_buffer.begin(), [this](const u32 p) {
         return full_nes_palette[mask.rgb()][p];
       });
-      ppu_state = Idle;
+      ppu_state = Timing::Idle;
     } else if (scanline == 241) {
-      ppu_state = VBlank;
+      ppu_state = Timing::VBlank;
     } else if (scanline > 241 && scanline < 261) {
-      ppu_state = Idle;
+      ppu_state = Timing::Idle;
     } else if (scanline == 261) {
-      ppu_state = PreRender;
+      ppu_state = Timing::PreRender;
     }
 
     if (scanline > 261) {
@@ -150,7 +147,7 @@ void Ppu::step() {
         tick = 1; // Skip the first cycle of the visible scanline
       }
 
-      ppu_state = Visible;
+      ppu_state = Timing::Visible;
       scanline = 0;
       is_odd_frame = !is_odd_frame;
     }
@@ -160,7 +157,9 @@ void Ppu::step() {
 auto Ppu::peek_reg(const u16 addr) const -> u8 {
   using enum types::ppu::PpuMap;
 
-  switch (addr % 8) {
+  const auto map = static_cast<types::ppu::PpuMap>(addr % 8);
+
+  switch (map) {
   case PpuStatus: return (bus_latch & 0x1F) | status.raw;
   case OamData: return oam_mem[oam_addr];
   case PpuData:
@@ -170,7 +169,13 @@ auto Ppu::peek_reg(const u16 addr) const -> u8 {
 
     return peek_vram(vram_addr.addr());
 
-  default: break;
+  case PpuAddr:
+  case PpuScroll:
+  case PpuCtrl:
+  case PpuMask:
+  case OamAddr: break;
+
+  default: unreachable();
   }
 
   return bus_latch;
@@ -179,7 +184,9 @@ auto Ppu::peek_reg(const u16 addr) const -> u8 {
 auto Ppu::read(const u16 addr) -> u8 {
   using enum types::ppu::PpuMap;
 
-  switch (addr % 8) {
+  const auto map = static_cast<types::ppu::PpuMap>(addr % 8);
+
+  switch (map) {
   case PpuStatus: {
     bus_latch = (bus_latch & 0x1F) | status.raw;
     status.set_vblank(false);
@@ -206,10 +213,16 @@ auto Ppu::read(const u16 addr) -> u8 {
     break;
   }
 
-  default: {
+  case PpuCtrl:
+  case PpuMask:
+  case OamAddr:
+  case PpuScroll:
+  case PpuAddr: {
     SPDLOG_CRITICAL("Unreachable");
     std::terminate();
   }
+
+  default: unreachable();
   }
 
   return bus_latch;
@@ -220,7 +233,9 @@ void Ppu::write(const u16 addr, const u8 value) {
 
   bus_latch = value;
 
-  switch (addr % 8) {
+  const auto map = static_cast<types::ppu::PpuMap>(addr % 8);
+
+  switch (map) {
   case PpuCtrl: {
     ctrl.raw = value;
     temp_addr.set_nt(ctrl.nt());
@@ -285,6 +300,7 @@ void Ppu::write(const u16 addr, const u8 value) {
     break;
   }
 
+  case PpuStatus:
   default: {
     SPDLOG_CRITICAL("Unreachable");
     std::terminate();
@@ -303,7 +319,9 @@ auto Ppu::vram_read(const u16 addr) const -> u8 {
   case Chr: return Cartridge::get().chr_read(addr);
   case Nametables: return ci_ram[nt_mirror_addr(addr)];
   case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
-  default: return 0;
+  case Unknown: return 0;
+
+  default: unreachable();
   }
 }
 
@@ -314,7 +332,9 @@ void Ppu::vram_write(const u16 addr, const u8 value) {
   case Chr: Cartridge::get().chr_write(addr, value); break;
   case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
   case Palettes: cg_ram[palette_addr(addr)] = value; break;
-  default: throw; // TODO: fix this
+  case Unknown: throw std::runtime_error("Unreachable");
+
+  default: unreachable();
   }
 }
 
@@ -549,10 +569,7 @@ void Ppu::background_fetch() {
       horizontal_scroll();
       break;
 
-    default: {
-      SPDLOG_CRITICAL("Unreachable");
-      std::terminate();
-    }
+    default: unreachable();
     }
   } else {
     switch (tick) {
@@ -656,7 +673,9 @@ auto Ppu::nt_mirror_addr(const u16 addr) const -> u16 {
   case OneScreenLow: return addr & 0x03FF;
   case OneScreenHigh: return 0x0400 + (addr & 0x03FF);
   case FourScreen: return addr & 0x0FFF;
-  default: throw std::runtime_error("Invalid mirroring type");
+  case Unknown: throw std::runtime_error("Invalid mirroring type");
+
+  default: unreachable();
   }
 }
 

@@ -35,7 +35,9 @@ auto get_mirroring_name(const MirroringType type) -> std::string_view {
   case MirroringType::OneScreenLow: return one_screen_low;
   case MirroringType::OneScreenHigh: return one_screen_high;
   case MirroringType::FourScreen: return four_screen;
-  default: return unknown;
+  case MirroringType::Unknown: return unknown;
+
+  default: unreachable();
   }
 }
 } // namespace nes::types::ppu
