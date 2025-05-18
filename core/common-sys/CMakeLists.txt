@@ -16,21 +16,15 @@ target_sources(common-sys
     FILES ${HEADERS}
 )
 
-set_target_properties(common-sys
-  PROPERTIES
-    CXX_STANDARD 23
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
+set_project_options(common-sys)
+set_compiler_warnings(common-sys)
 
 target_link_libraries(common-sys
   PRIVATE
-    global::warnings
     lib::common
 )
 
 install(
   TARGETS common-sys
-  #LIBRARY
-  #FILE_SET HEADERS
+  FILE_SET HEADERS
 )

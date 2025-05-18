@@ -1,0 +1,14 @@
+#pragma once
+
+#include <string_view>
+
+namespace version {
+inline constexpr std::string_view PROJECT_NAME = "@PROJECT_NAME@";
+inline constexpr std::string_view PROJECT_VERSION = "@PROJECT_VERSION@";
+inline constexpr std::string_view GIT_SHA = "@GIT_SHA@";
+
+inline constexpr int PROJECT_VERSION_MAJOR{@PROJECT_VERSION_MAJOR@};
+inline constexpr int PROJECT_VERSION_MINOR{@PROJECT_VERSION_MINOR@};
+inline constexpr int PROJECT_VERSION_PATCH{@PROJECT_VERSION_PATCH@};
+inline constexpr int PROJECT_VERSION_TWEAK{@PROJECT_VERSION_TWEAK@};
+} // namespace version

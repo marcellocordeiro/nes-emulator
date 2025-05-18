@@ -27,6 +27,14 @@ set(SOURCES
   #src/todo/debugger.hpp
   src/types/cpu_types.cpp
   src/types/cpu_types.hpp
+  src/types/ppu/loopy_addr.cpp
+  src/types/ppu/loopy_addr.hpp
+  src/types/ppu/ppuctrl.cpp
+  src/types/ppu/ppuctrl.hpp
+  src/types/ppu/ppumask.cpp
+  src/types/ppu/ppumask.hpp
+  src/types/ppu/ppustatus.cpp
+  src/types/ppu/ppustatus.hpp
   src/types/ppu_types.cpp
   src/types/ppu_types.hpp
   src/utility/file_manager.cpp
@@ -34,14 +42,6 @@ set(SOURCES
   src/utility/ips_patch.cpp
   src/utility/ips_patch.hpp
   src/utility/snapshotable.hpp
-  src/types/ppu/ppuctrl.cpp
-  src/types/ppu/ppuctrl.hpp
-  src/types/ppu/ppustatus.cpp
-  src/types/ppu/ppustatus.hpp
-  src/types/ppu/ppumask.cpp
-  src/types/ppu/ppumask.hpp
-  src/types/ppu/loopy_addr.cpp
-  src/types/ppu/loopy_addr.hpp
 )
 
 set(HEADERS
@@ -58,16 +58,11 @@ target_sources(nes-core
     FILES ${HEADERS}
 )
 
-set_target_properties(nes-core
-  PROPERTIES
-    CXX_STANDARD 23
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
+set_project_options(nes-core)
+set_compiler_warnings(nes-core)
 
 target_link_libraries(nes-core
   PRIVATE
-    global::warnings
     lib::common
     fmt::fmt
     spdlog::spdlog

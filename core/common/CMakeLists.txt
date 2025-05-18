@@ -17,14 +17,20 @@ target_sources(common
     FILES ${HEADERS}
 )
 
-set_target_properties(common
-  PROPERTIES
-    CXX_STANDARD 23
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
+configure_file(
+  include/lib/version.hpp.in
+  include/lib/version.hpp
 )
 
-target_link_libraries(common INTERFACE global::warnings)
+target_sources(common
+  PUBLIC
+    FILE_SET HEADERS
+    BASE_DIRS ${CMAKE_CURRENT_BINARY_DIR}/include
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/include/lib/version.hpp
+)
+
+set_project_options(common)
+set_compiler_warnings(common)
 
 install(
   TARGETS common

@@ -2,9 +2,7 @@
 #
 # https://github.com/lefticus/cppbestpractices/blob/master/02-Use_the_Tools_Available.md
 
-function(set_project_warnings project_name)
-  option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
-
+function(set_compiler_warnings target)
   set(MSVC_WARNINGS
     /W4 # Baseline reasonable warnings
     /w14242 # 'identifier': conversion from 'type1' to 'type2', possible loss of data
@@ -68,18 +66,14 @@ function(set_project_warnings project_name)
   endif()
 
   if(MSVC)
-    set(PROJECT_WARNINGS ${MSVC_WARNINGS})
+    set(COMPILER_WARNINGS ${MSVC_WARNINGS})
   elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
-    set(PROJECT_WARNINGS ${CLANG_WARNINGS})
+    set(COMPILER_WARNINGS ${CLANG_WARNINGS})
   elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(PROJECT_WARNINGS ${GCC_WARNINGS})
+    set(COMPILER_WARNINGS ${GCC_WARNINGS})
   else()
     message(AUTHOR_WARNING "No compiler warnings set for '${CMAKE_CXX_COMPILER_ID}' compiler.")
   endif()
 
-  target_compile_options(${project_name} INTERFACE ${PROJECT_WARNINGS})
+  target_compile_options(${target} INTERFACE ${COMPILER_WARNINGS})
 endfunction()
-
-add_library(project-warnings INTERFACE)
-add_library(global::warnings ALIAS project-warnings)
-set_project_warnings(project-warnings)

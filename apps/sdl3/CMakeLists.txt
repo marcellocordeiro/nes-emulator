@@ -15,16 +15,11 @@ set(SOURCES
 
 add_executable(nes-emulator-sdl3 ${SOURCES})
 
-set_target_properties(nes-emulator-sdl3
-  PROPERTIES
-    CXX_STANDARD 23
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
+set_project_options(nes-emulator-sdl3)
+set_compiler_warnings(nes-emulator-sdl3)
 
 target_link_libraries(nes-emulator-sdl3
   PRIVATE
-    global::warnings
     lib::common
     nes::core
     fmt::fmt

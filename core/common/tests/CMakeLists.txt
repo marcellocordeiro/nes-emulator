@@ -4,16 +4,11 @@ set(SOURCES
 
 add_executable(common-tests ${SOURCES})
 
-set_target_properties(common-tests
-  PROPERTIES
-    CXX_STANDARD 23
-    CXX_STANDARD_REQUIRED YES
-    CXX_EXTENSIONS NO
-)
+set_project_options(common-tests)
+set_compiler_warnings(common-tests)
 
 target_link_libraries(common-tests
   PRIVATE
-    global::warnings
     lib::common
     Catch2::Catch2WithMain
 )

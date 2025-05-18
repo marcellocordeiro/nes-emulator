@@ -1,4 +1,5 @@
 set(CMAKE_COLOR_DIAGNOSTICS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # WIP
 function(get_compiler_friendly_name result)
