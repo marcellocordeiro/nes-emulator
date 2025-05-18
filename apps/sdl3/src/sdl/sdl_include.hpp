@@ -4,4 +4,4 @@
 #pragma GCC system_header // AppleClang workaround to supress warnings
 #endif
 
-#include "SDL3/SDL.h" // IWYU pragma: export
+#include <SDL3/SDL.h> // IWYU pragma: export

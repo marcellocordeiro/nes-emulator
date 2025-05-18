@@ -3,7 +3,7 @@
 #include <format>
 #include <stdexcept>
 
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 #include "lib/common.hpp"
 #include "types/cpu_types.hpp"

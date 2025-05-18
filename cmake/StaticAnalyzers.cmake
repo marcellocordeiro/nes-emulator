@@ -8,9 +8,8 @@ if(ENABLE_CLANG_TIDY)
 
   set(CLANG_TIDY_OPTIONS
     ${CLANG_TIDY_PROGRAM}
-    -p ${CMAKE_BINARY_DIR}
   )
 
-  message("clang-tidy enabled")
+  message(STATUS "clang-tidy enabled")
   set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_OPTIONS})
 endif()

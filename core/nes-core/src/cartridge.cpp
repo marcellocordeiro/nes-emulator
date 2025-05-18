@@ -1,10 +1,12 @@
 #include "cartridge.hpp"
 
 #include <format>
+#include <iterator>
+#include <memory>
 #include <span>
 #include <stdexcept>
 
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 #include "base_mapper.hpp"
 #include "lib/common.hpp"
@@ -13,6 +15,7 @@
 #include "mappers/mapper_2.hpp"
 #include "mappers/mapper_4.hpp"
 #include "mappers/mapper_7.hpp"
+#include "types/ppu_types.hpp"
 #include "utility/file_manager.hpp"
 
 namespace nes {

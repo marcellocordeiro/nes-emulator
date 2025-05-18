@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 #include "cartridge.hpp"
 #include "controller.hpp"

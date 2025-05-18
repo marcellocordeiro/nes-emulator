@@ -2,7 +2,7 @@
 #include <string_view>
 #include <vector>
 
-#include "spdlog/spdlog.h"
+#include <spdlog/spdlog.h>
 
 #include "app.hpp"
 #include "lib/version.hpp"

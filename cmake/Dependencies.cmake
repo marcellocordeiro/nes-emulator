@@ -12,6 +12,10 @@
 # )
 #
 # CPMAddPackage(
+#   URI "gh:libsdl-org/SDL#release-3.2.14"
+# )
+#
+# CPMAddPackage(
 #   URI "gh:catchorg/Catch2#v3.8.1"
 # )
 #
@@ -19,7 +23,7 @@
 
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
-find_package(SDL3 CONFIG REQUIRED COMPONENTS SDL3-shared)
+find_package(SDL3 CONFIG REQUIRED)
 find_package(Catch2 CONFIG REQUIRED)
 
 include(CTest)
