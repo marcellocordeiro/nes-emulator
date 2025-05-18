@@ -11,20 +11,17 @@ Checks: [
   -llvm*,
   # -zircon-*,
 
-  # -modernize-use-trailing-return-type,
-  -readability-magic-numbers,
-  -cppcoreguidelines-avoid-magic-numbers,
-  # -misc-include-cleaner,
-  -cppcoreguidelines-pro-bounds-constant-array-index,
   -bugprone-easily-swappable-parameters,
-  -readability-avoid-return-with-void-value,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
   -hicpp-signed-bitwise,
-  # -misc-const-correctness,
-  # -readability-implicit-bool-conversion,
-  -readability-identifier-length,
-  # -bugprone-narrowing-conversions,
-  # -readability-suspicious-call-argument,
+  -misc-include-cleaner,
   -misc-no-recursion,
+  -readability-avoid-return-with-void-value,
+  -readability-identifier-length,
+
+  -cppcoreguidelines-avoid-magic-numbers,
+  -readability-magic-numbers,
+
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -misc-non-private-member-variables-in-classes,
 

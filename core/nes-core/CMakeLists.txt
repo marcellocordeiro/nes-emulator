@@ -45,6 +45,7 @@ set(SOURCES
 )
 
 set(HEADERS
+  include/nes/constants.hpp
   include/nes/nes.hpp
 )
 

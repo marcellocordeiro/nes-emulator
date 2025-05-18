@@ -14,7 +14,7 @@ public:
 
   static auto get() -> Cartridge&;
 
-  auto get_mapper() const -> BaseMapper*;
+  [[nodiscard]] auto get_mapper() const -> BaseMapper*;
 
   void load();
 

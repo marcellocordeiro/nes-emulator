@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "lib/common.hpp"
+#include "nes/constants.hpp"
 #include "nes/nes.hpp"
 #include "sdl/sdl.hpp"
 #include "utils/scaling.hpp"
@@ -18,7 +19,7 @@ namespace {
 void render_display(const sdl::Renderer& renderer, const sdl::Texture& texture) {
   const auto available_size = renderer.get_current_render_output_size();
   const auto rect =
-    integer_scale_centered_rect(available_size, {.width = Nes::width, .height = Nes::height});
+    integer_scale_centered_rect(available_size, {.width = nes::SCREEN_WIDTH, .height = nes::SCREEN_HEIGHT});
 
   UNUSED(rect); // fix
 
@@ -44,7 +45,7 @@ void App::run() {
   constexpr auto window_flags = SDL_WindowFlags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
 
   const auto window =
-    sdl::Window(std::string(Nes::title), Nes::width * 3, Nes::height * 3, window_flags);
+    sdl::Window(std::string(nes::TITLE), nes::SCREEN_WIDTH * 3, nes::SCREEN_HEIGHT * 3, window_flags);
   const auto renderer = sdl::Renderer(window);
 
   renderer.enable_vsync();
@@ -55,8 +56,8 @@ void App::run() {
     renderer,
     SDL_PIXELFORMAT_XRGB8888,
     SDL_TEXTUREACCESS_STREAMING,
-    Nes::width,
-    Nes::height
+    nes::SCREEN_WIDTH,
+    nes::SCREEN_HEIGHT
   );
 
   texture.set_scale_mode(SDL_SCALEMODE_NEAREST);
@@ -98,7 +99,7 @@ void App::run() {
 
       if (elapsed_time > 1s) {
         auto fps = elapsed_frames / std::chrono::duration<double>(elapsed_time).count();
-        auto title = std::format("{} | {:5.2f}fps", Nes::title, fps);
+        auto title = std::format("{} | {:5.2f}fps", nes::TITLE, fps);
         SDL_SetWindowTitle(window.get(), title.c_str());
 
         fps_timer = std::chrono::steady_clock::now();
@@ -111,7 +112,7 @@ void App::run() {
       nes.run_frame();
     }
 
-    SDL_UpdateTexture(texture.get(), nullptr, nes.get_frame_buffer(), Nes::width * sizeof(u32));
+    SDL_UpdateTexture(texture.get(), nullptr, nes.get_frame_buffer(), nes::SCREEN_WIDTH * sizeof(u32));
 
     SDL_RenderClear(renderer.get());
     render_display(renderer, texture);
