@@ -41,7 +41,7 @@ void BaseMapper::set_prg_map(const usize slot, i32 page) {
     page += static_cast<i32>(prg_size) / static_cast<i32>(pages_b);
   }
 
-  const usize resolved_page = static_cast<usize>(page);
+  const auto resolved_page = static_cast<usize>(page);
 
   for (usize i = 0; i < pages; ++i) {
     prg_map[(pages * slot) + i] = ((pages_b * resolved_page) + 0x2000u * i) % prg_size;

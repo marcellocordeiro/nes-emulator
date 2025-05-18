@@ -1,5 +1,7 @@
 #include "ppuctrl.hpp"
 
+#include "lib/common.hpp"
+
 namespace nes::types::ppu {
 auto Ppuctrl::nt() const -> u8 {
   constexpr auto mask = 0b0000'0011;

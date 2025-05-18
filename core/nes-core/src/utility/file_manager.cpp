@@ -9,6 +9,7 @@
 #include "spdlog/spdlog.h"
 
 #include "ips_patch.hpp"
+#include "lib/common.hpp"
 #include "lib/files.hpp"
 
 namespace nes::utility {

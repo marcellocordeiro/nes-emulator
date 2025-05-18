@@ -1,5 +1,7 @@
 #include "ppumask.hpp"
 
+#include "lib/common.hpp"
+
 namespace nes::types::ppu {
 auto Ppumask::grayscale() const -> bool {
   constexpr auto mask = 0b0000'0001;

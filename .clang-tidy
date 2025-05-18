@@ -26,6 +26,9 @@ Checks: [
   "-misc-no-recursion",
   "-cppcoreguidelines-non-private-member-variables-in-classes",
   "-misc-non-private-member-variables-in-classes",
+
+  -hicpp-uppercase-literal-suffix,
+  -readability-uppercase-literal-suffix,
 ]
 
 
@@ -49,6 +52,7 @@ Checks: [
 WarningsAsErrors: ""
 HeaderFilterRegex: ""
 FormatStyle: none
+UseColor: true
 
 CheckOptions:
   - key: readability-identifier-length.IgnoredVariableNames

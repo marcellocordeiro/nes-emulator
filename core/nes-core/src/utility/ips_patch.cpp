@@ -2,7 +2,13 @@
 
 #include <algorithm>
 #include <array>
+#include <filesystem>
+#include <stdexcept>
 #include <string>
+#include <utility>
+#include <vector>
+
+#include "lib/common.hpp"
 
 namespace nes::utility {
 IpsPatch::IpsPatch(const std::filesystem::path& path) : ips_file(path, std::ios::binary) {

@@ -2,7 +2,6 @@
 
 #include <stdexcept>
 
-#include "../base_mapper.hpp"
 #include "lib/common.hpp"
 
 namespace nes {

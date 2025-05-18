@@ -1,6 +1,5 @@
 #include "cpu.hpp"
 
-#include <iosfwd>
 #include <stdexcept>
 
 #include "spdlog/spdlog.h"

@@ -1,5 +1,7 @@
 #include "ppustatus.hpp"
 
+#include "lib/common.hpp"
+
 namespace nes::types::ppu {
 auto Ppustatus::spr_overflow() const -> bool {
   constexpr auto mask = 0b0010'0000;

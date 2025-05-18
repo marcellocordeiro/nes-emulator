@@ -1078,7 +1078,7 @@ void Cpu::SRE() {
 
   tick();
 
-  u8 shifted = shift_right(value);
+  const u8 shifted = shift_right(value);
 
   state.set_a(state.a ^ shifted);
   memory_write(addr, shifted);

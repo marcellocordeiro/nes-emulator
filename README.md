@@ -22,15 +22,15 @@ Experimental NES emulator written in C++23 using SDL3.
 - [x] Custom palettes (.pal)
   - [x] 64 colours
   - [ ] 64 \* 8 colours
-  - [x] Auto generation of colour emphasis palettes
+  - [x] Auto generation of color emphasis palettes
 
 ## Screenshots
 
-![Alt text](/doc/screenshots/Super_Mario_Bros_3.png?raw=true "Super Mario Bros 3")
+![Alt text](/docs/screenshots/Super_Mario_Bros_3.png?raw=true "Super Mario Bros 3")
 
-![Alt text](/doc/screenshots/The_Legend_of_Zelda.png?raw=true "The Legend of Zelda")
+![Alt text](/docs/screenshots/The_Legend_of_Zelda.png?raw=true "The Legend of Zelda")
 
-![Alt text](/doc/screenshots/Final_Fantasy_III.png?raw=true "Final Fantasy III")
+![Alt text](/docs/screenshots/Final_Fantasy_III.png?raw=true "Final Fantasy III")
 
 ## Supported tools
 
@@ -41,7 +41,7 @@ This project requires a recent compiler with C++23 support to be built.
 - Clang 20.1.2
   - Tested on Fedora 42
 - MSVC 19.43.34810 (Visual Studio 17.13.6)
-  - Tested on Windows 11
+  - Tested on Windows 11********
 - Apple Clang 17.0.0 (Xcode 16.3)
   - Tested on macOS 15.4.1 (Intel)
 
@@ -84,5 +84,5 @@ Run the `nes-emulator-sdl3{,.exe}` executable generated in the `bin` folder pass
 ## References
 
 - [NESdev](http://wiki.nesdev.com/w/index.php/Nesdev_Wiki)
-- [Mesen](https://www.mesen.ca/) for the excellent debugger and well documented hardware behaviour
+- [Mesen](https://www.mesen.ca/) for the excellent debugger and well documented hardware behavior
 - [@ulfalizer](https://github.com/ulfalizer)'s great PPU implementation and NTSC PPU timing diagram

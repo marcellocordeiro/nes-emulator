@@ -55,5 +55,5 @@ private:
   std::map<Action, SDL_Scancode> action_key_bindings;
   std::map<Button, SDL_Scancode> controller_key_bindings;
 
-  const bool* keys = nullptr;
+  std::span<const bool> keys;
 };

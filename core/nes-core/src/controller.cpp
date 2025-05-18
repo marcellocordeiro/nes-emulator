@@ -1,5 +1,7 @@
 #include "controller.hpp"
 
+#include "lib/common.hpp"
+
 namespace nes {
 auto Controller::get() -> Controller& {
   static Controller instance;

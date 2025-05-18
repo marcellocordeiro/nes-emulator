@@ -1,9 +1,5 @@
 #include "mapper_1.hpp"
 
-#include <iosfwd>
-
-#include "spdlog/spdlog.h"
-
 #include "../base_mapper.hpp"
 #include "lib/common.hpp"
 
@@ -52,10 +48,7 @@ void Mapper1::apply() {
   case 2: set_mirroring(MirroringType::Vertical); break;
   case 3: set_mirroring(MirroringType::Horizontal); break;
 
-  default: {
-    SPDLOG_CRITICAL("Unreachable");
-    std::terminate();
-  }
+  default: unreachable();
   }
 }
 
@@ -78,10 +71,7 @@ void Mapper1::write(const u16 addr, const u8 value) {
         case 2: chr_bank_1 = shift_reg; break;
         case 3: prg_bank = shift_reg; break;
 
-        default: {
-          SPDLOG_CRITICAL("Unreachable");
-          std::terminate();
-        }
+        default: unreachable();
         }
 
         write_delay = 5;

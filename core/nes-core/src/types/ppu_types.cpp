@@ -1,5 +1,9 @@
 #include "ppu_types.hpp"
 
+#include <string_view>
+
+#include "lib/common.hpp"
+
 namespace nes::types::ppu {
 auto get_memory_map(u16 addr) -> MemoryMap {
   auto in_range = [addr](const u16 lower, const u16 upper) {

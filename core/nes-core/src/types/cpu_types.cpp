@@ -1,5 +1,7 @@
 #include "cpu_types.hpp"
 
+#include "lib/common.hpp"
+
 namespace nes::types::cpu {
 auto State::check_flags(const u8 flags) const -> bool {
   return (this->ps & flags) == flags;
@@ -52,7 +54,7 @@ void State::set_ps(const u8 value) {
 
 namespace memory {
 template <auto Operation>
-auto get_map(u16 addr) -> MemoryMap {
+auto get_map(u16 addr) -> MemoryMap { // NOLINT
   auto in_range = [addr](const auto lower, const auto upper) {
     return (addr >= lower) && (addr <= upper);
   };

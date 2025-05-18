@@ -61,7 +61,11 @@ void App::run() {
 
   texture.set_scale_mode(SDL_SCALEMODE_NEAREST);
 
-  keys = SDL_GetKeyboardState(nullptr);
+  {
+    int numkeys = 0;
+    const auto raw_keys = SDL_GetKeyboardState(&numkeys);
+    keys = std::span(raw_keys, static_cast<usize>(numkeys));
+  }
 
   setup_default_bindings();
 
@@ -126,8 +130,8 @@ void App::setup_default_bindings() {
   action_key_bindings[Action::VolumeUp] = SDL_SCANCODE_KP_PLUS;
   action_key_bindings[Action::VolumeDown] = SDL_SCANCODE_KP_MINUS;
 
-  controller_key_bindings[Button::A] = SDL_SCANCODE_A;
-  controller_key_bindings[Button::B] = SDL_SCANCODE_S;
+  controller_key_bindings[Button::A] = SDL_SCANCODE_X;
+  controller_key_bindings[Button::B] = SDL_SCANCODE_Z;
   controller_key_bindings[Button::Select] = SDL_SCANCODE_BACKSPACE;
   controller_key_bindings[Button::Start] = SDL_SCANCODE_RETURN;
   controller_key_bindings[Button::Up] = SDL_SCANCODE_UP;
@@ -139,14 +143,14 @@ void App::setup_default_bindings() {
 void App::update_emulated_controllers(Nes& nes) {
   u8 state = 0;
 
-  state |= keys[controller_key_bindings[Button::A]] << 0;
-  state |= keys[controller_key_bindings[Button::B]] << 1;
-  state |= keys[controller_key_bindings[Button::Select]] << 2;
-  state |= keys[controller_key_bindings[Button::Start]] << 3;
-  state |= keys[controller_key_bindings[Button::Up]] << 4;
-  state |= keys[controller_key_bindings[Button::Down]] << 5;
-  state |= keys[controller_key_bindings[Button::Left]] << 6;
-  state |= keys[controller_key_bindings[Button::Right]] << 7;
+  state |= static_cast<int>(keys[controller_key_bindings[Button::A]]) << 0;
+  state |= static_cast<int>(keys[controller_key_bindings[Button::B]]) << 1;
+  state |= static_cast<int>(keys[controller_key_bindings[Button::Select]]) << 2;
+  state |= static_cast<int>(keys[controller_key_bindings[Button::Start]]) << 3;
+  state |= static_cast<int>(keys[controller_key_bindings[Button::Up]]) << 4;
+  state |= static_cast<int>(keys[controller_key_bindings[Button::Down]]) << 5;
+  state |= static_cast<int>(keys[controller_key_bindings[Button::Left]]) << 6;
+  state |= static_cast<int>(keys[controller_key_bindings[Button::Right]]) << 7;
 
   nes.update_controller_state(0, state);
 }

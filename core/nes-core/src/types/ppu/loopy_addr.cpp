@@ -1,5 +1,7 @@
 #include "loopy_addr.hpp"
 
+#include "lib/common.hpp"
+
 namespace nes::types::ppu {
 auto LoopyAddr::coarse_x() const -> u16 {
   constexpr auto position = 0;

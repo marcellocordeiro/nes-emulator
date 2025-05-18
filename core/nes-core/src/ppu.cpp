@@ -1,7 +1,6 @@
 #include "ppu.hpp"
 
 #include <algorithm>
-#include <iosfwd>
 #include <stdexcept>
 
 #include "spdlog/spdlog.h"
