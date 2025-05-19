@@ -449,11 +449,11 @@ void Ppu::vertical_scroll() {
 }
 
 void Ppu::horizontal_update() {
-  vram_addr.raw = (vram_addr.raw & ~0x041F) | (temp_addr.raw & 0x041F);
+  vram_addr.raw = (vram_addr.raw & ~0x041Fu) | (temp_addr.raw & 0x041Fu);
 }
 
 void Ppu::vertical_update() {
-  vram_addr.raw = (vram_addr.raw & ~0x7BE0) | (temp_addr.raw & 0x7BE0);
+  vram_addr.raw = (vram_addr.raw & ~0x7BE0u) | (temp_addr.raw & 0x7BE0u);
 }
 
 void Ppu::background_shift() {

@@ -18,8 +18,10 @@ using nes::Nes;
 namespace {
 void render_display(const sdl::Renderer& renderer, const sdl::Texture& texture) {
   const auto available_size = renderer.get_current_render_output_size();
-  const auto rect =
-    integer_scale_centered_rect(available_size, {.width = nes::SCREEN_WIDTH, .height = nes::SCREEN_HEIGHT});
+  const auto rect = integer_scale_centered_rect(
+    available_size,
+    {.width = nes::SCREEN_WIDTH, .height = nes::SCREEN_HEIGHT}
+  );
 
   UNUSED(rect); // fix
 
@@ -27,25 +29,31 @@ void render_display(const sdl::Renderer& renderer, const sdl::Texture& texture) 
 }
 } // namespace
 
-App::App(const std::span<std::string_view> args) : args(args) {
+App::App(const std::span<std::string_view> args) {
   if (args.size() == 1) {
     throw std::invalid_argument("Too few arguments");
   }
+
+  rom_path = args[1];
 }
 
 void App::run() {
   auto nes = Nes();
 
   nes.set_app_path(SDL_GetBasePath());
-  nes.load(args[1]);
+  nes.load(rom_path);
   nes.power_on();
 
   auto context = sdl::Context{SDL_INIT_VIDEO | SDL_INIT_GAMEPAD};
 
   constexpr auto window_flags = SDL_WindowFlags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
 
-  const auto window =
-    sdl::Window(std::string(nes::TITLE), nes::SCREEN_WIDTH * 3, nes::SCREEN_HEIGHT * 3, window_flags);
+  const auto window = sdl::Window(
+    std::string(nes::TITLE),
+    nes::SCREEN_WIDTH * 3,
+    nes::SCREEN_HEIGHT * 3,
+    window_flags
+  );
   const auto renderer = sdl::Renderer(window);
 
   renderer.enable_vsync();
@@ -112,7 +120,12 @@ void App::run() {
       nes.run_frame();
     }
 
-    SDL_UpdateTexture(texture.get(), nullptr, nes.get_frame_buffer(), nes::SCREEN_WIDTH * sizeof(u32));
+    SDL_UpdateTexture(
+      texture.get(),
+      nullptr,
+      nes.get_frame_buffer(),
+      nes::SCREEN_WIDTH * sizeof(u32)
+    );
 
     SDL_RenderClear(renderer.get());
     render_display(renderer, texture);
@@ -144,14 +157,14 @@ void App::setup_default_bindings() {
 void App::update_emulated_controllers(Nes& nes) {
   u8 state = 0;
 
-  state |= static_cast<int>(keys[controller_key_bindings[Button::A]]) << 0;
-  state |= static_cast<int>(keys[controller_key_bindings[Button::B]]) << 1;
-  state |= static_cast<int>(keys[controller_key_bindings[Button::Select]]) << 2;
-  state |= static_cast<int>(keys[controller_key_bindings[Button::Start]]) << 3;
-  state |= static_cast<int>(keys[controller_key_bindings[Button::Up]]) << 4;
-  state |= static_cast<int>(keys[controller_key_bindings[Button::Down]]) << 5;
-  state |= static_cast<int>(keys[controller_key_bindings[Button::Left]]) << 6;
-  state |= static_cast<int>(keys[controller_key_bindings[Button::Right]]) << 7;
+  state |= static_cast<u8>(static_cast<u8>(keys[controller_key_bindings[Button::A]]) << 0u);
+  state |= static_cast<u8>(static_cast<u8>(keys[controller_key_bindings[Button::B]]) << 1u);
+  state |= static_cast<u8>(static_cast<u8>(keys[controller_key_bindings[Button::Select]]) << 2u);
+  state |= static_cast<u8>(static_cast<u8>(keys[controller_key_bindings[Button::Start]]) << 3u);
+  state |= static_cast<u8>(static_cast<u8>(keys[controller_key_bindings[Button::Up]]) << 4u);
+  state |= static_cast<u8>(static_cast<u8>(keys[controller_key_bindings[Button::Down]]) << 5u);
+  state |= static_cast<u8>(static_cast<u8>(keys[controller_key_bindings[Button::Left]]) << 6u);
+  state |= static_cast<u8>(static_cast<u8>(keys[controller_key_bindings[Button::Right]]) << 7u);
 
   nes.update_controller_state(0, state);
 }

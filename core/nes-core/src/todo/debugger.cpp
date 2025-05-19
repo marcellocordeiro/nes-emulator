@@ -62,26 +62,26 @@ void Debugger::cpu_log() {
   };
   // clang-format on
 
-  auto* cpu_ptr = &Cpu::get();
+  const auto& cpu = Cpu::get();
 
-  auto peek = [&](const u16 addr) { return cpu_ptr->peek(addr); };
-  auto peek_imm = [&] { return cpu_ptr->peek_imm(); };
-  auto peek_rel = [&] { return cpu_ptr->peek_rel(); };
-  auto peek_zp = [&] { return cpu_ptr->peek_zp(); };
-  auto peek_zpx = [&] { return cpu_ptr->peek_zpx(); };
-  auto peek_zpy = [&] { return cpu_ptr->peek_zpy(); };
-  auto peek_ab = [&] { return cpu_ptr->peek_ab(); };
-  auto peek_abx = [&] { return cpu_ptr->peek_abx(); };
-  auto peek_aby = [&] { return cpu_ptr->peek_aby(); };
-  auto peek_ind = [&] { return cpu_ptr->peek_ind(); };
-  auto peek_indx = [&] { return cpu_ptr->peek_indx(); };
-  auto peek_indy = [&] { return cpu_ptr->peek_indy(); };
+  auto peek = [&](const u16 addr) { return cpu.peek(addr); };
+  auto peek_imm = [&] { return cpu.peek_imm(); };
+  auto peek_rel = [&] { return cpu.peek_rel(); };
+  auto peek_zp = [&] { return cpu.peek_zp(); };
+  auto peek_zpx = [&] { return cpu.peek_zpx(); };
+  auto peek_zpy = [&] { return cpu.peek_zpy(); };
+  auto peek_ab = [&] { return cpu.peek_ab(); };
+  auto peek_abx = [&] { return cpu.peek_abx(); };
+  auto peek_aby = [&] { return cpu.peek_aby(); };
+  auto peek_ind = [&] { return cpu.peek_ind(); };
+  auto peek_indx = [&] { return cpu.peek_indx(); };
+  auto peek_indy = [&] { return cpu.peek_indy(); };
 
   auto read_word_zp = [&](const u16 addr) -> u16 {
     return peek((addr + 1) & 0xFF) << 8 | peek(addr);
   };
 
-  auto state = cpu_ptr->get_state();
+  const auto state = cpu.get_state();
 
   std::stringstream ss;
 

@@ -11,7 +11,13 @@ class BaseMapper {
 public:
   using MirroringType = types::ppu::MirroringType;
 
+  BaseMapper() = default;
   virtual ~BaseMapper() = default;
+
+  BaseMapper(const BaseMapper&) = delete;
+  auto operator=(const BaseMapper&) -> BaseMapper& = delete;
+  BaseMapper(const BaseMapper&&) = delete;
+  auto operator=(BaseMapper&&) -> BaseMapper& = delete;
 
   virtual void reset() = 0;
 
@@ -31,7 +37,6 @@ public:
 
   virtual void scanline_counter();
 
-  // TODO: save mirroring
   // TODO: fix this
   std::shared_ptr<bool> irq_conn;
   std::shared_ptr<MirroringType> mirroring_conn;

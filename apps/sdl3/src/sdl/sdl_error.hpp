@@ -12,7 +12,7 @@ class Error final: public std::exception {
 public:
   [[nodiscard]]
   auto what() const noexcept -> const char* override {
-    return message.c_str();
+    return message_.c_str();
   }
 
   [[nodiscard]]
@@ -27,32 +27,32 @@ public:
 
   [[nodiscard]]
   auto get_source() const -> std::string {
-    return source;
+    return source_;
   }
 
   [[nodiscard]]
   auto get_error() const -> std::string {
-    return error;
+    return error_;
   }
 
   [[nodiscard]]
   auto get_message() const -> std::string {
-    return message;
+    return message_;
   }
 
 private:
   [[nodiscard]]
   Error(std::string source, std::string error) :
-    source(source),
-    error(error),
-    message(std::format("{}: {}", source, error)) {}
+    source_(source),
+    error_(error),
+    message_(std::format("{}: {}", source, error)) {}
 
   static void clear_context_error() {
     SDL_ClearError();
   }
 
-  std::string source;
-  std::string error;
-  std::string message;
+  std::string source_;
+  std::string error_;
+  std::string message_;
 };
 } // namespace sdl

@@ -111,13 +111,11 @@
             "name": "macos-x64-clang",
             "description": "",
             "inherits": [ "base", "x64", "clang", "macos" ]
-
         },
         {
             "name": "linux-x64-gcc",
             "description": "",
             "inherits": [ "base", "x64", "gcc", "linux" ]
-
         },
         {
             "name": "linux-x64-clang",

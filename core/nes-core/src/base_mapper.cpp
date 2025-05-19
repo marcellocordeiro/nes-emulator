@@ -12,8 +12,8 @@ void BaseMapper::set_irq(const bool value) const {
 }
 
 auto BaseMapper::get_prg_addr(const u16 addr) const -> usize {
-  const usize slot = (addr - 0x8000) / 0x2000;
-  const usize prg_addr = (addr - 0x8000) % 0x2000;
+  const usize slot = (addr - 0x8000u) / 0x2000u;
+  const usize prg_addr = (addr - 0x8000u) % 0x2000u;
 
   return prg_map[slot] + prg_addr;
 }

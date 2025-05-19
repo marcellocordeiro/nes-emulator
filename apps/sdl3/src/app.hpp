@@ -18,7 +18,7 @@ private:
   // Settings
   //
 
-  std::span<std::string_view> args;
+  std::string_view rom_path;
 
   // double volume = 0.1;
   bool running = false;
