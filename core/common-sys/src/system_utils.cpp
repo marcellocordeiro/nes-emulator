@@ -12,8 +12,6 @@
 
 #include <mach-o/dyld.h>
 #include <sys/syslimits.h>
-
-#include "lib/common.hpp"
 #endif
 
 namespace lib {
@@ -33,7 +31,7 @@ auto get_base_path() -> std::filesystem::path {
   constexpr auto path_separator = "/";
 
   std::array<char, PATH_MAX> buf = {};
-  u32 bufsize = PATH_MAX;
+  std::uint32_t bufsize = PATH_MAX;
   _NSGetExecutablePath(buf.data(), &bufsize);
 
   path = std::string(buf.data(), bufsize);

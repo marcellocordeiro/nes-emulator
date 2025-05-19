@@ -1,10 +1,10 @@
-macro(enable_ipo)
+function(enable_ipo)
   include(CheckIPOSupported)
   check_ipo_supported(RESULT result OUTPUT output)
 
-  if(result)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
-  else()
+  if(NOT result)
     message(SEND_ERROR "IPO is not supported: ${output}")
   endif()
-endmacro()
+
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON PARENT_SCOPE)
+endfunction()

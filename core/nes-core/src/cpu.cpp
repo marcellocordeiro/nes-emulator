@@ -152,10 +152,10 @@ auto Cpu::peek_imm() const -> u16 {
 
 auto Cpu::peek_rel() const -> u16 {
   const auto addr = peek_imm();
-  const auto offset = static_cast<i16>(static_cast<i8>(peek(addr)));
-  const auto base = state.pc + 2;
+  const auto offset = static_cast<i8>(peek(addr));
+  const u16 base = state.pc + 2;
 
-  return static_cast<u16>(static_cast<i16>(base) + offset);
+  return static_cast<u16>(base + offset);
 }
 
 auto Cpu::peek_zp() const -> u16 {

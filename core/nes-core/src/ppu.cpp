@@ -58,7 +58,7 @@ auto Ppu::get_frame_buffer() const -> const u32* {
 void Ppu::set_palette() {
   const auto palette = utility::FileManager::get().get_palette();
 
-  if (palette.size() != (64 * 3)) {
+  if (palette.size() != static_cast<usize>(64 * 3)) {
     throw std::invalid_argument("Invalid palette file");
   }
 
@@ -347,7 +347,11 @@ void Ppu::sprite_evaluation() {
   for (usize i = 0; i < 64; ++i) {
     const i32 line = scanline - oam_mem[i * 4];
 
-    if (line >= 0 && line < sprite_height) {
+    if (line < 0) {
+      continue;
+    }
+
+    if (static_cast<u8>(line) < sprite_height) {
       sec_oam[size].id = i;
       sec_oam[size].y = oam_mem[(i * 4) + 0];
       sec_oam[size].tile = oam_mem[(i * 4) + 1];
@@ -532,7 +536,7 @@ auto Ppu::get_sprite_pixel() -> u8 {
 
 void Ppu::render_pixel() {
   const usize row_pixel = tick - 2;
-  const usize pixel_pos = (scanline * 256) + row_pixel;
+  const usize pixel_pos = static_cast<usize>(scanline * 256u) + row_pixel;
 
   if (!is_rendering) {
     work_frame_buffer[pixel_pos] = vram_read(0x3F00);
