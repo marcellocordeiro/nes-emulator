@@ -7,14 +7,19 @@
             "generator": "Ninja Multi-Config",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
-            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
             "warnings": {
                 "dev": true
             }
         },
         {
+            "name": "vcpkg",
+            "hidden": true,
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+        },
+        {
             "name": "windows",
             "hidden": true,
+            "inherits": [ "vcpkg" ],
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
@@ -24,6 +29,7 @@
         {
             "name": "macos",
             "hidden": true,
+            "inherits": [ "vcpkg" ],
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
