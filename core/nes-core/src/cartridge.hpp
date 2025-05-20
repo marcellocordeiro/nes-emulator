@@ -15,21 +15,21 @@ public:
   static auto get() -> Cartridge&;
 
   [[nodiscard]] auto get_mapper() const -> BaseMapper*;
+  [[nodiscard]] auto get_mirroring() const -> MirroringType;
 
   void load();
 
-  [[nodiscard]] auto prg_read(u16) const -> u8;
-  [[nodiscard]] auto chr_read(u16) const -> u8;
+  [[nodiscard]] auto prg_read(u16 addr) const -> u8;
+  [[nodiscard]] auto chr_read(u16 addr) const -> u8;
 
-  void prg_write(u16, u8);
-  void chr_write(u16, u8);
+  void prg_write(u16 addr, u8 value);
+  void chr_write(u16 addr, u8 value);
 
   void scanline_counter() const;
 
   void dump_prg_ram() const;
 
   std::shared_ptr<bool> irq_conn;
-  std::shared_ptr<MirroringType> mirroring_conn;
 
 private:
   Cartridge() = default;
@@ -39,8 +39,6 @@ private:
   usize chr_size = 0;
   bool has_chr_ram = false;
   usize prg_ram_size = 0;
-
-  MirroringType mirroring = MirroringType::Unknown;
 
   std::unique_ptr<BaseMapper> mapper;
 

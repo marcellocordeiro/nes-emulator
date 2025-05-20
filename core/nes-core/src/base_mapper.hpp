@@ -21,7 +21,8 @@ public:
 
   virtual void reset() = 0;
 
-  void set_mirroring(MirroringType) const;
+  [[nodiscard]] auto get_mirroring() const -> MirroringType;
+  void set_mirroring(MirroringType);
   void set_irq(bool) const;
 
   [[nodiscard]] auto get_prg_addr(u16 addr) const -> usize;
@@ -39,12 +40,13 @@ public:
 
   // TODO: fix this
   std::shared_ptr<bool> irq_conn;
-  std::shared_ptr<MirroringType> mirroring_conn;
 
   usize prg_size = 0;
   usize chr_size = 0;
 
 private:
+  MirroringType mirroring = MirroringType::Unknown;
+
   std::array<usize, 4> prg_map = {};
   std::array<usize, 8> chr_map = {};
 };

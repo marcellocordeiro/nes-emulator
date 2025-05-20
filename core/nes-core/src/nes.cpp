@@ -34,11 +34,6 @@ void Nes::power_on() {
   Cpu::get().nmi_conn = nmi;
   Ppu::get().nmi_conn = nmi;
 
-  const auto mirroring =
-    std::make_shared<types::ppu::MirroringType>(types::ppu::MirroringType::Unknown);
-  Ppu::get().mirroring_conn = mirroring;
-  Cartridge::get().mirroring_conn = mirroring;
-
   Cartridge::get().load();
 
   Cpu::get().power_on();

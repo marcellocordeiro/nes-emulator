@@ -3,8 +3,12 @@
 #include "lib/common.hpp"
 
 namespace nes {
-void BaseMapper::set_mirroring(const MirroringType value) const {
-  *mirroring_conn = value;
+auto BaseMapper::get_mirroring() const -> MirroringType {
+  return mirroring;
+}
+
+void BaseMapper::set_mirroring(const MirroringType value) {
+  mirroring = value;
 }
 
 void BaseMapper::set_irq(const bool value) const {

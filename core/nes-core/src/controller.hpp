@@ -8,17 +8,16 @@ namespace nes {
 class Controller final {
 public:
   static auto get() -> Controller&;
+  void update_state(usize port, u8 state);
 
-  void update_state(usize, u8);
-
-  auto read(usize) -> u8;
-  void write(bool);
+  auto read(usize port) -> u8;
+  void write(bool signal);
 
   //
   // Read status without side effects
   //
 
-  [[nodiscard]] auto peek(usize) const -> u8;
+  [[nodiscard]] auto peek(usize port) const -> u8;
 
 private:
   Controller() = default;

@@ -670,7 +670,7 @@ auto Ppu::bg_addr() const -> u16 {
 auto Ppu::nt_mirror_addr(const u16 addr) const -> u16 {
   using enum types::ppu::MirroringType;
 
-  switch (*mirroring_conn) {
+  switch (Cartridge::get().get_mirroring()) {
   case Vertical: return addr & 0x07FF;
   case Horizontal: return ((addr >> 1) & 0x400) + (addr & 0x03FF);
   case OneScreenLow: return addr & 0x03FF;

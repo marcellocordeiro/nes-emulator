@@ -28,6 +28,10 @@ auto Cartridge::get_mapper() const -> BaseMapper* {
   return mapper.get();
 }
 
+auto Cartridge::get_mirroring() const -> MirroringType {
+  return mapper->get_mirroring();
+}
+
 void Cartridge::load() {
   rom = utility::FileManager::get().get_rom();
 
@@ -38,7 +42,7 @@ void Cartridge::load() {
   chr_size = static_cast<usize>(header[5]) * 0x2000;
   has_chr_ram = chr_size == 0;
   prg_ram_size = header[8] != 0 ? header[8] * 0x2000 : 0x2000;
-  mirroring = (header[6] & 1) != 0 ? MirroringType::Vertical : MirroringType::Horizontal;
+  const auto mirroring = (header[6] & 1) != 0 ? MirroringType::Vertical : MirroringType::Horizontal;
 
   switch (mapper_num) {
   case 0: mapper = std::make_unique<Mapper0>(); break;
@@ -73,7 +77,6 @@ void Cartridge::load() {
 
   mapper->prg_size = prg.size();
   mapper->chr_size = chr.size();
-  mapper->mirroring_conn = mirroring_conn;
   mapper->irq_conn = irq_conn;
   mapper->set_mirroring(mirroring);
   mapper->reset();

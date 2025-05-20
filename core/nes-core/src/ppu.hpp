@@ -24,7 +24,6 @@ public:
   void step();
 
   std::shared_ptr<bool> nmi_conn;
-  std::shared_ptr<types::ppu::MirroringType> mirroring_conn;
 
   //
   // Read without side effects
