@@ -7,7 +7,7 @@
 #include "common.hpp"
 
 namespace lib {
-inline auto read_binary_file(const std::filesystem::path& path) -> std::vector<u8> {
+[[nodiscard]] inline auto read_binary_file(const std::filesystem::path& path) -> std::vector<u8> {
   std::ifstream stream(path, std::ios::binary);
 
   const auto length = std::filesystem::file_size(path);

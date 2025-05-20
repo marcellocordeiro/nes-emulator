@@ -39,7 +39,7 @@ enum class MemoryMap {
   Palettes,
 };
 
-auto get_memory_map(u16) -> MemoryMap;
+auto get_memory_map(u16 addr) -> MemoryMap;
 
 enum class MirroringType {
   Unknown,

@@ -8,7 +8,6 @@
 #include "cpu.hpp"
 #include "lib/common.hpp"
 #include "ppu.hpp"
-#include "types/ppu_types.hpp"
 #include "utility/file_manager.hpp"
 
 namespace nes {

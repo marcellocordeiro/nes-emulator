@@ -63,7 +63,7 @@ void BaseMapper::set_chr_map(const usize slot, const usize page) {
   }
 }
 
-void BaseMapper::scanline_counter() {}
+void BaseMapper::increment_scanline_counter() {}
 
 // Explicit instantiation
 template void BaseMapper::set_prg_map<32>(usize, i32);

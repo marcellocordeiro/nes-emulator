@@ -18,8 +18,8 @@ public:
 
   void set_palette();
 
-  auto read(u16) -> u8;
-  void write(u16, u8);
+  auto read(u16 addr) -> u8;
+  void write(u16 addr, u8 value);
 
   void step();
 
@@ -37,8 +37,8 @@ public:
     return scanline;
   }
 
-  [[nodiscard]] auto peek_reg(u16) const -> u8;
-  [[nodiscard]] auto peek_vram(u16) const -> u8;
+  [[nodiscard]] auto peek_reg(u16 addr) const -> u8;
+  [[nodiscard]] auto peek_vram(u16 addr) const -> u8;
 
 private:
   Ppu() = default;
@@ -47,8 +47,8 @@ private:
   // VRAM access
   //
 
-  [[nodiscard]] auto vram_read(u16) const -> u8;
-  void vram_write(u16, u8);
+  [[nodiscard]] auto vram_read(u16 addr) const -> u8;
+  void vram_write(u16 addr, u8 value);
 
   //
   // Sprites
@@ -92,14 +92,14 @@ private:
   // Addresses
   //
 
-  [[nodiscard]] auto nt_addr() const -> u16;           // Nametable address
-  [[nodiscard]] auto at_addr() const -> u16;           // Attribute address
-  [[nodiscard]] auto bg_addr() const -> u16;           // Background address
-  [[nodiscard]] static auto palette_addr(u16) -> u16;  // Palette address
-  [[nodiscard]] auto nt_mirror_addr(u16) const -> u16; // Relative nametable address
+  [[nodiscard]] auto nt_addr() const -> u16;                // Nametable address
+  [[nodiscard]] auto at_addr() const -> u16;                // Attribute address
+  [[nodiscard]] auto bg_addr() const -> u16;                // Background address
+  [[nodiscard]] static auto palette_addr(u16 addr) -> u16;  // Palette address
+  [[nodiscard]] auto nt_mirror_addr(u16 addr) const -> u16; // Relative nametable address
 
   template <typename T>
-  [[nodiscard]] auto get_palette(T, T, u8) const -> u8; // Get palette
+  [[nodiscard]] auto get_palette(T low, T high, u8 offset) const -> u8; // Get palette
 
   enum class Timing {
     Idle,

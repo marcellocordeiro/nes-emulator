@@ -9,22 +9,22 @@
 namespace nes::utility {
 class IpsPatch final {
 public:
-  explicit IpsPatch(const std::filesystem::path&);
+  explicit IpsPatch(const std::filesystem::path& path);
 
-  auto patch(const std::vector<u8>&) -> std::vector<u8>;
+  [[nodiscard]] auto patch(const std::vector<u8>& rom) -> std::vector<u8>;
 
 private:
-  auto check() -> bool;
+  [[nodiscard]] auto check() -> bool;
   void build();
-  auto read_record() -> bool;
+  [[nodiscard]] auto read_record() -> bool;
 
-  struct record_entry {
+  struct RecordEntry {
     u32 addr = 0;
     u16 length = 0;
     std::vector<u8> data;
   };
 
-  std::vector<record_entry> records;
+  std::vector<RecordEntry> records;
   std::ifstream ips_file;
   usize min_size = 0;
 };

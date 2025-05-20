@@ -76,7 +76,7 @@ void Mapper4::write(const u16 addr, const u8 value) {
   }
 }
 
-void Mapper4::scanline_counter() {
+void Mapper4::increment_scanline_counter() {
   if (irq_counter == 0) {
     irq_counter = irq_period;
   } else {

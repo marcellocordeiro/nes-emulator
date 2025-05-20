@@ -2,6 +2,7 @@
 
 #include <format>
 #include <stdexcept>
+#include <utility>
 
 #include <spdlog/spdlog.h>
 
@@ -10,7 +11,7 @@
 
 namespace nes {
 using enum types::cpu::AddressingMode;
-using enum types::cpu::flags;
+using enum types::cpu::Flags;
 
 template auto Cpu::get_operand<Immediate>() -> u16;
 
@@ -436,7 +437,7 @@ void Cpu::branch(const bool taken) {
     return;
   }
 
-  if (crossed_page(state.pc, jump_addr)) {
+  if (will_cross_page(state.pc, jump_addr)) {
     tick();
   }
 
@@ -455,8 +456,8 @@ auto Cpu::pop() -> u8 {
   return memory_read(0x100 + state.sp);
 }
 
-auto Cpu::crossed_page(const u16 addr, const u16 jump_addr) -> bool {
-  return (addr & 0xFF00) != (jump_addr & 0xFF00);
+auto Cpu::will_cross_page(const u16 from, const u16 to) -> bool {
+  return (from & 0xFF00) != (to & 0xFF00);
 }
 
 //
@@ -997,7 +998,7 @@ void Cpu::NOP() {
 template <auto Mode>
 void Cpu::NOP() {
   tick();
-  get_operand<Mode>(); // Discard it
+  std::ignore = get_operand<Mode>(); // Discard it
 }
 
 template <auto Mode>
@@ -1239,7 +1240,7 @@ auto Cpu::get_operand<AbsoluteX>() -> u16 {
   const auto base_addr = get_operand<Absolute>();
   const auto addr = static_cast<u16>(base_addr + state.x);
 
-  if (crossed_page(base_addr, addr)) {
+  if (will_cross_page(base_addr, addr)) {
     tick();
   }
 
@@ -1256,7 +1257,7 @@ auto Cpu::get_operand<AbsoluteY>() -> u16 {
   const auto base_addr = get_operand<Absolute>();
   const auto addr = static_cast<u16>(base_addr + state.y);
 
-  if (crossed_page(base_addr, addr)) {
+  if (will_cross_page(base_addr, addr)) {
     tick();
   }
 
@@ -1297,7 +1298,7 @@ auto Cpu::get_operand<IndirectY>() -> u16 {
 
   const auto addr = static_cast<u16>(base_addr + state.y);
 
-  if (crossed_page(base_addr, addr)) {
+  if (will_cross_page(base_addr, addr)) {
     tick();
   }
 

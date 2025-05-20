@@ -30,7 +30,7 @@ enum class AddressingMode {
   IndirectY_Exception,
 };
 
-enum flags {
+enum Flags {
   Carry = 0x01,
   Zero = 0x02,
   Interrupt = 0x04,
@@ -56,16 +56,16 @@ struct State {
 
   i32 cycle_count = 0;
 
-  [[nodiscard]] auto check_flags(u8) const -> bool;
-  void set_flags(u8);
-  void clear_flags(u8);
-  void update_nz(u8);
+  [[nodiscard]] auto check_flags(u8 flags) const -> bool;
+  void set_flags(u8 flags);
+  void clear_flags(u8 flags);
+  void update_nz(u8 value);
 
-  void set_a(u8);
-  void set_x(u8);
-  void set_y(u8);
-  void set_pc(u16);
-  void set_ps(u8);
+  void set_a(u8 value);
+  void set_x(u8 value);
+  void set_y(u8 value);
+  void set_pc(u16 addr);
+  void set_ps(u8 value);
 };
 
 namespace memory {
@@ -88,6 +88,6 @@ enum class MemoryMap {
 };
 
 template <auto Operation>
-auto get_map(u16) -> MemoryMap;
+auto get_map(u16 addr) -> MemoryMap;
 } // namespace memory
 } // namespace nes::types::cpu

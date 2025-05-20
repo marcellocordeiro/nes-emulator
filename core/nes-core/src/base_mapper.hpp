@@ -22,21 +22,21 @@ public:
   virtual void reset() = 0;
 
   [[nodiscard]] auto get_mirroring() const -> MirroringType;
-  void set_mirroring(MirroringType);
-  void set_irq(bool) const;
+  void set_mirroring(MirroringType value);
+  void set_irq(bool value) const;
 
   [[nodiscard]] auto get_prg_addr(u16 addr) const -> usize;
   [[nodiscard]] auto get_chr_addr(u16 addr) const -> usize;
 
-  virtual void write(u16, u8);
+  virtual void write(u16 addr, u8 value);
 
-  template <usize>
-  void set_prg_map(usize, i32);
+  template <usize Size>
+  void set_prg_map(usize slot, i32 page);
 
-  template <usize>
-  void set_chr_map(usize, usize);
+  template <usize Size>
+  void set_chr_map(usize slot, usize page);
 
-  virtual void scanline_counter();
+  virtual void increment_scanline_counter();
 
   // TODO: fix this
   std::shared_ptr<bool> irq_conn;

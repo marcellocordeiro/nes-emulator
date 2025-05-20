@@ -7,10 +7,11 @@
 namespace nes {
 class Controller final {
 public:
-  static auto get() -> Controller&;
+  [[nodiscard]] static auto get() -> Controller&;
+
   void update_state(usize port, u8 state);
 
-  auto read(usize port) -> u8;
+  [[nodiscard]] auto read(usize port) -> u8;
   void write(bool signal);
 
   //

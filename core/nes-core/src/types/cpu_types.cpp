@@ -16,12 +16,12 @@ void State::clear_flags(const u8 flags) {
 }
 
 void State::update_nz(const u8 value) {
-  clear_flags(flags::Zero | flags::Negative);
+  clear_flags(Flags::Zero | Flags::Negative);
 
   if (value == 0) {
-    set_flags(flags::Zero);
+    set_flags(Flags::Zero);
   } else if ((value & 0x80) != 0) {
-    set_flags(flags::Negative);
+    set_flags(Flags::Negative);
   }
 }
 

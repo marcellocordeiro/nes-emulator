@@ -7,7 +7,7 @@ class Mapper7 final: public BaseMapper {
 public:
   void reset() override;
 
-  void write(u16, u8) override;
+  void write(u16 addr, u8 value) override;
 
 private:
   void apply();

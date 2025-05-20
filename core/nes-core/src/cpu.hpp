@@ -11,7 +11,7 @@ class Cpu final {
 public:
   using RamType = std::array<u8, 0x800>;
 
-  static auto get() -> Cpu&;
+  [[nodiscard]] static auto get() -> Cpu&;
 
   void power_on();
   void reset();
@@ -29,7 +29,7 @@ public:
 
   [[nodiscard]] auto get_state() const -> types::cpu::State;
 
-  [[nodiscard]] auto peek(u16) const -> u8;
+  [[nodiscard]] auto peek(u16 addr) const -> u8;
 
   [[nodiscard]] auto peek_imm() const -> u16;
   [[nodiscard]] auto peek_rel() const -> u16;
@@ -51,11 +51,11 @@ private:
 
   void tick();
 
-  [[nodiscard]] auto read(u16) const -> u8;
-  void write(u16, u8);
+  [[nodiscard]] auto read(u16 addr) const -> u8;
+  void write(u16 addr, u8 value);
 
-  auto memory_read(u16) -> u8;
-  void memory_write(u16, u8);
+  [[nodiscard]] auto memory_read(u16 addr) -> u8;
+  void memory_write(u16 addr, u8 value);
 
   //
   // All functions defined here are
@@ -70,23 +70,23 @@ private:
   // Auxiliary
   //
 
-  void add(u8);
-  auto shift_left(u8) -> u8;  // Arithmetic left shift
-  auto shift_right(u8) -> u8; // Logical right shift
-  auto rotate_left(u8) -> u8;
-  auto rotate_right(u8) -> u8;
+  void add(u8 value);
+  [[nodiscard]] auto shift_left(u8 value) -> u8;  // Arithmetic left shift
+  [[nodiscard]] auto shift_right(u8 value) -> u8; // Logical right shift
+  [[nodiscard]] auto rotate_left(u8 value) -> u8;
+  [[nodiscard]] auto rotate_right(u8 value) -> u8;
 
-  void compare(u8, u8);
+  void compare(u8 reg, u8 value);
 
-  void push(u8);
-  auto pop() -> u8;
+  void push(u8 value);
+  [[nodiscard]] auto pop() -> u8;
 
-  void branch(bool);
+  void branch(bool taken);
 
-  static auto crossed_page(u16, u16) -> bool;
+  [[nodiscard]] static auto will_cross_page(u16 from, u16 to) -> bool;
 
   template <auto Mode>
-  auto get_operand() -> u16;
+  [[nodiscard]] auto get_operand() -> u16;
 
   //
   // Storage

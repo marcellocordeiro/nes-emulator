@@ -7,8 +7,8 @@
 namespace nes {
 class Nes {
 public:
-  void set_app_path(const std::filesystem::path&);
-  void load(const std::filesystem::path&);
+  void set_app_path(const std::filesystem::path& path);
+  void load(const std::filesystem::path& path);
   void reset();
   void power_on();
   void power_off();
@@ -16,6 +16,6 @@ public:
   void run_frame();
   auto get_frame_buffer() -> const u32*;
 
-  void update_controller_state(usize, u8);
+  void update_controller_state(usize port, u8 state);
 };
 } // namespace nes

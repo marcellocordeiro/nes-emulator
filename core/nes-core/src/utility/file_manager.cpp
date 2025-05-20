@@ -76,11 +76,11 @@ auto FileManager::get_palette() const -> std::vector<u8> {
   return lib::read_binary_file(palette_path);
 }
 
-void FileManager::save_prg_ram(const std::vector<u8>& vec) const {
+void FileManager::save_prg_ram(const std::vector<u8>& value) const {
   std::ofstream prg_ram_file(prg_ram_path, std::ios::binary);
   prg_ram_file.write(
-    reinterpret_cast<const char*>(vec.data()),
-    static_cast<std::streamsize>(vec.size())
+    reinterpret_cast<const char*>(value.data()),
+    static_cast<std::streamsize>(value.size())
   );
 }
 

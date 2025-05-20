@@ -116,7 +116,7 @@ void Cartridge::chr_write(const u16 addr, const u8 value) {
 }
 
 void Cartridge::scanline_counter() const {
-  mapper->scanline_counter();
+  mapper->increment_scanline_counter();
 }
 
 void Cartridge::dump_prg_ram() const {

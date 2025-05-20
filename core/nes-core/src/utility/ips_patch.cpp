@@ -65,7 +65,7 @@ auto IpsPatch::check() -> bool {
 auto IpsPatch::read_record() -> bool {
   constexpr auto magic_eof = static_cast<u32>((('E') << 16) | ('O' << 8) | ('F'));
 
-  record_entry record;
+  RecordEntry record;
 
   std::array<u8, 3> buffer = {};
 

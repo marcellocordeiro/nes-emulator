@@ -26,20 +26,20 @@ auto get_memory_map(u16 addr) -> MemoryMap {
 }
 
 auto get_mirroring_name(const MirroringType type) -> std::string_view {
-  constexpr static std::string_view horizontal = "Horizontal";
-  constexpr static std::string_view vertical = "Vertical";
-  constexpr static std::string_view one_screen_low = "One Screen Low";
-  constexpr static std::string_view one_screen_high = "One Screen High";
-  constexpr static std::string_view four_screen = "Four Screen";
-  constexpr static std::string_view unknown = "Unknown";
+  constexpr static std::string_view HORIZONTAL = "Horizontal";
+  constexpr static std::string_view VERTICAL = "Vertical";
+  constexpr static std::string_view ONE_SCREEN_LOW = "One Screen Low";
+  constexpr static std::string_view ONE_SCREEN_HIGH = "One Screen High";
+  constexpr static std::string_view FOUR_SCREEN = "Four Screen";
+  constexpr static std::string_view UNKNOWN = "Unknown";
 
   switch (type) {
-  case MirroringType::Horizontal: return horizontal;
-  case MirroringType::Vertical: return vertical;
-  case MirroringType::OneScreenLow: return one_screen_low;
-  case MirroringType::OneScreenHigh: return one_screen_high;
-  case MirroringType::FourScreen: return four_screen;
-  case MirroringType::Unknown: return unknown;
+  case MirroringType::Horizontal: return HORIZONTAL;
+  case MirroringType::Vertical: return VERTICAL;
+  case MirroringType::OneScreenLow: return ONE_SCREEN_LOW;
+  case MirroringType::OneScreenHigh: return ONE_SCREEN_HIGH;
+  case MirroringType::FourScreen: return FOUR_SCREEN;
+  case MirroringType::Unknown: return UNKNOWN;
 
   default: unreachable();
   }

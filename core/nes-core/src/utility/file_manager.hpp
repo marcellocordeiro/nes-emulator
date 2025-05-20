@@ -8,17 +8,17 @@
 namespace nes::utility {
 class FileManager final {
 public:
-  static auto get() -> FileManager&;
+  [[nodiscard]] static auto get() -> FileManager&;
 
-  void set_app_path(const std::filesystem::path&);
-  void set_rom(const std::filesystem::path&);
-  void set_palette(const std::filesystem::path&);
+  void set_app_path(const std::filesystem::path& value);
+  void set_rom(const std::filesystem::path& value);
+  void set_palette(const std::filesystem::path& value);
 
   [[nodiscard]] auto get_rom() const -> std::vector<u8>;
   [[nodiscard]] auto get_prg_ram() const -> std::vector<u8>;
   [[nodiscard]] auto get_palette() const -> std::vector<u8>;
 
-  void save_prg_ram(const std::vector<u8>&) const;
+  void save_prg_ram(const std::vector<u8>& value) const;
 
   [[nodiscard]] auto get_app_path() const -> std::filesystem::path;
   [[nodiscard]] auto get_rom_path() const -> std::filesystem::path;

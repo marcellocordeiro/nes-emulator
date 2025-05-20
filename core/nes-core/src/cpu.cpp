@@ -45,7 +45,7 @@ void Cpu::dma_oam(const u16 addr) {
 
 void Cpu::run_frame() {
   using types::cpu::memory::get_map;
-  using enum types::cpu::flags;
+  using enum types::cpu::Flags;
 
   constexpr auto cycles_per_frame = 29781;
 
