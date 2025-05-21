@@ -1,8 +1,12 @@
 {
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
   "dependencies": [
     "catch2",
     "fmt",
     "spdlog",
-    "sdl3"
+    {
+      "name": "sdl3",
+      "platform": "!linux"
+    }
   ]
 }

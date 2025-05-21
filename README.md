@@ -41,29 +41,31 @@ This project requires a recent compiler with C++23 support to be built.
 - Clang 20.1.2
   - Tested on Fedora 42
 - MSVC 19.43.34810 (Visual Studio 17.13.6)
-  - Tested on Windows 11********
+  - Tested on Windows 11
 - Apple Clang 17.0.0 (Xcode 16.3)
-  - Tested on macOS 15.4.1 (Intel)
+  - Tested on macOS 15.5 (Intel)
 
 ## Dependencies
+
+### vcpkg
+
+1. Install [vcpkg](https://vcpkg.io/)
+2. Add `VCPKG_ROOT` to the environment variables, containing the path to vcpkg (e.g. `C:\vcpkg`)
+3. vcpkg will install the dependencies during the configuration step (manifest mode)
+
+SDL3 is excluded from the dependency list on Linux, so it needs to be manually installed instead:
 
 ### Arch Linux
 
 ```bash
-sudo pacman -S fmt spdlog sdl3
+sudo pacman -S sdl3
 ```
 
 ### Fedora
 
 ```bash
-sudo dnf install fmt-devel spdlog-devel SDL3-devel
+sudo dnf install SDL3-devel
 ```
-
-### Windows
-
-1. Install [vcpkg](https://vcpkg.io/)
-2. Add `VCPKG_ROOT` to the environment variables, containing the path to vcpkg (e.g. `C:\vcpkg`)
-3. vcpkg will install the dependencies during the configuration step (manifest mode)
 
 ## Building
 

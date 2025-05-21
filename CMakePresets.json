@@ -39,6 +39,7 @@
         {
             "name": "linux",
             "hidden": true,
+            "inherits": [ "vcpkg" ],
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
