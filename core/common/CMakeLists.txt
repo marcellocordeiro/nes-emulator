@@ -4,7 +4,7 @@ set(HEADERS
   include/lib/common.hpp
   include/lib/concepts/binary_ops.hpp
   include/lib/files.hpp
-  include/lib/sane_integer.hpp
+  include/lib/integer.hpp
 )
 
 add_library(common INTERFACE)

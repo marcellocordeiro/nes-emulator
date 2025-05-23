@@ -12,6 +12,6 @@ public:
 private:
   void apply();
 
-  i32 mode = 0;
+  u8 mode = 0;
 };
 } // namespace nes

@@ -35,13 +35,12 @@ void BaseMapper::write(const u16 addr, const u8 value) {
 }
 
 // Size must be in KB
-template <usize Size>
+template <std::size_t Size>
 void BaseMapper::set_prg_map(const usize slot, i32 page) {
   constexpr usize pages = Size / 8;
   constexpr usize pages_b = Size * 0x400; // In bytes
 
   if (page < 0) {
-    // Last page
     page += static_cast<i32>(prg_size) / static_cast<i32>(pages_b);
   }
 
@@ -53,7 +52,7 @@ void BaseMapper::set_prg_map(const usize slot, i32 page) {
 }
 
 // Size must be in KB
-template <usize Size>
+template <std::size_t Size>
 void BaseMapper::set_chr_map(const usize slot, const usize page) {
   constexpr usize pages = Size;
   constexpr usize pages_b = Size * 0x400; // In bytes

@@ -30,10 +30,10 @@ public:
 
   virtual void write(u16 addr, u8 value);
 
-  template <usize Size>
+  template <std::size_t Size>
   void set_prg_map(usize slot, i32 page);
 
-  template <usize Size>
+  template <std::size_t Size>
   void set_chr_map(usize slot, usize page);
 
   virtual void increment_scanline_counter();
