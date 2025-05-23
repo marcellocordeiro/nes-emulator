@@ -4,25 +4,30 @@
 
 #include "lib/integer.hpp"
 
-template<typename Lhs, typename Rhs, typename Op>
+template <typename Lhs, typename Rhs, typename Op>
 concept supports_op = requires(Lhs a, Rhs b) {
-  { Op{}(a, b) } -> std::same_as<Lhs>;
-  { Op{}(b, a) } -> std::same_as<Lhs>;
+  {
+    Op{}(a, b)
+  } -> std::same_as<Lhs>;
+  {
+    Op{}(b, a)
+  } -> std::same_as<Lhs>;
 };
 
 template <typename Lhs, typename Rhs>
-concept supports_all_binary_ops =
-  supports_op<Lhs, Rhs, std::plus<>> &&
-  supports_op<Lhs, Rhs, std::minus<>> &&
-  supports_op<Lhs, Rhs, std::multiplies<>> &&
-  supports_op<Lhs, Rhs, std::divides<>> &&
-  supports_op<Lhs, Rhs, std::bit_and<>> &&
-  supports_op<Lhs, Rhs, std::bit_or<>> &&
-  supports_op<Lhs, Rhs, std::bit_xor<>>;
+concept supports_all_binary_ops = supports_op<Lhs, Rhs, std::plus<>>
+  && supports_op<Lhs, Rhs, std::minus<>>
+  && supports_op<Lhs, Rhs, std::multiplies<>>
+  && supports_op<Lhs, Rhs, std::divides<>>
+  && supports_op<Lhs, Rhs, std::bit_and<>>
+  && supports_op<Lhs, Rhs, std::bit_or<>>
+  && supports_op<Lhs, Rhs, std::bit_xor<>>;
 
 template <typename Lhs, typename Rhs>
 concept supports_comparisons = requires(Lhs a, Rhs b) {
-  { a <=> b };
+  {
+    a <=> b
+  };
 };
 
 static_assert(supports_comparisons<u8, u8>);

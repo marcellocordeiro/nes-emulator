@@ -34,9 +34,11 @@ struct Integer {
   }
 
   constexpr auto operator=(const Integer& rhs) noexcept -> Integer& = default;
+
   constexpr Integer(const Integer& other) noexcept : value_{other.value_} {}
 
-  constexpr auto add_signed(const matches_signed_type<value_type> auto value) const noexcept -> Integer {
+  constexpr auto add_signed(const matches_signed_type<value_type> auto value) const noexcept
+    -> Integer {
     return from(value_ + value.get());
   }
 
