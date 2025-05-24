@@ -16,7 +16,7 @@ target_sources(common-sys
     FILES ${HEADERS}
 )
 
-set_project_options(common-sys)
+set_target_options(common-sys)
 set_compiler_warnings(common-sys)
 
 target_link_libraries(common-sys

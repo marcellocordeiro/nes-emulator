@@ -59,7 +59,7 @@ target_sources(nes-core
     FILES ${HEADERS}
 )
 
-set_project_options(nes-core)
+set_target_options(nes-core)
 set_compiler_warnings(nes-core)
 
 target_link_libraries(nes-core

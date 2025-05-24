@@ -8,3 +8,6 @@
 *.state*
 *.sav
 *.rtc
+
+# Patches
+*.ips

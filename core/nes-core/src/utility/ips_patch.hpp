@@ -20,7 +20,6 @@ private:
 
   struct RecordEntry {
     u32 addr = 0;
-    u16 length = 0;
     std::vector<u8> data;
   };
 

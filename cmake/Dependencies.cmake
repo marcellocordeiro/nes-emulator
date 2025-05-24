@@ -24,8 +24,3 @@
 find_package(fmt CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(SDL3 CONFIG REQUIRED)
-
-find_package(Catch2 CONFIG REQUIRED)
-
-include(CTest)
-include(Catch)

@@ -15,7 +15,7 @@ set(SOURCES
 
 add_executable(nes-emulator-sdl3 ${SOURCES})
 
-set_project_options(nes-emulator-sdl3)
+set_target_options(nes-emulator-sdl3)
 set_compiler_warnings(nes-emulator-sdl3)
 
 target_link_libraries(nes-emulator-sdl3

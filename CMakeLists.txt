@@ -6,11 +6,12 @@ project(
   VERSION 0.1.0
 )
 
+include(cmake/CompilerWarnings.cmake)
 include(cmake/Compilers.cmake)
 include(cmake/Dependencies.cmake)
 include(cmake/Options.cmake)
-include(cmake/ProjectOptions.cmake)
-include(cmake/CompilerWarnings.cmake)
+include(cmake/TargetOptions.cmake)
+include(cmake/Testing.cmake)
 
 set(GIT_SHA
   "Unknown"

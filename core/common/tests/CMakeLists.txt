@@ -4,7 +4,7 @@ set(SOURCES
 
 add_executable(common-tests ${SOURCES})
 
-set_project_options(common-tests)
+set_target_options(common-tests)
 set_compiler_warnings(common-tests)
 
 target_link_libraries(common-tests
@@ -12,7 +12,5 @@ target_link_libraries(common-tests
     lib::common
     Catch2::Catch2WithMain
 )
-
-enable_testing()
 
 catch_discover_tests(common-tests)

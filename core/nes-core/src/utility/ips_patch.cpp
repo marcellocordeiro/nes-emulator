@@ -21,7 +21,7 @@ void IpsPatch::build() {
   }
 
   while (read_record()) {
-    min_size = std::max(min_size, records.back().addr + static_cast<usize>(records.back().length));
+    min_size = std::max(min_size, records.back().addr + records.back().data.size());
   }
 }
 
@@ -30,8 +30,8 @@ auto IpsPatch::patch(const std::vector<u8>& rom) -> std::vector<u8> {
 
   std::ranges::copy(rom, output.begin());
 
-  for (const auto& entry : records) {
-    std::ranges::copy(entry.data, output.begin() + entry.addr);
+  for (const auto& [addr, data] : records) {
+    std::ranges::copy(data, output.begin() + addr);
   }
 
   //
@@ -77,18 +77,18 @@ auto IpsPatch::read_record() -> bool {
   }
 
   ips_file.read(reinterpret_cast<char*>(buffer.data()), 2);
-  record.length = static_cast<u16>(buffer[0] << 8) | buffer[1];
+  const u16 length = static_cast<u16>(buffer[0] << 8) | buffer[1];
 
-  if (record.length > 0u) {
-    record.data.resize(record.length);
-    ips_file.read(reinterpret_cast<char*>(record.data.data()), record.length);
+  if (length > 0u) {
+    record.data.resize(length);
+    ips_file.read(reinterpret_cast<char*>(record.data.data()), length);
   } else { // RLE
     ips_file.read(reinterpret_cast<char*>(buffer.data()), 3);
-    record.length = static_cast<u16>(buffer[0] << 8) | buffer[1];
+    const u16 new_length = static_cast<u16>(buffer[0] << 8) | buffer[1];
     const u8 value = buffer[2];
 
-    record.data.resize(record.length);
-    std::fill_n(record.data.begin(), record.length, value);
+    record.data.resize(new_length);
+    std::fill_n(record.data.begin(), new_length, value);
   }
 
   records.push_back(std::move(record));

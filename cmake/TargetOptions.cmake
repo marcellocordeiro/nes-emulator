@@ -1,4 +1,4 @@
-function(set_project_options target)
+function(set_target_options target)
   set_target_properties(${target}
     PROPERTIES
       CXX_STANDARD 23
