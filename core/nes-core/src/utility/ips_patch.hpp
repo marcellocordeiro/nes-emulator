@@ -1,7 +1,6 @@
 #pragma once
 
-#include <filesystem>
-#include <fstream>
+#include <optional>
 #include <vector>
 
 #include "lib/common.hpp"
@@ -9,14 +8,18 @@
 namespace nes::utility {
 class IpsPatch final {
 public:
-  explicit IpsPatch(const std::filesystem::path& path);
+  explicit IpsPatch(const std::vector<u8>& patch_file);
 
   [[nodiscard]] auto patch(const std::vector<u8>& rom) -> std::vector<u8>;
 
 private:
-  [[nodiscard]] auto check() -> bool;
-  void build();
-  [[nodiscard]] auto read_record() -> bool;
+  void build(const std::vector<u8>& patch_file);
+
+  [[nodiscard]] static auto check(std::vector<u8>::const_iterator& iterator) -> bool;
+  [[nodiscard]] auto read_record(std::vector<u8>::const_iterator& iterator) -> bool;
+
+  template <typename T>
+  auto take_from_iterator(std::vector<u8>::const_iterator& iterator, auto count) -> T;
 
   struct RecordEntry {
     u32 addr = 0;
@@ -24,7 +27,9 @@ private:
   };
 
   std::vector<RecordEntry> records;
-  std::ifstream ips_file;
+
   usize min_size = 0;
+
+  std::optional<usize> truncate_size;
 };
 } // namespace nes::utility

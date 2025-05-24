@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include <vector>
 
 #include "lib/common.hpp"
 #include "types/ppu_types.hpp"
@@ -16,7 +17,7 @@ public:
 
   [[nodiscard]] auto get_frame_buffer() const -> const u32*;
 
-  void set_palette();
+  void set_palette(const std::vector<u8>& palette);
 
   auto read(u16 addr) -> u8;
   void write(u16 addr, u8 value);

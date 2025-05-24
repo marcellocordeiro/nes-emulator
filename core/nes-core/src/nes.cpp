@@ -33,14 +33,24 @@ void Nes::power_on() {
   Cpu::get().nmi_conn = nmi;
   Ppu::get().nmi_conn = nmi;
 
-  Cartridge::get().load();
+  auto prg_ram = std::optional<std::vector<u8>>();
+
+  if (utility::FileManager::get().has_prg_ram()) {
+    prg_ram = utility::FileManager::get().get_prg_ram();
+  }
+
+  Cartridge::get().load(utility::FileManager::get().get_rom(), prg_ram);
+
+  const auto palette = utility::FileManager::get().get_palette();
+  Ppu::get().set_palette(palette);
 
   Cpu::get().power_on();
   Ppu::get().power_on();
 }
 
 void Nes::power_off() {
-  Cartridge::get().dump_prg_ram();
+  const auto prg_ram = Cartridge::get().get_prg_ram();
+  utility::FileManager::get().save_prg_ram(prg_ram);
 }
 
 void Nes::run_frame() {

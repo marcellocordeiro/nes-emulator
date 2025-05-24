@@ -8,7 +8,6 @@
 #include "cartridge.hpp"
 #include "lib/common.hpp"
 #include "types/ppu_types.hpp"
-#include "utility/file_manager.hpp"
 
 namespace nes {
 auto Ppu::get() -> Ppu& {
@@ -17,8 +16,6 @@ auto Ppu::get() -> Ppu& {
 }
 
 void Ppu::power_on() {
-  this->set_palette();
-
   ctrl.raw = 0;
   mask.raw = 0;
   status.raw = 0;
@@ -55,9 +52,7 @@ auto Ppu::get_frame_buffer() const -> const u32* {
   return frame_buffer.data();
 }
 
-void Ppu::set_palette() {
-  const auto palette = utility::FileManager::get().get_palette();
-
+void Ppu::set_palette(const std::vector<u8>& palette) {
   if (palette.size() != static_cast<usize>(64 * 3)) {
     throw std::invalid_argument("Invalid palette file");
   }

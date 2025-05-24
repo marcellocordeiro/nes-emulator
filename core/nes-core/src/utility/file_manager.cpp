@@ -58,7 +58,8 @@ auto FileManager::get_rom() const -> std::vector<u8> {
   auto rom = lib::read_binary_file(rom_path);
 
   if (has_patch()) {
-    rom = IpsPatch(patch_path).patch(rom);
+    const auto patch_file = lib::read_binary_file(patch_path);
+    rom = IpsPatch(patch_file).patch(rom);
   }
 
   return rom;

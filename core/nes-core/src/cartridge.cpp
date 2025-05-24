@@ -16,7 +16,6 @@
 #include "mappers/mapper_4.hpp"
 #include "mappers/mapper_7.hpp"
 #include "types/ppu_types.hpp"
-#include "utility/file_manager.hpp"
 
 namespace nes {
 auto Cartridge::get() -> Cartridge& {
@@ -32,16 +31,19 @@ auto Cartridge::get_mirroring() const -> MirroringType {
   return mapper->get_mirroring();
 }
 
-void Cartridge::load() {
-  rom = utility::FileManager::get().get_rom();
+void Cartridge::load(
+  const std::vector<u8>& rom_file,
+  const std::optional<std::vector<u8>>& prg_ram_file
+) {
+  rom = rom_file;
 
   const std::span header(rom.begin(), rom.begin() + 16);
 
-  mapper_num = (header[7] & 0xF0) | (header[6] >> 4);
-  prg_size = static_cast<usize>(header[4]) * 0x4000;
-  chr_size = static_cast<usize>(header[5]) * 0x2000;
-  has_chr_ram = chr_size == 0;
-  prg_ram_size = header[8] != 0 ? header[8] * 0x2000 : 0x2000;
+  const usize mapper_num = (header[7] & 0xF0) | (header[6] >> 4);
+  const usize prg_size = static_cast<usize>(header[4]) * 0x4000;
+  const usize chr_size = static_cast<usize>(header[5]) * 0x2000;
+  const usize has_chr_ram = chr_size == 0;
+  const usize prg_ram_size = header[8] != 0 ? header[8] * 0x2000 : 0x2000;
   const auto mirroring = (header[6] & 1) != 0 ? MirroringType::Vertical : MirroringType::Horizontal;
 
   switch (mapper_num) {
@@ -69,8 +71,8 @@ void Cartridge::load() {
     chr = chr_ram;
   }
 
-  if (utility::FileManager::get().has_prg_ram()) {
-    prg_ram = utility::FileManager::get().get_prg_ram();
+  if (prg_ram_file) {
+    prg_ram = *prg_ram_file;
   } else {
     prg_ram.resize(0x2000, 0);
   }
@@ -119,7 +121,7 @@ void Cartridge::scanline_counter() const {
   mapper->increment_scanline_counter();
 }
 
-void Cartridge::dump_prg_ram() const {
-  utility::FileManager::get().save_prg_ram(prg_ram);
+auto Cartridge::get_prg_ram() const -> std::vector<u8> {
+  return prg_ram;
 }
 } // namespace nes

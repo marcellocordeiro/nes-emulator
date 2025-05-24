@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <span>
 #include <vector>
 
@@ -17,7 +18,7 @@ public:
   [[nodiscard]] auto get_mapper() const -> BaseMapper*;
   [[nodiscard]] auto get_mirroring() const -> MirroringType;
 
-  void load();
+  void load(const std::vector<u8>& rom_file, const std::optional<std::vector<u8>>& prg_ram_file);
 
   [[nodiscard]] auto prg_read(u16 addr) const -> u8;
   [[nodiscard]] auto chr_read(u16 addr) const -> u8;
@@ -27,18 +28,12 @@ public:
 
   void scanline_counter() const;
 
-  void dump_prg_ram() const;
+  [[nodiscard]] auto get_prg_ram() const -> std::vector<u8>;
 
   std::shared_ptr<bool> irq_conn;
 
 private:
   Cartridge() = default;
-
-  i32 mapper_num = -1;
-  usize prg_size = 0;
-  usize chr_size = 0;
-  bool has_chr_ram = false;
-  usize prg_ram_size = 0;
 
   std::unique_ptr<BaseMapper> mapper;
 

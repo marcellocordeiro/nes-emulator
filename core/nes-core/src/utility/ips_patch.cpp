@@ -1,8 +1,7 @@
 #include "ips_patch.hpp"
 
 #include <algorithm>
-#include <array>
-#include <filesystem>
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -11,17 +10,23 @@
 #include "lib/common.hpp"
 
 namespace nes::utility {
-IpsPatch::IpsPatch(const std::filesystem::path& path) : ips_file(path, std::ios::binary) {
-  build();
+IpsPatch::IpsPatch(const std::vector<u8>& patch_file) {
+  build(patch_file);
 }
 
-void IpsPatch::build() {
-  if (!check()) {
+void IpsPatch::build(const std::vector<u8>& patch_file) {
+  auto iterator = patch_file.cbegin();
+
+  if (!check(iterator)) {
     throw std::runtime_error("Invalid IPS patch");
   }
 
-  while (read_record()) {
+  while (read_record(iterator)) {
     min_size = std::max(min_size, records.back().addr + records.back().data.size());
+  }
+
+  if (iterator != patch_file.cend()) {
+    truncate_size = take_from_iterator<usize>(iterator, 3);
   }
 }
 
@@ -38,61 +43,59 @@ auto IpsPatch::patch(const std::vector<u8>& rom) -> std::vector<u8> {
   // Truncate (extension)
   //
 
-  std::array<u8, 3> buffer = {};
-  ips_file.read(reinterpret_cast<char*>(buffer.data()), 3 * sizeof(u8));
-
-  // If the stream is still good, there is a 3-byte truncate offset after EOF
-  if (ips_file) {
-    const usize truncate_offset =
-      static_cast<usize>(buffer[0] << 16) | static_cast<usize>(buffer[1] << 8) | buffer[2];
-
-    if (output.size() > truncate_offset) {
-      output.resize(truncate_offset);
+  if (truncate_size) {
+    if (output.size() > *truncate_size) {
+      output.resize(*truncate_size);
     }
   }
 
   return output;
 }
 
-auto IpsPatch::check() -> bool {
-  std::string header;
-  header.resize(5);
-  ips_file.read(header.data(), 5);
+auto IpsPatch::check(std::vector<u8>::const_iterator& iterator) -> bool {
+  const auto header = std::string(iterator, iterator + 5);
+  std::advance(iterator, 5);
 
   return header == "PATCH";
 }
 
-auto IpsPatch::read_record() -> bool {
-  constexpr auto magic_eof = static_cast<u32>((('E') << 16) | ('O' << 8) | ('F'));
+auto IpsPatch::read_record(std::vector<u8>::const_iterator& iterator) -> bool {
+  static constexpr auto EOF_MARKER = static_cast<u32>((('E') << 16) | ('O' << 8) | ('F'));
 
-  RecordEntry record;
+  const auto addr = take_from_iterator<u32>(iterator, 3);
 
-  std::array<u8, 3> buffer = {};
-
-  ips_file.read(reinterpret_cast<char*>(buffer.data()), 3 * sizeof(u8));
-  record.addr = static_cast<u32>(buffer[0] << 16) | static_cast<u32>(buffer[1] << 8) | buffer[2];
-
-  if (record.addr == magic_eof) {
+  if (addr == EOF_MARKER) {
     return false;
   }
 
-  ips_file.read(reinterpret_cast<char*>(buffer.data()), 2);
-  const u16 length = static_cast<u16>(buffer[0] << 8) | buffer[1];
+  const auto length = take_from_iterator<u16>(iterator, 2);
+
+  std::vector<u8> data;
 
   if (length > 0u) {
-    record.data.resize(length);
-    ips_file.read(reinterpret_cast<char*>(record.data.data()), length);
+    data.assign(iterator, iterator + length);
+    std::advance(iterator, length);
   } else { // RLE
-    ips_file.read(reinterpret_cast<char*>(buffer.data()), 3);
-    const u16 new_length = static_cast<u16>(buffer[0] << 8) | buffer[1];
-    const u8 value = buffer[2];
+    const auto rle_length = take_from_iterator<u16>(iterator, 2);
+    const auto rle_value = take_from_iterator<u8>(iterator, 1);
 
-    record.data.resize(new_length);
-    std::fill_n(record.data.begin(), new_length, value);
+    data.assign(rle_length, rle_value);
   }
 
-  records.push_back(std::move(record));
+  records.emplace_back(addr, std::move(data));
 
   return true;
+}
+
+template <typename T>
+auto IpsPatch::take_from_iterator(std::vector<u8>::const_iterator& iterator, const auto count)
+  -> T {
+  const auto range = std::ranges::subrange(iterator, iterator + count);
+  const auto result = std::ranges::fold_left(range, T{0}, [](const T acc, const u8 value) {
+    return static_cast<T>((acc << 8) | static_cast<T>(value));
+  });
+  std::advance(iterator, count);
+
+  return result;
 }
 } // namespace nes::utility
