@@ -75,7 +75,8 @@ auto IpsPatch::read_record(std::vector<u8>::const_iterator& iterator) -> bool {
   if (length > 0u) {
     data.assign(iterator, iterator + length);
     std::advance(iterator, length);
-  } else { // RLE
+  } else {
+    // RLE
     const auto rle_length = take_from_iterator<u16>(iterator, 2);
     const auto rle_value = take_from_iterator<u8>(iterator, 1);
 

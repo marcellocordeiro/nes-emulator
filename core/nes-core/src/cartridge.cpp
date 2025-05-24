@@ -39,7 +39,7 @@ void Cartridge::load(const std::vector<u8>& rom_file, const std::optional<std::v
   const usize mapper_num = (header[7] & 0xF0) | (header[6] >> 4);
   const usize prg_size = static_cast<usize>(header[4]) * 0x4000;
   const usize chr_size = static_cast<usize>(header[5]) * 0x2000;
-  const usize has_chr_ram = chr_size == 0;
+  const bool has_chr_ram = chr_size == 0;
   const usize prg_ram_size = header[8] != 0 ? header[8] * 0x2000 : 0x2000;
   const auto mirroring = (header[6] & 1) != 0 ? MirroringType::Vertical : MirroringType::Horizontal;
 
