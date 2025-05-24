@@ -53,82 +53,80 @@ void State::set_ps(const u8 value) {
 //
 
 namespace memory {
-template <auto Operation>
-auto get_map(u16 addr) -> MemoryMap { // NOLINT
-  auto in_range = [addr](const u16 lower, const u16 upper) {
-    return (addr >= lower) && (addr <= upper);
-  };
+  template <auto Operation>
+  auto get_map(u16 addr) -> MemoryMap { // NOLINT
+    auto in_range = [addr](const u16 lower, const u16 upper) { return (addr >= lower) && (addr <= upper); };
 
-  if constexpr (Operation == Operation::Read) {
-    if (addr <= 0x1FFF) {
-      return MemoryMap::CpuRam;
+    if constexpr (Operation == Operation::Read) {
+      if (addr <= 0x1FFF) {
+        return MemoryMap::CpuRam;
+      }
+
+      if (in_range(0x2000, 0x3FFF)) {
+        return MemoryMap::PpuAccess;
+      }
+
+      if (in_range(0x4000, 0x4013) || addr == 0x4015) {
+        return MemoryMap::ApuAccess;
+      }
+
+      if (addr == 0x4016) {
+        return MemoryMap::Controller1;
+      }
+
+      if (addr == 0x4017) {
+        return MemoryMap::Controller2;
+      }
+
+      if (in_range(0x4018, 0x401F)) {
+        return MemoryMap::Unknown;
+      }
+
+      if (in_range(0x4020, 0x5FFF)) {
+        return MemoryMap::Unknown;
+      }
+
+      if (in_range(0x6000, 0xFFFF)) {
+        return MemoryMap::CartridgeAccess;
+      }
+    } else if constexpr (Operation == Operation::Write) {
+      if (addr <= 0x1FFF) {
+        return MemoryMap::CpuRam;
+      }
+
+      if (in_range(0x2000, 0x3FFF)) {
+        return MemoryMap::PpuAccess;
+      }
+
+      if (in_range(0x4000, 0x4013) || addr == 0x4015) {
+        return MemoryMap::ApuAccess;
+      }
+
+      if (addr == 0x4014) {
+        return MemoryMap::OamDma;
+      }
+
+      if (addr == 0x4016) {
+        return MemoryMap::ControllerAccess;
+      }
+
+      if (addr == 0x4017) {
+        return MemoryMap::ApuAccess;
+      }
+
+      if (in_range(0x4018, 0x401F)) {
+        return MemoryMap::Unknown;
+      }
+
+      if (in_range(0x4020, 0xFFFF)) {
+        return MemoryMap::CartridgeAccess;
+      }
     }
 
-    if (in_range(0x2000, 0x3FFF)) {
-      return MemoryMap::PpuAccess;
-    }
-
-    if (in_range(0x4000, 0x4013) || addr == 0x4015) {
-      return MemoryMap::ApuAccess;
-    }
-
-    if (addr == 0x4016) {
-      return MemoryMap::Controller1;
-    }
-
-    if (addr == 0x4017) {
-      return MemoryMap::Controller2;
-    }
-
-    if (in_range(0x4018, 0x401F)) {
-      return MemoryMap::Unknown;
-    }
-
-    if (in_range(0x4020, 0x5FFF)) {
-      return MemoryMap::Unknown;
-    }
-
-    if (in_range(0x6000, 0xFFFF)) {
-      return MemoryMap::CartridgeAccess;
-    }
-  } else if constexpr (Operation == Operation::Write) {
-    if (addr <= 0x1FFF) {
-      return MemoryMap::CpuRam;
-    }
-
-    if (in_range(0x2000, 0x3FFF)) {
-      return MemoryMap::PpuAccess;
-    }
-
-    if (in_range(0x4000, 0x4013) || addr == 0x4015) {
-      return MemoryMap::ApuAccess;
-    }
-
-    if (addr == 0x4014) {
-      return MemoryMap::OamDma;
-    }
-
-    if (addr == 0x4016) {
-      return MemoryMap::ControllerAccess;
-    }
-
-    if (addr == 0x4017) {
-      return MemoryMap::ApuAccess;
-    }
-
-    if (in_range(0x4018, 0x401F)) {
-      return MemoryMap::Unknown;
-    }
-
-    if (in_range(0x4020, 0xFFFF)) {
-      return MemoryMap::CartridgeAccess;
-    }
+    return MemoryMap::Unknown;
   }
 
-  return MemoryMap::Unknown;
-}
-
-template auto get_map<Operation::Read>(u16) -> MemoryMap;
-template auto get_map<Operation::Write>(u16) -> MemoryMap;
+  template auto get_map<Operation::Read>(u16) -> MemoryMap;
+  template auto get_map<Operation::Write>(u16) -> MemoryMap;
 } // namespace memory
 } // namespace nes::types::cpu

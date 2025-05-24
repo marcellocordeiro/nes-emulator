@@ -62,8 +62,7 @@ void Ppu::set_palette(const std::vector<u8>& palette) {
     const auto g = palette[(i * 3) + 1];
     const auto b = palette[(i * 3) + 2];
 
-    full_nes_palette[0][i] =
-      static_cast<u32>(r << 16) | static_cast<u32>(g << 8) | static_cast<u32>(b);
+    full_nes_palette[0][i] = static_cast<u32>(r << 16) | static_cast<u32>(g << 8) | static_cast<u32>(b);
   }
 
   // Generate full colour palette
@@ -109,12 +108,12 @@ void Ppu::set_palette(const std::vector<u8>& palette) {
 
 void Ppu::step() {
   switch (ppu_state) {
-  case Timing::Visible: scanline_cycle_visible(); break;
-  case Timing::VBlank: scanline_cycle_nmi(); break;
-  case Timing::PreRender: scanline_cycle_pre(); break;
-  case Timing::Idle: break;
+    case Timing::Visible: scanline_cycle_visible(); break;
+    case Timing::VBlank: scanline_cycle_nmi(); break;
+    case Timing::PreRender: scanline_cycle_pre(); break;
+    case Timing::Idle: break;
 
-  default: unreachable();
+    default: unreachable();
   }
 
   ++tick;
@@ -154,22 +153,22 @@ auto Ppu::peek_reg(const u16 addr) const -> u8 {
   const auto map = static_cast<types::ppu::PpuMap>(addr % 8);
 
   switch (map) {
-  case PpuStatus: return (bus_latch & 0x1F) | status.raw;
-  case OamData: return oam_mem[oam_addr];
-  case PpuData:
-    if (vram_addr.addr() <= 0x3EFF) {
-      return ppudata_buffer;
-    }
+    case PpuStatus: return (bus_latch & 0x1F) | status.raw;
+    case OamData: return oam_mem[oam_addr];
+    case PpuData:
+      if (vram_addr.addr() <= 0x3EFF) {
+        return ppudata_buffer;
+      }
 
-    return peek_vram(vram_addr.addr());
+      return peek_vram(vram_addr.addr());
 
-  case PpuAddr:
-  case PpuScroll:
-  case PpuCtrl:
-  case PpuMask:
-  case OamAddr: break;
+    case PpuAddr:
+    case PpuScroll:
+    case PpuCtrl:
+    case PpuMask:
+    case OamAddr: break;
 
-  default: unreachable();
+    default: unreachable();
   }
 
   return bus_latch;
@@ -181,42 +180,42 @@ auto Ppu::read(const u16 addr) -> u8 {
   const auto map = static_cast<types::ppu::PpuMap>(addr % 8);
 
   switch (map) {
-  case PpuStatus: {
-    bus_latch = (bus_latch & 0x1F) | status.raw;
-    status.set_vblank(false);
-    addr_latch = false;
-    break;
-  }
-
-  case OamData: {
-    bus_latch = oam_mem[oam_addr];
-    break;
-  }
-
-  case PpuData: {
-    if (vram_addr.addr() <= 0x3EFF) {
-      bus_latch = ppudata_buffer;
-      ppudata_buffer = vram_read(vram_addr.addr());
-    } else {
-      ppudata_buffer = vram_read(vram_addr.addr());
-      bus_latch = ppudata_buffer;
+    case PpuStatus: {
+      bus_latch = (bus_latch & 0x1F) | status.raw;
+      status.set_vblank(false);
+      addr_latch = false;
+      break;
     }
 
-    vram_addr.set_addr(vram_addr.addr() + addr_increment);
+    case OamData: {
+      bus_latch = oam_mem[oam_addr];
+      break;
+    }
 
-    break;
-  }
+    case PpuData: {
+      if (vram_addr.addr() <= 0x3EFF) {
+        bus_latch = ppudata_buffer;
+        ppudata_buffer = vram_read(vram_addr.addr());
+      } else {
+        ppudata_buffer = vram_read(vram_addr.addr());
+        bus_latch = ppudata_buffer;
+      }
 
-  case PpuCtrl:
-  case PpuMask:
-  case OamAddr:
-  case PpuScroll:
-  case PpuAddr: {
-    SPDLOG_CRITICAL("Unreachable");
-    std::terminate();
-  }
+      vram_addr.set_addr(vram_addr.addr() + addr_increment);
 
-  default: unreachable();
+      break;
+    }
+
+    case PpuCtrl:
+    case PpuMask:
+    case OamAddr:
+    case PpuScroll:
+    case PpuAddr: {
+      SPDLOG_CRITICAL("Unreachable");
+      std::terminate();
+    }
+
+    default: unreachable();
   }
 
   return bus_latch;
@@ -230,75 +229,75 @@ void Ppu::write(const u16 addr, const u8 value) {
   const auto map = static_cast<types::ppu::PpuMap>(addr % 8);
 
   switch (map) {
-  case PpuCtrl: {
-    ctrl.raw = value;
-    temp_addr.set_nt(ctrl.nt());
+    case PpuCtrl: {
+      ctrl.raw = value;
+      temp_addr.set_nt(ctrl.nt());
 
-    sprite_height = ctrl.spr_size() ? 16 : 8;
-    addr_increment = ctrl.addr_inc() ? 32 : 1;
-    break;
-  }
-
-  case PpuMask: {
-    mask.raw = value;
-
-    is_rendering = mask.show_bg() || mask.show_spr();
-    grayscale_mask = mask.grayscale() ? 0x30 : 0x3F;
-    selected_palette = mask.rgb();
-    break;
-  }
-
-  case OamAddr: {
-    oam_addr = value;
-    break;
-  }
-
-  case OamData: {
-    oam_mem[oam_addr] = value;
-    ++oam_addr;
-    break;
-  }
-
-  case PpuScroll: {
-    if (!addr_latch) {
-      // First write
-      fine_x = value & 0b111;
-      temp_addr.set_coarse_x(value >> 3);
-    } else {
-      // Second write
-      temp_addr.set_fine_y(value & 0b111);
-      temp_addr.set_coarse_y(value >> 3);
+      sprite_height = ctrl.spr_size() ? 16 : 8;
+      addr_increment = ctrl.addr_inc() ? 32 : 1;
+      break;
     }
 
-    addr_latch = !addr_latch;
-    break;
-  }
+    case PpuMask: {
+      mask.raw = value;
 
-  case PpuAddr: {
-    if (!addr_latch) {
-      // First write
-      temp_addr.set_addr_high(value & 0b11'1111);
-    } else {
-      // Second write
-      temp_addr.set_addr_low(value);
-      vram_addr.raw = temp_addr.raw;
+      is_rendering = mask.show_bg() || mask.show_spr();
+      grayscale_mask = mask.grayscale() ? 0x30 : 0x3F;
+      selected_palette = mask.rgb();
+      break;
     }
 
-    addr_latch = !addr_latch;
-    break;
-  }
+    case OamAddr: {
+      oam_addr = value;
+      break;
+    }
 
-  case PpuData: {
-    vram_write(vram_addr.addr(), value);
-    vram_addr.set_addr(vram_addr.addr() + addr_increment);
-    break;
-  }
+    case OamData: {
+      oam_mem[oam_addr] = value;
+      ++oam_addr;
+      break;
+    }
 
-  case PpuStatus:
-  default: {
-    SPDLOG_CRITICAL("Unreachable");
-    std::terminate();
-  }
+    case PpuScroll: {
+      if (!addr_latch) {
+        // First write
+        fine_x = value & 0b111;
+        temp_addr.set_coarse_x(value >> 3);
+      } else {
+        // Second write
+        temp_addr.set_fine_y(value & 0b111);
+        temp_addr.set_coarse_y(value >> 3);
+      }
+
+      addr_latch = !addr_latch;
+      break;
+    }
+
+    case PpuAddr: {
+      if (!addr_latch) {
+        // First write
+        temp_addr.set_addr_high(value & 0b11'1111);
+      } else {
+        // Second write
+        temp_addr.set_addr_low(value);
+        vram_addr.raw = temp_addr.raw;
+      }
+
+      addr_latch = !addr_latch;
+      break;
+    }
+
+    case PpuData: {
+      vram_write(vram_addr.addr(), value);
+      vram_addr.set_addr(vram_addr.addr() + addr_increment);
+      break;
+    }
+
+    case PpuStatus:
+    default: {
+      SPDLOG_CRITICAL("Unreachable");
+      std::terminate();
+    }
   }
 }
 
@@ -310,12 +309,12 @@ auto Ppu::vram_read(const u16 addr) const -> u8 {
   using enum types::ppu::MemoryMap;
 
   switch (types::ppu::get_memory_map(addr)) {
-  case Chr: return Cartridge::get().chr_read(addr);
-  case Nametables: return ci_ram[nt_mirror_addr(addr)];
-  case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
-  case Unknown: return 0;
+    case Chr: return Cartridge::get().chr_read(addr);
+    case Nametables: return ci_ram[nt_mirror_addr(addr)];
+    case Palettes: return cg_ram[palette_addr(addr)] & grayscale_mask;
+    case Unknown: return 0;
 
-  default: unreachable();
+    default: unreachable();
   }
 }
 
@@ -323,12 +322,12 @@ void Ppu::vram_write(const u16 addr, const u8 value) {
   using enum types::ppu::MemoryMap;
 
   switch (types::ppu::get_memory_map(addr)) {
-  case Chr: Cartridge::get().chr_write(addr, value); break;
-  case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
-  case Palettes: cg_ram[palette_addr(addr)] = value; break;
-  case Unknown: throw std::runtime_error("Unreachable");
+    case Chr: Cartridge::get().chr_write(addr, value); break;
+    case Nametables: ci_ram[nt_mirror_addr(addr)] = value; break;
+    case Palettes: cg_ram[palette_addr(addr)] = value; break;
+    case Unknown: throw std::runtime_error("Unreachable");
 
-  default: unreachable();
+    default: unreachable();
   }
 }
 
@@ -433,12 +432,12 @@ void Ppu::vertical_scroll() {
   } else {
     vram_addr.set_fine_y(0);
     switch (vram_addr.coarse_y()) {
-    case 29:
-      vram_addr.set_nt(vram_addr.nt() ^ 0b10);
-      vram_addr.set_coarse_y(0);
-      break;
-    case 31: vram_addr.set_coarse_y(0); break;
-    default: vram_addr.set_coarse_y(vram_addr.coarse_y() + 1); break;
+      case 29:
+        vram_addr.set_nt(vram_addr.nt() ^ 0b10);
+        vram_addr.set_coarse_y(0);
+        break;
+      case 31: vram_addr.set_coarse_y(0); break;
+      default: vram_addr.set_coarse_y(vram_addr.coarse_y() + 1); break;
     }
   }
 }
@@ -542,9 +541,7 @@ void Ppu::render_pixel() {
 }
 
 void Ppu::background_fetch() {
-  auto in_range = [this](const auto lower, const auto upper) {
-    return (tick >= lower) && (tick <= upper);
-  };
+  auto in_range = [this](const auto lower, const auto upper) { return (tick >= lower) && (tick <= upper); };
 
   if (in_range(2, 257) || in_range(322, 337)) {
     background_shift();
@@ -552,44 +549,42 @@ void Ppu::background_fetch() {
 
   if (in_range(1, 255) || in_range(321, 338)) {
     switch (tick % 8) {
-    case 1: ppu_addr = nt_addr(); break;
-    case 2: nt_latch = vram_read(ppu_addr); break;
+      case 1: ppu_addr = nt_addr(); break;
+      case 2: nt_latch = vram_read(ppu_addr); break;
 
-    case 3: ppu_addr = at_addr(); break;
-    case 4: at_latch = vram_read(ppu_addr); break;
+      case 3: ppu_addr = at_addr(); break;
+      case 4: at_latch = vram_read(ppu_addr); break;
 
-    case 5: ppu_addr = bg_addr(); break;
-    case 6: bg_latch_l = vram_read(ppu_addr); break;
+      case 5: ppu_addr = bg_addr(); break;
+      case 6: bg_latch_l = vram_read(ppu_addr); break;
 
-    case 7: ppu_addr += 8; break;
-    case 0:
-      bg_latch_h = vram_read(ppu_addr);
-      horizontal_scroll();
-      break;
+      case 7: ppu_addr += 8; break;
+      case 0:
+        bg_latch_h = vram_read(ppu_addr);
+        horizontal_scroll();
+        break;
 
-    default: unreachable();
+      default: unreachable();
     }
   } else {
     switch (tick) {
-    case 256:
-      bg_latch_h = vram_read(ppu_addr);
-      vertical_scroll();
-      break;
+      case 256:
+        bg_latch_h = vram_read(ppu_addr);
+        vertical_scroll();
+        break;
 
-    case 257: horizontal_update(); break;
+      case 257: horizontal_update(); break;
 
-    case 339: ppu_addr = nt_addr(); break;
-    case 340: nt_latch = vram_read(ppu_addr); break;
+      case 339: ppu_addr = nt_addr(); break;
+      case 340: nt_latch = vram_read(ppu_addr); break;
 
-    default: break;
+      default: break;
     }
   }
 }
 
 void Ppu::scanline_cycle_pre() {
-  auto in_range = [this](const auto lower, const auto upper) {
-    return (tick >= lower) && (tick <= upper);
-  };
+  auto in_range = [this](const auto lower, const auto upper) { return (tick >= lower) && (tick <= upper); };
 
   if (tick == 1) {
     status.set_vblank(false);
@@ -621,10 +616,10 @@ void Ppu::scanline_cycle_visible() {
     background_fetch();
 
     switch (tick) {
-    case 1: clear_sec_oam(); break;
-    case 257: sprite_evaluation(); break;
-    case 321: load_sprites(); break;
-    default: break;
+      case 1: clear_sec_oam(); break;
+      case 257: sprite_evaluation(); break;
+      case 321: load_sprites(); break;
+      default: break;
     }
 
     if (tick == 260) {
@@ -666,14 +661,14 @@ auto Ppu::nt_mirror_addr(const u16 addr) const -> u16 {
   using enum types::ppu::MirroringType;
 
   switch (Cartridge::get().get_mirroring()) {
-  case Vertical: return addr & 0x07FF;
-  case Horizontal: return ((addr >> 1) & 0x400) + (addr & 0x03FF);
-  case OneScreenLow: return addr & 0x03FF;
-  case OneScreenHigh: return 0x0400 + (addr & 0x03FF);
-  case FourScreen: return addr & 0x0FFF;
-  case Unknown: throw std::runtime_error("Invalid mirroring type");
+    case Vertical: return addr & 0x07FF;
+    case Horizontal: return ((addr >> 1) & 0x400) + (addr & 0x03FF);
+    case OneScreenLow: return addr & 0x03FF;
+    case OneScreenHigh: return 0x0400 + (addr & 0x03FF);
+    case FourScreen: return addr & 0x0FFF;
+    case Unknown: throw std::runtime_error("Invalid mirroring type");
 
-  default: unreachable();
+    default: unreachable();
   }
 }
 

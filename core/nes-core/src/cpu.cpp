@@ -75,18 +75,18 @@ auto Cpu::peek(u16 addr) const -> u8 {
   using enum types::cpu::memory::Operation;
 
   switch (get_map<Read>(addr)) {
-  case CpuRam: return ram[addr & 0x07FF];
-  case PpuAccess: return Ppu::get().peek_reg(addr);
-  case ApuAccess: return 0xFF; // Avoids APU side effects and satisfies nestest
-  case Controller1: return Controller::get().peek(0);
-  case Controller2: return Controller::get().peek(1);
-  case CartridgeAccess: return Cartridge::get().prg_read(addr);
+    case CpuRam: return ram[addr & 0x07FF];
+    case PpuAccess: return Ppu::get().peek_reg(addr);
+    case ApuAccess: return 0xFF; // Avoids APU side effects and satisfies nestest
+    case Controller1: return Controller::get().peek(0);
+    case Controller2: return Controller::get().peek(1);
+    case CartridgeAccess: return Cartridge::get().prg_read(addr);
 
-  case OamDma:
-  case ControllerAccess:
-  case Unknown: SPDLOG_ERROR("Invalid read address: 0x{:04X}", addr); return 0;
+    case OamDma:
+    case ControllerAccess:
+    case Unknown: SPDLOG_ERROR("Invalid read address: 0x{:04X}", addr); return 0;
 
-  default: unreachable();
+    default: unreachable();
   }
 }
 
@@ -96,18 +96,18 @@ auto Cpu::read(u16 addr) const -> u8 {
   using enum types::cpu::memory::Operation;
 
   switch (get_map<Read>(addr)) {
-  case CpuRam: return ram[addr & 0x07FF];
-  case PpuAccess: return Ppu::get().read(addr);
-  case ApuAccess: return 0;
-  case Controller1: return Controller::get().read(0);
-  case Controller2: return Controller::get().read(1);
-  case CartridgeAccess: return Cartridge::get().prg_read(addr);
+    case CpuRam: return ram[addr & 0x07FF];
+    case PpuAccess: return Ppu::get().read(addr);
+    case ApuAccess: return 0;
+    case Controller1: return Controller::get().read(0);
+    case Controller2: return Controller::get().read(1);
+    case CartridgeAccess: return Cartridge::get().prg_read(addr);
 
-  case OamDma:
-  case ControllerAccess:
-  case Unknown: SPDLOG_ERROR("Invalid read address: 0x{:04X}", addr); return 0;
+    case OamDma:
+    case ControllerAccess:
+    case Unknown: SPDLOG_ERROR("Invalid read address: 0x{:04X}", addr); return 0;
 
-  default: unreachable();
+    default: unreachable();
   }
 }
 
@@ -117,18 +117,18 @@ void Cpu::write(const u16 addr, const u8 value) {
   using enum types::cpu::memory::Operation;
 
   switch (get_map<Write>(addr)) {
-  case CpuRam: ram[addr & 0x07FF] = value; break;
-  case PpuAccess: Ppu::get().write(addr, value); break;
-  case ApuAccess: break;
-  case OamDma: dma_oam(value); break;
-  case ControllerAccess: Controller::get().write((value & 1) != 0); break;
-  case CartridgeAccess: Cartridge::get().prg_write(addr, value); break;
+    case CpuRam: ram[addr & 0x07FF] = value; break;
+    case PpuAccess: Ppu::get().write(addr, value); break;
+    case ApuAccess: break;
+    case OamDma: dma_oam(value); break;
+    case ControllerAccess: Controller::get().write((value & 1) != 0); break;
+    case CartridgeAccess: Cartridge::get().prg_write(addr, value); break;
 
-  case Controller1:
-  case Controller2:
-  case Unknown: throw std::runtime_error("Invalid write address");
+    case Controller1:
+    case Controller2:
+    case Unknown: throw std::runtime_error("Invalid write address");
 
-  default: unreachable();
+    default: unreachable();
   }
 }
 

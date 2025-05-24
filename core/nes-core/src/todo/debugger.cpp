@@ -77,9 +77,7 @@ void Debugger::cpu_log() {
   auto peek_indx = [&] { return cpu.peek_indx(); };
   auto peek_indy = [&] { return cpu.peek_indy(); };
 
-  auto read_word_zp = [&](const u16 addr) -> u16 {
-    return peek((addr + 1) & 0xFF) << 8 | peek(addr);
-  };
+  auto read_word_zp = [&](const u16 addr) -> u16 { return peek((addr + 1) & 0xFF) << 8 | peek(addr); };
 
   const auto state = cpu.get_state();
 
@@ -97,18 +95,18 @@ void Debugger::cpu_log() {
   using enum types::cpu::AddressingMode;
 
   switch (static_cast<types::cpu::AddressingMode>(addr_m)) {
-  case Absolute:
-  case AbsoluteX:
-  case AbsoluteY:
-  case Indirect: ss << std::format("{:02X} {:02X} ", arg8, arg8_2); break;
-  case IndirectY:
-  case IndirectX:
-  case ZeroPage:
-  case ZeroPageX:
-  case ZeroPageY:
-  case Relative:
-  case Immediate: ss << std::format("{:02X}    ", arg8); break;
-  default: ss << "      "; break;
+    case Absolute:
+    case AbsoluteX:
+    case AbsoluteY:
+    case Indirect: ss << std::format("{:02X} {:02X} ", arg8, arg8_2); break;
+    case IndirectY:
+    case IndirectX:
+    case ZeroPage:
+    case ZeroPageX:
+    case ZeroPageY:
+    case Relative:
+    case Immediate: ss << std::format("{:02X}    ", arg8); break;
+    default: ss << "      "; break;
   }
 
   ss << std::format("{:>4s} ", inst);
@@ -116,78 +114,72 @@ void Debugger::cpu_log() {
   ss << std::left << std::setw(28) << std::setfill(' ');
 
   switch (static_cast<types::cpu::AddressingMode>(addr_m)) {
-  case Implicit: {
-    ss << " ";
-    break;
-  }
-  case Accumulator:
-    if (inst == "LSR" || inst == "ASL" || inst == "ROR" || inst == "ROL") {
-      ss << "A";
-    } else {
+    case Implicit: {
       ss << " ";
+      break;
     }
-    break;
-  case Immediate: {
-    ss << std::format("#${:02X}", peek(peek_imm()));
-    break;
-  }
-  case Relative: {
-    ss << std::format("${:04X}", peek_rel());
-    break;
-  }
-  case ZeroPage: {
-    ss << std::format("${:02X} = {:02X}", peek_zp(), peek(peek_zp()));
-    break;
-  }
-  case ZeroPageX: {
-    ss << std::format("${:02X},X @ {:02X} = {:02X}", peek_zp(), peek_zpx(), peek(peek_zpx()));
-    break;
-  }
-  case ZeroPageY: {
-    ss << std::format("${:02X},Y @ {:02X} = {:02X}", peek_zp(), peek_zpy(), peek(peek_zpy()));
-    break;
-  }
-  case Absolute: {
-    if (inst == "JMP" || inst == "JSR") {
-      ss << std::format("${:04X}", peek_ab());
-    } else {
-      ss << std::format("${:04X} = {:02X}", peek_ab(), peek(peek_ab()));
+    case Accumulator:
+      if (inst == "LSR" || inst == "ASL" || inst == "ROR" || inst == "ROL") {
+        ss << "A";
+      } else {
+        ss << " ";
+      }
+      break;
+    case Immediate: {
+      ss << std::format("#${:02X}", peek(peek_imm()));
+      break;
     }
-    break;
-  }
-  case AbsoluteX: {
-    ss << std::format("${:04X},X @ {:04X} = {:02X}", arg16, peek_abx(), peek(peek_abx()));
-    break;
-  }
-  case AbsoluteY: {
-    ss << std::format("${:04X},Y @ {:04X} = {:02X}", arg16, peek_aby(), peek(peek_aby()));
-    break;
-  }
-  case Indirect: {
-    ss << std::format("(${:04X}) = {:04X}", peek_ab(), peek_ind());
-    break;
-  }
-  case IndirectX: {
-    ss << std::format(
-      "(${:02X},X) @ {:02X} = {:04X} = {:02X}",
-      arg8,
-      peek_zpx(),
-      peek_indx(),
-      peek(peek_indx())
-    );
-    break;
-  }
-  case IndirectY: {
-    ss << std::format(
-      "(${:02X}),Y = {:04X} @ {:04X} = {:02X}",
-      arg8,
-      read_word_zp(arg8),
-      peek_indy(),
-      peek(peek_indy())
-    );
-    break;
-  }
-  default: ss << " "; break;
+    case Relative: {
+      ss << std::format("${:04X}", peek_rel());
+      break;
+    }
+    case ZeroPage: {
+      ss << std::format("${:02X} = {:02X}", peek_zp(), peek(peek_zp()));
+      break;
+    }
+    case ZeroPageX: {
+      ss << std::format("${:02X},X @ {:02X} = {:02X}", peek_zp(), peek_zpx(), peek(peek_zpx()));
+      break;
+    }
+    case ZeroPageY: {
+      ss << std::format("${:02X},Y @ {:02X} = {:02X}", peek_zp(), peek_zpy(), peek(peek_zpy()));
+      break;
+    }
+    case Absolute: {
+      if (inst == "JMP" || inst == "JSR") {
+        ss << std::format("${:04X}", peek_ab());
+      } else {
+        ss << std::format("${:04X} = {:02X}", peek_ab(), peek(peek_ab()));
+      }
+      break;
+    }
+    case AbsoluteX: {
+      ss << std::format("${:04X},X @ {:04X} = {:02X}", arg16, peek_abx(), peek(peek_abx()));
+      break;
+    }
+    case AbsoluteY: {
+      ss << std::format("${:04X},Y @ {:04X} = {:02X}", arg16, peek_aby(), peek(peek_aby()));
+      break;
+    }
+    case Indirect: {
+      ss << std::format("(${:04X}) = {:04X}", peek_ab(), peek_ind());
+      break;
+    }
+    case IndirectX: {
+      ss << std::format("(${:02X},X) @ {:02X} = {:04X} = {:02X}", arg8, peek_zpx(), peek_indx(), peek(peek_indx()));
+      break;
+    }
+    case IndirectY: {
+      ss << std::format(
+        "(${:02X}),Y = {:04X} @ {:04X} = {:02X}",
+        arg8,
+        read_word_zp(arg8),
+        peek_indy(),
+        peek(peek_indy())
+      );
+      break;
+    }
+    default: ss << " "; break;
   }
 
   auto ppu_cycle = Ppu::get().cycle_count();

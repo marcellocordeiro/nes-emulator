@@ -43,12 +43,12 @@ void Mapper1::apply() {
   }
 
   switch (control & 0b11) {
-  case 0: set_mirroring(MirroringType::OneScreenLow); break;
-  case 1: set_mirroring(MirroringType::OneScreenHigh); break;
-  case 2: set_mirroring(MirroringType::Vertical); break;
-  case 3: set_mirroring(MirroringType::Horizontal); break;
+    case 0: set_mirroring(MirroringType::OneScreenLow); break;
+    case 1: set_mirroring(MirroringType::OneScreenHigh); break;
+    case 2: set_mirroring(MirroringType::Vertical); break;
+    case 3: set_mirroring(MirroringType::Horizontal); break;
 
-  default: unreachable();
+    default: unreachable();
   }
 }
 
@@ -66,12 +66,12 @@ void Mapper1::write(const u16 addr, const u8 value) {
 
       if (write_delay == 0) {
         switch ((addr >> 13) & 0b11) {
-        case 0: control = shift_reg; break;
-        case 1: chr_bank_0 = shift_reg; break;
-        case 2: chr_bank_1 = shift_reg; break;
-        case 3: prg_bank = shift_reg; break;
+          case 0: control = shift_reg; break;
+          case 1: chr_bank_0 = shift_reg; break;
+          case 2: chr_bank_1 = shift_reg; break;
+          case 3: prg_bank = shift_reg; break;
 
-        default: unreachable();
+          default: unreachable();
         }
 
         write_delay = 5;

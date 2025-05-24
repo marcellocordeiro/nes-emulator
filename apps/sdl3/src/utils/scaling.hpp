@@ -8,22 +8,17 @@
 #include "vec2.hpp"
 
 [[nodiscard]] static auto integer_scale(const Vec2 available_size, const Vec2 texture_size) -> i32 {
-  const auto width_ratio = std::max(
-    static_cast<double>(available_size.width) / static_cast<double>(texture_size.width),
-    1.0
-  );
-  const auto height_ratio = std::max(
-    static_cast<double>(available_size.height) / static_cast<double>(texture_size.height),
-    1.0
-  );
+  const auto width_ratio =
+    std::max(static_cast<double>(available_size.width) / static_cast<double>(texture_size.width), 1.0);
+  const auto height_ratio =
+    std::max(static_cast<double>(available_size.height) / static_cast<double>(texture_size.height), 1.0);
 
   const auto scale = std::floor(std::clamp(width_ratio, 1.0, height_ratio));
 
   return static_cast<i32>(scale);
 }
 
-[[nodiscard]] static auto
-integer_scale_centered_rect(const Vec2 available_size, const Vec2 texture_size) -> SDL_FRect {
+[[nodiscard]] static auto integer_scale_centered_rect(const Vec2 available_size, const Vec2 texture_size) -> SDL_FRect {
   const auto scale = integer_scale(available_size, texture_size);
 
   const auto w = static_cast<float>(texture_size.height * scale);

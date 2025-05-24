@@ -88,8 +88,7 @@ auto IpsPatch::read_record(std::vector<u8>::const_iterator& iterator) -> bool {
 }
 
 template <typename T>
-auto IpsPatch::take_from_iterator(std::vector<u8>::const_iterator& iterator, const auto count)
-  -> T {
+auto IpsPatch::take_from_iterator(std::vector<u8>::const_iterator& iterator, const auto count) -> T {
   const auto range = std::ranges::subrange(iterator, iterator + count);
   const auto result = std::ranges::fold_left(range, T{0}, [](const T acc, const u8 value) {
     return static_cast<T>((acc << 8) | static_cast<T>(value));

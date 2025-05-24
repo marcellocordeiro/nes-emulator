@@ -18,10 +18,8 @@ using nes::Nes;
 namespace {
 void render_display(const sdl::Renderer& renderer, const sdl::Texture& texture) {
   const auto available_size = renderer.get_current_render_output_size();
-  const auto rect = integer_scale_centered_rect(
-    available_size,
-    {.width = nes::SCREEN_WIDTH, .height = nes::SCREEN_HEIGHT}
-  );
+  const auto rect =
+    integer_scale_centered_rect(available_size, {.width = nes::SCREEN_WIDTH, .height = nes::SCREEN_HEIGHT});
 
   UNUSED(rect); // fix
 
@@ -48,12 +46,7 @@ void App::run() {
 
   constexpr auto window_flags = SDL_WindowFlags{SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIDDEN};
 
-  const auto window = sdl::Window(
-    std::string(nes::TITLE),
-    nes::SCREEN_WIDTH * 3,
-    nes::SCREEN_HEIGHT * 3,
-    window_flags
-  );
+  const auto window = sdl::Window(std::string(nes::TITLE), nes::SCREEN_WIDTH * 3, nes::SCREEN_HEIGHT * 3, window_flags);
   const auto renderer = sdl::Renderer(window);
 
   renderer.enable_vsync();
@@ -88,10 +81,10 @@ void App::run() {
 
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
-      case SDL_EVENT_QUIT: nes.power_off(); return;
-      case SDL_EVENT_KEY_DOWN: process_input(event.key, nes); break;
+        case SDL_EVENT_QUIT: nes.power_off(); return;
+        case SDL_EVENT_KEY_DOWN: process_input(event.key, nes); break;
 
-      default: break;
+        default: break;
       }
 
       if ((SDL_GetWindowFlags(window.get()) & SDL_WINDOW_MINIMIZED) != 0) {
@@ -120,12 +113,7 @@ void App::run() {
       nes.run_frame();
     }
 
-    SDL_UpdateTexture(
-      texture.get(),
-      nullptr,
-      nes.get_frame_buffer(),
-      nes::SCREEN_WIDTH * sizeof(u32)
-    );
+    SDL_UpdateTexture(texture.get(), nullptr, nes.get_frame_buffer(), nes::SCREEN_WIDTH * sizeof(u32));
 
     SDL_RenderClear(renderer.get());
     render_display(renderer, texture);
@@ -178,15 +166,15 @@ void App::process_input(const SDL_KeyboardEvent& key_event, Nes& nes) {
     }
 
     switch (action) {
-    case Action::Pause: running = !running; return;
-    case Action::Reset: nes.reset(); return;
+      case Action::Pause: running = !running; return;
+      case Action::Reset: nes.reset(); return;
 
-    case Action::SaveSnapshot:
-    case Action::LoadSnapshot:
-    case Action::ToggleLimiter:
-    case Action::VolumeUp:
-    case Action::VolumeDown:
-    default: return;
+      case Action::SaveSnapshot:
+      case Action::LoadSnapshot:
+      case Action::ToggleLimiter:
+      case Action::VolumeUp:
+      case Action::VolumeDown:
+      default: return;
     }
   }
 }

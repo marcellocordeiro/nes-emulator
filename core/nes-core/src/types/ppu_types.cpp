@@ -6,9 +6,7 @@
 
 namespace nes::types::ppu {
 auto get_memory_map(u16 addr) -> MemoryMap {
-  auto in_range = [addr](const u16 lower, const u16 upper) {
-    return (addr >= lower) && (addr <= upper);
-  };
+  auto in_range = [addr](const u16 lower, const u16 upper) { return (addr >= lower) && (addr <= upper); };
 
   if (in_range(0x0000, 0x1FFF)) {
     return MemoryMap::Chr;
@@ -34,14 +32,14 @@ auto get_mirroring_name(const MirroringType type) -> std::string_view {
   constexpr static std::string_view UNKNOWN = "Unknown";
 
   switch (type) {
-  case MirroringType::Horizontal: return HORIZONTAL;
-  case MirroringType::Vertical: return VERTICAL;
-  case MirroringType::OneScreenLow: return ONE_SCREEN_LOW;
-  case MirroringType::OneScreenHigh: return ONE_SCREEN_HIGH;
-  case MirroringType::FourScreen: return FOUR_SCREEN;
-  case MirroringType::Unknown: return UNKNOWN;
+    case MirroringType::Horizontal: return HORIZONTAL;
+    case MirroringType::Vertical: return VERTICAL;
+    case MirroringType::OneScreenLow: return ONE_SCREEN_LOW;
+    case MirroringType::OneScreenHigh: return ONE_SCREEN_HIGH;
+    case MirroringType::FourScreen: return FOUR_SCREEN;
+    case MirroringType::Unknown: return UNKNOWN;
 
-  default: unreachable();
+    default: unreachable();
   }
 }
 } // namespace nes::types::ppu

@@ -69,25 +69,25 @@ struct State {
 };
 
 namespace memory {
-enum class Operation {
-  None = -1,
-  Read,
-  Write,
-};
+  enum class Operation {
+    None = -1,
+    Read,
+    Write,
+  };
 
-enum class MemoryMap {
-  Unknown = -1,
-  CpuRam,
-  PpuAccess,
-  ApuAccess,
-  OamDma,
-  ControllerAccess,
-  Controller1,
-  Controller2,
-  CartridgeAccess
-};
+  enum class MemoryMap {
+    Unknown = -1,
+    CpuRam,
+    PpuAccess,
+    ApuAccess,
+    OamDma,
+    ControllerAccess,
+    Controller1,
+    Controller2,
+    CartridgeAccess
+  };
 
-template <auto Operation>
-auto get_map(u16 addr) -> MemoryMap;
+  template <auto Operation>
+  auto get_map(u16 addr) -> MemoryMap;
 } // namespace memory
 } // namespace nes::types::cpu

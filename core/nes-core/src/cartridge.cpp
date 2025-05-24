@@ -31,10 +31,7 @@ auto Cartridge::get_mirroring() const -> MirroringType {
   return mapper->get_mirroring();
 }
 
-void Cartridge::load(
-  const std::vector<u8>& rom_file,
-  const std::optional<std::vector<u8>>& prg_ram_file
-) {
+void Cartridge::load(const std::vector<u8>& rom_file, const std::optional<std::vector<u8>>& prg_ram_file) {
   rom = rom_file;
 
   const std::span header(rom.begin(), rom.begin() + 16);
@@ -47,12 +44,12 @@ void Cartridge::load(
   const auto mirroring = (header[6] & 1) != 0 ? MirroringType::Vertical : MirroringType::Horizontal;
 
   switch (mapper_num) {
-  case 0: mapper = std::make_unique<Mapper0>(); break;
-  case 1: mapper = std::make_unique<Mapper1>(); break;
-  case 2: mapper = std::make_unique<Mapper2>(); break;
-  case 4: mapper = std::make_unique<Mapper4>(); break;
-  case 7: mapper = std::make_unique<Mapper7>(); break;
-  default: throw std::runtime_error(std::format("Mapper #{} not implemented", mapper_num));
+    case 0: mapper = std::make_unique<Mapper0>(); break;
+    case 1: mapper = std::make_unique<Mapper1>(); break;
+    case 2: mapper = std::make_unique<Mapper2>(); break;
+    case 4: mapper = std::make_unique<Mapper4>(); break;
+    case 7: mapper = std::make_unique<Mapper7>(); break;
+    default: throw std::runtime_error(std::format("Mapper #{} not implemented", mapper_num));
   }
 
   auto prg_start = std::next(rom.begin(), 16);
