@@ -85,7 +85,7 @@ AllowShortFunctionsOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: false
-#AllowShortNamespacesOnASingleLine: false
+AllowShortNamespacesOnASingleLine: false
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: true
 AttributeMacros:
@@ -128,7 +128,7 @@ BreakFunctionDefinitionParameters: false
 BreakInheritanceList: AfterColon
 BreakStringLiterals: false
 BreakTemplateDeclarations: Yes
-ColumnLimit:     120
+ColumnLimit:     100
 CommentPragmas:  '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerIndentWidth: 2
@@ -169,7 +169,7 @@ IncludeIsMainSourceRegex: ''
 IndentAccessModifiers: false
 IndentCaseBlocks: false
 IndentCaseLabels: true
-#IndentExportBlock: true
+IndentExportBlock: false
 IndentExternBlock: AfterExternBlock
 IndentGotoLabels: true
 IndentPPDirectives: None
@@ -255,7 +255,7 @@ ReferenceAlignment: Pointer
 #ReflowComments: Never
 ReflowComments:  false
 RemoveBracesLLVM: false
-#RemoveEmptyLinesInUnwrappedLines: true
+RemoveEmptyLinesInUnwrappedLines: true
 RemoveParentheses: Leave
 RemoveSemicolon: true
 RequiresClausePosition: OwnLine
@@ -321,5 +321,5 @@ WhitespaceSensitiveMacros:
   - NS_SWIFT_NAME
   - PP_STRINGIZE
   - STRINGIZE
-#WrapNamespaceBodyWithEmptyLines: Leave
+WrapNamespaceBodyWithEmptyLines: Never
 ...

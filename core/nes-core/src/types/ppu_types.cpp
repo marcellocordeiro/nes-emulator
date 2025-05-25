@@ -6,7 +6,9 @@
 
 namespace nes::types::ppu {
 auto get_memory_map(u16 addr) -> MemoryMap {
-  auto in_range = [addr](const u16 lower, const u16 upper) { return (addr >= lower) && (addr <= upper); };
+  auto in_range = [addr](const u16 lower, const u16 upper) {
+    return (addr >= lower) && (addr <= upper);
+  };
 
   if (in_range(0x0000, 0x1FFF)) {
     return MemoryMap::Chr;

@@ -407,7 +407,8 @@ auto Cpu::rotate_left(const u8 value) -> u8 {
 }
 
 auto Cpu::rotate_right(const u8 value) -> u8 {
-  const u8 result = static_cast<u8>(static_cast<u8>(value >> 1) | (static_cast<u8>(state.check_flags(Carry)) << 7));
+  const u8 result =
+    static_cast<u8>(static_cast<u8>(value >> 1) | (static_cast<u8>(state.check_flags(Carry)) << 7));
   state.update_nz(result);
 
   state.clear_flags(Carry);
@@ -491,7 +492,10 @@ template <auto Mode>
 void Cpu::STA() {
   const auto addr = get_operand<Mode>();
 
-  if constexpr (Mode == AbsoluteX_Exception || Mode == AbsoluteY_Exception || Mode == IndirectY_Exception) {
+  if constexpr (Mode == AbsoluteX_Exception
+                || Mode == AbsoluteY_Exception
+                || Mode == IndirectY_Exception)
+  {
     tick();
   }
 
@@ -923,7 +927,7 @@ void Cpu::INT_NMI() {
   const u16 addr = static_cast<u16>(static_cast<u16>(high << 8) | low);
 
   state.pc = addr;
-  *nmi_conn = false;
+  *nmi = false;
 }
 
 void Cpu::INT_RST() {
@@ -1289,7 +1293,8 @@ template <>
 auto Cpu::get_operand<IndirectY>() -> u16 {
   const auto zp_addr = get_operand<ZeroPage>();
 
-  const u16 base_addr = static_cast<u16>((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+  const u16 base_addr =
+    static_cast<u16>((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
 
   const auto addr = static_cast<u16>(base_addr + state.y);
 
@@ -1303,7 +1308,8 @@ auto Cpu::get_operand<IndirectY>() -> u16 {
 template <>
 auto Cpu::get_operand<IndirectY_Exception>() -> u16 {
   const auto zp_addr = get_operand<ZeroPage>();
-  const u16 base_addr = static_cast<u16>((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
+  const u16 base_addr =
+    static_cast<u16>((memory_read((zp_addr + 1) & 0xFF) << 8) | memory_read(zp_addr));
 
   return base_addr + state.y;
 }

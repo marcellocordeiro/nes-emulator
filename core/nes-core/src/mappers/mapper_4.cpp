@@ -56,7 +56,9 @@ void Mapper4::write(const u16 addr, const u8 value) {
     switch (addr & 0xE001) {
       case 0x8000: reg_8000 = value; break;
       case 0x8001: regs[reg_8000 & 7] = value; break;
-      case 0xA000: set_mirroring((value & 1) != 0 ? MirroringType::Horizontal : MirroringType::Vertical); break;
+      case 0xA000:
+        set_mirroring((value & 1) != 0 ? MirroringType::Horizontal : MirroringType::Vertical);
+        break;
       case 0xC000: irq_period = value; break;
       case 0xC001: irq_counter = 0; break;
       case 0xE000:

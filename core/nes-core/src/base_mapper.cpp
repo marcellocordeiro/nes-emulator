@@ -12,7 +12,7 @@ void BaseMapper::set_mirroring(const MirroringType value) {
 }
 
 void BaseMapper::set_irq(const bool value) const {
-  *irq_conn = value;
+  *irq = value;
 }
 
 auto BaseMapper::get_prg_addr(const u16 addr) const -> usize {

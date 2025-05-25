@@ -24,7 +24,7 @@ public:
 
   void step();
 
-  std::shared_ptr<bool> nmi_conn;
+  std::shared_ptr<bool> nmi;
 
   //
   // Read without side effects

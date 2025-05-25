@@ -1,8 +1,10 @@
 #include "cartridge.hpp"
 
+#include <algorithm>
 #include <format>
 #include <iterator>
 #include <memory>
+#include <ranges>
 #include <span>
 #include <stdexcept>
 
@@ -31,9 +33,11 @@ auto Cartridge::get_mirroring() const -> MirroringType {
   return mapper->get_mirroring();
 }
 
-void Cartridge::load(const std::vector<u8>& rom_file, const std::optional<std::vector<u8>>& prg_ram_file) {
-  rom = rom_file;
-
+void Cartridge::load(
+  const std::vector<u8>& rom,
+  const std::optional<std::vector<u8>>& prg_ram_file,
+  std::shared_ptr<bool> irq
+) {
   const std::span header(rom.begin(), rom.begin() + 16);
 
   const usize mapper_num = (header[7] & 0xF0) | (header[6] >> 4);
@@ -41,7 +45,35 @@ void Cartridge::load(const std::vector<u8>& rom_file, const std::optional<std::v
   const usize chr_size = static_cast<usize>(header[5]) * 0x2000;
   const bool has_chr_ram = chr_size == 0;
   const usize prg_ram_size = header[8] != 0 ? header[8] * 0x2000 : 0x2000;
-  const auto mirroring = (header[6] & 1) != 0 ? MirroringType::Vertical : MirroringType::Horizontal;
+  const auto mirroring =
+    (header[6] & 0b1) != 0 ? MirroringType::Vertical : MirroringType::Horizontal;
+
+  // PRG
+  constexpr usize prg_start = 16;
+
+  prg = rom
+    | std::ranges::views::drop(prg_start)
+    | std::ranges::views::take(prg_size)
+    | std::ranges::to<std::vector>();
+
+  // CHR
+  if (!has_chr_ram) {
+    const usize chr_start = prg_start + prg_size;
+
+    chr = rom
+      | std::ranges::views::drop(chr_start)
+      | std::ranges::views::take(chr_size)
+      | std::ranges::to<std::vector>();
+  } else {
+    chr.resize(0x2000);
+  }
+
+  // PRG-RAM
+  if (prg_ram_file) {
+    prg_ram = *prg_ram_file;
+  } else {
+    prg_ram.resize(0x2000);
+  }
 
   switch (mapper_num) {
     case 0: mapper = std::make_unique<Mapper0>(); break;
@@ -52,31 +84,9 @@ void Cartridge::load(const std::vector<u8>& rom_file, const std::optional<std::v
     default: throw std::runtime_error(std::format("Mapper #{} not implemented", mapper_num));
   }
 
-  auto prg_start = std::next(rom.begin(), 16);
-  auto prg_end = std::next(prg_start, static_cast<i32>(prg_size));
-
-  prg = {prg_start, prg_end};
-
-  if (!has_chr_ram) {
-    auto chr_start = prg_end;
-    auto chr_end = std::next(chr_start, static_cast<i32>(chr_size));
-
-    chr = {chr_start, chr_end};
-  } else {
-    chr_ram.resize(0x2000);
-
-    chr = chr_ram;
-  }
-
-  if (prg_ram_file) {
-    prg_ram = *prg_ram_file;
-  } else {
-    prg_ram.resize(0x2000, 0);
-  }
-
   mapper->prg_size = prg.size();
   mapper->chr_size = chr.size();
-  mapper->irq_conn = irq_conn;
+  mapper->irq = std::move(irq);
   mapper->set_mirroring(mirroring);
   mapper->reset();
 

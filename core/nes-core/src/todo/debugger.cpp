@@ -77,7 +77,9 @@ void Debugger::cpu_log() {
   auto peek_indx = [&] { return cpu.peek_indx(); };
   auto peek_indy = [&] { return cpu.peek_indy(); };
 
-  auto read_word_zp = [&](const u16 addr) -> u16 { return peek((addr + 1) & 0xFF) << 8 | peek(addr); };
+  auto read_word_zp = [&](const u16 addr) -> u16 {
+    return peek((addr + 1) & 0xFF) << 8 | peek(addr);
+  };
 
   const auto state = cpu.get_state();
 
@@ -166,7 +168,13 @@ void Debugger::cpu_log() {
       break;
     }
     case IndirectX: {
-      ss << std::format("(${:02X},X) @ {:02X} = {:04X} = {:02X}", arg8, peek_zpx(), peek_indx(), peek(peek_indx()));
+      ss << std::format(
+        "(${:02X},X) @ {:02X} = {:04X} = {:02X}",
+        arg8,
+        peek_zpx(),
+        peek_indx(),
+        peek(peek_indx())
+      );
       break;
     }
     case IndirectY: {

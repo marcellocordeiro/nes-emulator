@@ -55,7 +55,9 @@ void State::set_ps(const u8 value) {
 namespace memory {
   template <auto Operation>
   auto get_map(u16 addr) -> MemoryMap { // NOLINT
-    auto in_range = [addr](const u16 lower, const u16 upper) { return (addr >= lower) && (addr <= upper); };
+    auto in_range = [addr](const u16 lower, const u16 upper) {
+      return (addr >= lower) && (addr <= upper);
+    };
 
     if constexpr (Operation == Operation::Read) {
       if (addr <= 0x1FFF) {

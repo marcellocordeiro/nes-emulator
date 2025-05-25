@@ -20,8 +20,8 @@ public:
 
   void run_frame();
 
-  std::shared_ptr<bool> irq_conn;
-  std::shared_ptr<bool> nmi_conn;
+  std::shared_ptr<bool> irq;
+  std::shared_ptr<bool> nmi;
 
   //
   // Read without side effects

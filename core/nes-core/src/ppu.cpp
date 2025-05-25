@@ -62,7 +62,8 @@ void Ppu::set_palette(const std::vector<u8>& palette) {
     const auto g = palette[(i * 3) + 1];
     const auto b = palette[(i * 3) + 2];
 
-    full_nes_palette[0][i] = static_cast<u32>(r << 16) | static_cast<u32>(g << 8) | static_cast<u32>(b);
+    full_nes_palette[0][i] =
+      static_cast<u32>(r << 16) | static_cast<u32>(g << 8) | static_cast<u32>(b);
   }
 
   // Generate full colour palette
@@ -541,7 +542,9 @@ void Ppu::render_pixel() {
 }
 
 void Ppu::background_fetch() {
-  auto in_range = [this](const auto lower, const auto upper) { return (tick >= lower) && (tick <= upper); };
+  auto in_range = [this](const u16 lower, const u16 upper) {
+    return (tick >= lower) && (tick <= upper);
+  };
 
   if (in_range(2, 257) || in_range(322, 337)) {
     background_shift();
@@ -584,7 +587,9 @@ void Ppu::background_fetch() {
 }
 
 void Ppu::scanline_cycle_pre() {
-  auto in_range = [this](const auto lower, const auto upper) { return (tick >= lower) && (tick <= upper); };
+  auto in_range = [this](const auto lower, const auto upper) {
+    return (tick >= lower) && (tick <= upper);
+  };
 
   if (tick == 1) {
     status.set_vblank(false);
@@ -633,7 +638,7 @@ void Ppu::scanline_cycle_nmi() {
     status.set_vblank(true);
 
     if (ctrl.nmi()) {
-      *nmi_conn = true;
+      *nmi = true;
     }
   }
 }

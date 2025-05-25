@@ -26,12 +26,11 @@ void Nes::reset() {
 
 void Nes::power_on() {
   const auto irq = std::make_shared<bool>(false);
-  Cartridge::get().irq_conn = irq;
-  Cpu::get().irq_conn = irq;
+  Cpu::get().irq = irq;
 
   const auto nmi = std::make_shared<bool>(false);
-  Cpu::get().nmi_conn = nmi;
-  Ppu::get().nmi_conn = nmi;
+  Cpu::get().nmi = nmi;
+  Ppu::get().nmi = nmi;
 
   auto prg_ram = std::optional<std::vector<u8>>();
 
@@ -39,7 +38,7 @@ void Nes::power_on() {
     prg_ram = utility::FileManager::get().get_prg_ram();
   }
 
-  Cartridge::get().load(utility::FileManager::get().get_rom(), prg_ram);
+  Cartridge::get().load(utility::FileManager::get().get_rom(), prg_ram, irq);
 
   const auto palette = utility::FileManager::get().get_palette();
   Ppu::get().set_palette(palette);

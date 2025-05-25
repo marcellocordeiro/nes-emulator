@@ -39,7 +39,7 @@ public:
   virtual void increment_scanline_counter();
 
   // TODO: fix this
-  std::shared_ptr<bool> irq_conn;
+  std::shared_ptr<bool> irq;
 
   usize prg_size = 0;
   usize chr_size = 0;
