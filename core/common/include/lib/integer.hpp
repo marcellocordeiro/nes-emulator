@@ -5,14 +5,12 @@
 
 #include "concepts/binary_ops.hpp"
 
-#define DISABLE_PRIMITIVE_INTEGERS
-
 namespace lib {
 template <std::integral Type>
 struct Integer {
   using value_type = Type;
 
-  constexpr Integer() = default;
+  constexpr Integer() noexcept = default;
 
   constexpr Integer(value_type value) noexcept : value_{value} {}
 
@@ -20,13 +18,20 @@ struct Integer {
     return value_;
   }
 
-  static constexpr auto from(const std::integral auto value) -> Integer {
+  [[nodiscard]]
+  static constexpr auto from(const std::integral auto value) noexcept -> Integer {
     return {static_cast<value_type>(value)};
   }
 
   template <std::integral T>
-  static constexpr auto from(const Integer<T> value) -> Integer {
+  [[nodiscard]] static constexpr auto from(const Integer<T> value) noexcept -> Integer {
     return from(value.get());
+  }
+
+  constexpr operator std::size_t() const noexcept
+    requires std::same_as<Type, std::size_t>
+  {
+    return value_;
   }
 
   constexpr explicit operator value_type() const noexcept {
@@ -212,52 +217,52 @@ private:
 } // namespace lib
 
 // NOLINTBEGIN
-using i8 = lib::Integer<std::int8_t>;
-using i16 = lib::Integer<std::int16_t>;
-using i32 = lib::Integer<std::int32_t>;
-using i64 = lib::Integer<std::int64_t>;
-using u8 = lib::Integer<std::uint8_t>;
-using u16 = lib::Integer<std::uint16_t>;
-using u32 = lib::Integer<std::uint32_t>;
-using u64 = lib::Integer<std::uint64_t>;
-using usize = lib::Integer<std::size_t>;
+using i8_s = lib::Integer<std::int8_t>;
+using i16_s = lib::Integer<std::int16_t>;
+using i32_s = lib::Integer<std::int32_t>;
+using i64_s = lib::Integer<std::int64_t>;
+using u8_s = lib::Integer<std::uint8_t>;
+using u16_s = lib::Integer<std::uint16_t>;
+using u32_s = lib::Integer<std::uint32_t>;
+using u64_s = lib::Integer<std::uint64_t>;
+using usize_s = lib::Integer<std::size_t>;
 
 // NOLINTEND
 
 namespace lib::literals {
-consteval auto operator""_i8(const unsigned long long int value) noexcept -> i8 {
+consteval auto operator""_i8_s(const unsigned long long int value) noexcept -> i8_s {
   return {static_cast<std::int8_t>(value)};
 }
 
-consteval auto operator""_i16(const unsigned long long int value) noexcept -> i16 {
+consteval auto operator""_i16_s(const unsigned long long int value) noexcept -> i16_s {
   return {static_cast<std::int16_t>(value)};
 }
 
-consteval auto operator""_i32(const unsigned long long int value) noexcept -> i32 {
+consteval auto operator""_i32_s(const unsigned long long int value) noexcept -> i32_s {
   return {static_cast<std::int32_t>(value)};
 }
 
-consteval auto operator""_i64(const unsigned long long int value) noexcept -> i64 {
+consteval auto operator""_i64_s(const unsigned long long int value) noexcept -> i64_s {
   return {static_cast<std::int64_t>(value)};
 }
 
-consteval auto operator""_u8(const unsigned long long int value) noexcept -> u8 {
+consteval auto operator""_u8_s(const unsigned long long int value) noexcept -> u8_s {
   return {static_cast<std::uint8_t>(value)};
 }
 
-consteval auto operator""_u16(const unsigned long long int value) noexcept -> u16 {
+consteval auto operator""_u16_s(const unsigned long long int value) noexcept -> u16_s {
   return {static_cast<std::uint16_t>(value)};
 }
 
-consteval auto operator""_u32(const unsigned long long int value) noexcept -> u32 {
+consteval auto operator""_u32_s(const unsigned long long int value) noexcept -> u32_s {
   return {static_cast<std::uint32_t>(value)};
 }
 
-consteval auto operator""_u64(const unsigned long long int value) noexcept -> u64 {
+consteval auto operator""_u64_s(const unsigned long long int value) noexcept -> u64_s {
   return {static_cast<std::uint64_t>(value)};
 }
 
-consteval auto operator""_usize(const unsigned long long int value) noexcept -> usize {
+consteval auto operator""_usize_s(const unsigned long long int value) noexcept -> usize_s {
   return {static_cast<std::size_t>(value)};
 }
 } // namespace lib::literals

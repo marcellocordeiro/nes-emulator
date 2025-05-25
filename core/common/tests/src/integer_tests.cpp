@@ -30,24 +30,24 @@ concept supports_comparisons = requires(Lhs a, Rhs b) {
   };
 };
 
-static_assert(supports_comparisons<u8, u8>);
-static_assert(supports_comparisons<u8, int>);
-static_assert(supports_comparisons<int, u8>);
-static_assert(supports_comparisons<unsigned int, u8>);
-static_assert(!supports_comparisons<u16, u8>);
+static_assert(supports_comparisons<u8_s, u8_s>);
+static_assert(supports_comparisons<u8_s, int>);
+static_assert(supports_comparisons<int, u8_s>);
+static_assert(supports_comparisons<unsigned int, u8_s>);
+static_assert(!supports_comparisons<u16_s, u8_s>);
 
 TEMPLATE_TEST_CASE(
   "binary ops",
   "[test][sane_integer][binary_ops]",
-  (std::pair<u8, u8>),
-  (std::pair<u16, u16>),
-  (std::pair<u32, u32>),
-  (std::pair<u8, int>),
-  (std::pair<u16, int>),
-  (std::pair<u32, int>),
-  (std::pair<u8, unsigned int>),
-  (std::pair<u16, unsigned int>),
-  (std::pair<u32, unsigned int>)
+  (std::pair<u8_s, u8_s>),
+  (std::pair<u16_s, u16_s>),
+  (std::pair<u32_s, u32_s>),
+  (std::pair<u8_s, int>),
+  (std::pair<u16_s, int>),
+  (std::pair<u32_s, int>),
+  (std::pair<u8_s, unsigned int>),
+  (std::pair<u16_s, unsigned int>),
+  (std::pair<u32_s, unsigned int>)
 ) {
   using Lhs = TestType::first_type;
   using Rhs = TestType::second_type;
@@ -59,9 +59,9 @@ TEMPLATE_TEST_CASE(
 TEMPLATE_TEST_CASE(
   "mixed types binary ops are not supported",
   "[test][sane_integer][binary_ops]",
-  (std::pair<u8, u16>),
-  (std::pair<u8, u32>),
-  (std::pair<u16, u32>)
+  (std::pair<u8_s, u16_s>),
+  (std::pair<u8_s, u32_s>),
+  (std::pair<u16_s, u32_s>)
 ) {
   using Lhs = TestType::first_type;
   using Rhs = TestType::second_type;

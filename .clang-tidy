@@ -1,5 +1,4 @@
 # yaml-language-server: $schema=https://json.schemastore.org/clang-tidy.json
-
 ---
 Checks: [
   "*",
@@ -30,4 +29,3 @@ Checks: [
 ]
 
 UseColor: true
-...
