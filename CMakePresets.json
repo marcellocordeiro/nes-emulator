@@ -1,185 +1,185 @@
 {
-    "version": 10,
-    "configurePresets": [
-        {
-            "name": "base",
-            "hidden": true,
-            "generator": "Ninja Multi-Config",
-            "binaryDir": "${sourceDir}/out/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
-            "warnings": {
-                "dev": true
-            }
-        },
-        {
-            "name": "vcpkg",
-            "hidden": true,
-            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-        },
-        {
-            "name": "windows",
-            "hidden": true,
-            "inherits": [ "vcpkg" ],
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
-        },
-        {
-            "name": "macos",
-            "hidden": true,
-            "inherits": [ "vcpkg" ],
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Darwin"
-            }
-        },
-        {
-            "name": "linux",
-            "hidden": true,
-            "inherits": [ "vcpkg" ],
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Linux"
-            },
-            "vendor": {
-                "microsoft.com/VisualStudioRemoteSettings/CMake/2.0": {
-                    "remoteSourceRootDir": "$env{HOME}/.vs/$ms{projectDirName}"
-                }
-            }
-        },
-        {
-            "name": "x64",
-            "hidden": true,
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            }
-        },
-        {
-            "name": "arm64",
-            "hidden": true,
-            "architecture": {
-                "value": "arm64",
-                "strategy": "external"
-            }
-        },
-        {
-            "name": "gcc",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "g++"
-            }
-        },
-        {
-            "name": "clang",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "clang",
-                "CMAKE_CXX_COMPILER": "clang++"
-            }
-        },
-        {
-            "name": "clang-cl",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "clang-cl",
-                "CMAKE_CXX_COMPILER": "clang-cl"
-            }
-        },
-        {
-            "name": "msvc",
-            "hidden": true,
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "cl",
-                "CMAKE_CXX_COMPILER": "cl"
-            }
-        },
-        {
-            "name": "windows-x64-msvc",
-            "description": "",
-            "inherits": [ "base", "x64", "msvc", "windows" ]
-        },
-        {
-            "name": "windows-x64-clang-cl",
-            "description": "",
-            "inherits": [ "base", "x64", "clang-cl", "windows" ],
-            "vendor": {
-                "microsoft.com/VisualStudioSettings/CMake/1.0": {
-                    "intelliSenseMode": "windows-clang-x64"
-                }
-            }
-        },
-        {
-            "name": "macos-x64-clang",
-            "description": "",
-            "inherits": [ "base", "x64", "clang", "macos" ]
-        },
-        {
-            "name": "linux-x64-gcc",
-            "description": "",
-            "inherits": [ "base", "x64", "gcc", "linux" ]
-        },
-        {
-            "name": "linux-x64-clang",
-            "description": "",
-            "inherits": [ "base", "x64", "clang", "linux" ]
+  "version": 10,
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja Multi-Config",
+      "binaryDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
+      "warnings": {
+        "dev": true
+      }
+    },
+    {
+      "name": "vcpkg",
+      "hidden": true,
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+    },
+    {
+      "name": "windows",
+      "hidden": true,
+      "inherits": ["vcpkg"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "macos",
+      "hidden": true,
+      "inherits": ["vcpkg"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Darwin"
+      }
+    },
+    {
+      "name": "linux",
+      "hidden": true,
+      "inherits": ["vcpkg"],
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioRemoteSettings/CMake/2.0": {
+          "remoteSourceRootDir": "$env{HOME}/.vs/$ms{projectDirName}"
         }
-    ],
-    "buildPresets": [
-        {
-            "name": "windows-x64-msvc-debug",
-            "configurePreset": "windows-x64-msvc",
-            "configuration": "Debug"
-        },
-        {
-            "name": "windows-x64-msvc-release",
-            "configurePreset": "windows-x64-msvc",
-            "configuration": "Release"
-        },
-        {
-            "name": "windows-x64-clang-cl-debug",
-            "configurePreset": "windows-x64-clang-cl",
-            "configuration": "Debug"
-        },
-        {
-            "name": "windows-x64-clang-cl-release",
-            "configurePreset": "windows-x64-clang-cl",
-            "configuration": "Release"
-        },
-        {
-            "name": "macos-x64-clang-debug",
-            "configurePreset": "macos-x64-clang",
-            "configuration": "Debug"
-        },
-        {
-            "name": "macos-x64-clang-release",
-            "configurePreset": "macos-x64-clang",
-            "configuration": "Release"
-        },
-        {
-            "name": "linux-x64-gcc-debug",
-            "configurePreset": "linux-x64-gcc",
-            "configuration": "Debug"
-        },
-        {
-            "name": "linux-x64-gcc-release",
-            "configurePreset": "linux-x64-gcc",
-            "configuration": "Release"
-        },
-        {
-            "name": "linux-x64-clang-debug",
-            "configurePreset": "linux-x64-clang",
-            "configuration": "Debug"
-        },
-        {
-            "name": "linux-x64-clang-release",
-            "configurePreset": "linux-x64-clang",
-            "configuration": "Release"
+      }
+    },
+    {
+      "name": "x64",
+      "hidden": true,
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "arm64",
+      "hidden": true,
+      "architecture": {
+        "value": "arm64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "gcc",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc",
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "clang-cl",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-cl",
+        "CMAKE_CXX_COMPILER": "clang-cl"
+      }
+    },
+    {
+      "name": "msvc",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "cl",
+        "CMAKE_CXX_COMPILER": "cl"
+      }
+    },
+    {
+      "name": "windows-x64-msvc",
+      "description": "",
+      "inherits": ["base", "x64", "msvc", "windows"]
+    },
+    {
+      "name": "windows-x64-clang-cl",
+      "description": "",
+      "inherits": ["base", "x64", "clang-cl", "windows"],
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-clang-x64"
         }
-    ]
+      }
+    },
+    {
+      "name": "macos-x64-clang",
+      "description": "",
+      "inherits": ["base", "x64", "clang", "macos"]
+    },
+    {
+      "name": "linux-x64-gcc",
+      "description": "",
+      "inherits": ["base", "x64", "gcc", "linux"]
+    },
+    {
+      "name": "linux-x64-clang",
+      "description": "",
+      "inherits": ["base", "x64", "clang", "linux"]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-x64-msvc-debug",
+      "configurePreset": "windows-x64-msvc",
+      "configuration": "Debug"
+    },
+    {
+      "name": "windows-x64-msvc-release",
+      "configurePreset": "windows-x64-msvc",
+      "configuration": "Release"
+    },
+    {
+      "name": "windows-x64-clang-cl-debug",
+      "configurePreset": "windows-x64-clang-cl",
+      "configuration": "Debug"
+    },
+    {
+      "name": "windows-x64-clang-cl-release",
+      "configurePreset": "windows-x64-clang-cl",
+      "configuration": "Release"
+    },
+    {
+      "name": "macos-x64-clang-debug",
+      "configurePreset": "macos-x64-clang",
+      "configuration": "Debug"
+    },
+    {
+      "name": "macos-x64-clang-release",
+      "configurePreset": "macos-x64-clang",
+      "configuration": "Release"
+    },
+    {
+      "name": "linux-x64-gcc-debug",
+      "configurePreset": "linux-x64-gcc",
+      "configuration": "Debug"
+    },
+    {
+      "name": "linux-x64-gcc-release",
+      "configurePreset": "linux-x64-gcc",
+      "configuration": "Release"
+    },
+    {
+      "name": "linux-x64-clang-debug",
+      "configurePreset": "linux-x64-clang",
+      "configuration": "Debug"
+    },
+    {
+      "name": "linux-x64-clang-release",
+      "configurePreset": "linux-x64-clang",
+      "configuration": "Release"
+    }
+  ]
 }
