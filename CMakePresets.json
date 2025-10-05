@@ -120,6 +120,11 @@
       "inherits": ["base", "x64", "clang", "macos"]
     },
     {
+      "name": "macos-arm64-clang",
+      "description": "",
+      "inherits": ["base", "arm64", "clang", "macos"]
+    },
+    {
       "name": "linux-x64-gcc",
       "description": "",
       "inherits": ["base", "x64", "gcc", "linux"]
@@ -159,6 +164,16 @@
     {
       "name": "macos-x64-clang-release",
       "configurePreset": "macos-x64-clang",
+      "configuration": "Release"
+    },
+    {
+      "name": "macos-arm64-clang-debug",
+      "configurePreset": "macos-arm64-clang",
+      "configuration": "Debug"
+    },
+    {
+      "name": "macos-arm64-clang-release",
+      "configurePreset": "macos-arm64-clang",
       "configuration": "Release"
     },
     {
