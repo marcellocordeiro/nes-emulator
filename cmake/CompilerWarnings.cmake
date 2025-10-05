@@ -58,13 +58,6 @@ function(set_compiler_warnings target)
     -Wuseless-cast # warn if you perform a cast to the same type
   )
 
-  if(WARNINGS_AS_ERRORS)
-    message(TRACE "Warnings are treated as errors")
-    list(APPEND CLANG_WARNINGS -Werror)
-    list(APPEND GCC_WARNINGS -Werror)
-    list(APPEND MSVC_WARNINGS /WX)
-  endif()
-
   if(MSVC)
     set(COMPILER_WARNINGS ${MSVC_WARNINGS})
   elseif(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang")
@@ -76,4 +69,8 @@ function(set_compiler_warnings target)
   endif()
 
   target_compile_options(${target} INTERFACE ${COMPILER_WARNINGS})
+
+  if(WARNINGS_AS_ERRORS)
+    set_property(TARGET ${target} PROPERTY COMPILE_WARNING_AS_ERROR ON)
+  endif()
 endfunction()
